@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Home, Account, Listing, Cart } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { fontSizes, colors } from '../constants';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import IconFeather from 'react-native-vector-icons/Feather';
 
 const Tab = createBottomTabNavigator();
 const screenOptions = ({ route }) => ({
@@ -11,6 +11,12 @@ const screenOptions = ({ route }) => ({
     tabBarInactiveTintColor: colors.black,
     tabBarActiveBackgroundColor: colors.grey,
     tabBarInactiveBackgroundColor: colors.grey,
+    tabBarStyle: {height: 60},
+    tabBarLabelStyle: {
+        fontSize: fontSizes.h6,
+        marginBottom: 8,
+        fontFamily: 'OpenSans-Medium',
+    },
     tabBarIcon: ({ focused, color, size }) => {
         let screenName = route.name;
         let iconName = 'home';
@@ -23,10 +29,10 @@ const screenOptions = ({ route }) => ({
         else if (screenName == 'Cart') {
             iconName = 'shopping-cart';
         }
-        return <Icon
-            style={{ paddingTop: 10 }}
+        return <IconFeather
+            style={{ paddingTop: 5 }}
             name={iconName}
-            size={23}
+            size={22}
             color={focused ? colors.primary : colors.black} />
     }
 })
@@ -35,31 +41,20 @@ function UITabs(props) {
     return <Tab.Navigator screenOptions={screenOptions}>
         <Tab.Screen name={'Home'} component={Home}
             options={{
-                tabBarLabel: 'Trang chủ',
-                tabBarLabelStyle: {
-                    fontSize: fontSizes.h5
-                }
+                tabBarLabel: 'Trang chủ'
+                
             }} />
         <Tab.Screen name={'Account'} component={Account}
             options={{
-                tabBarLabel: 'Tài khoản',
-                tabBarLabelStyle: {
-                    fontSize: fontSizes.h5
-                }
+                tabBarLabel: 'Tài khoản'
             }} />
         <Tab.Screen name={'Listing'} component={Listing}
             options={{
-                tabBarLabel: 'Sản phẩm',
-                tabBarLabelStyle: {
-                    fontSize: fontSizes.h5
-                }
+                tabBarLabel: 'Sản phẩm'
             }} />
         <Tab.Screen name={'Cart'} component={Cart}
             options={{
-                tabBarLabel: 'Giỏ hàng',
-                tabBarLabelStyle: {
-                    fontSize: fontSizes.h5
-                }
+                tabBarLabel: 'Giỏ hàng'
             }} />
     </Tab.Navigator>
 }
