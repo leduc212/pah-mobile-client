@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Text,
     View,
@@ -8,55 +8,82 @@ import {
     StyleSheet,
     FlatList
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, images } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
+import { AuthContext } from '../context/AuthContext';
+import {
+    HomeItemCard,
+    HomeCategoryCard
+} from '../components';
 
 function Home(props) {
-    const popularProducts = [
-        {
-            name: 'The intresting queston is: how do you compute the number of lines? Because I guess nobody ever knows it in advance (since it has no reason to be static)',
-            price: '12.200.000',
-            url: 'https://cdn.tgdd.vn/2021/03/CookProductThumb/Bbq-la-gi-nguon-goc-va-cac-cach-tu-lam-bbq-tai-nha-vo-cung-don-gian-0b-620x620.jpg'
-        },
-        {
-            name: 'The intesting queson is: how do you compute the number of lines? Because I guess nobody ever knows it in advance (since it has no reason to be',
-            price: '600.000',
-            url: 'https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_1:1/k%2FPhoto%2FRecipes%2F2021-09-breakfast-grits%2FNew%20Finals%2F2021-10-12_ATK8035'
-        },
-        {
-            name: 'Beverages',
-            price: '600.000',
-            url: 'https://f.hubspotusercontent00.net/hubfs/4662006/Beverage_compounds_drinks.jpg'
-        },
-        {
-            name: 'Coffee',
-            price: '600.000',
-            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/800px-A_small_cup_of_coffee.JPG'
-        },
-        {
-            name: 'Salad',
-            price: '600.000',
-            url: 'https://cdn.loveandlemons.com/wp-content/uploads/2021/04/green-salad.jpg'
-        },
-        {
-            name: 'Fast food',
-            price: '600.000',
-            url: 'https://www.eatthis.com/wp-content/uploads/sites/4/2022/06/fast-food-assortment-soda.jpg?quality=82&strip=1'
-        },
-        {
-            name: 'Dessert',
-            price: '600.000',
-            url: 'https://stordfkenticomedia.blob.core.windows.net/df-us/rms/media/recipemediafiles/recipes/retail/x17/17244-caramel-topped-ice-cream-dessert-600x600.jpg?ext=.jpg'
-        },
-        {
-            name: 'Noodles',
-            price: '600.000',
-            url: 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/veg-noodles-vegetable-noodles-recipe.jpg'
-        }
-    ]
+    // Auth Context
+    const authContext = useContext(AuthContext);
 
-    const categories = [
+    // Navigation
+    const { navigation, route } = props;
+
+    // Function of navigate to/back
+    const { navigate, goBack } = navigation;
+
+    // Data for popular products, ongoing auction and categories
+    const [popularProducts, setPopularProducts] = useState([
+        {
+            name: 'New Basic Stussy Mens Black/White L/S Tee T Shirt Size Medium',
+            price: '553,658',
+            url: 'https://i.ebayimg.com/images/g/SqQAAOSw9w9jYyqQ/s-l1600.jpg'
+        },
+        {
+            name: 'Trump shirt Wanted for President rea Mugshot DJT Tee shirt Republican party tee',
+            price: '426,097',
+            url: 'https://i.ebayimg.com/images/g/r-YAAOSwe4Vk63Ai/s-l1600.jpg'
+        },
+        {
+            name: 'adidas Originals Mens Street Grp Tea Graphic Shirt AZ1138 White XS-XL',
+            price: '699,268',
+            url: 'https://i.ebayimg.com/images/g/PeoAAOSwiFFesyqM/s-l1600.jpg'
+        },
+        {
+            name: 'Supreme Scarface The World Is Yours T-Shirt Black XL 100% Authentic Tee',
+            price: '4,756,097',
+            url: 'https://i.ebayimg.com/images/g/fIUAAOSwmnFk2PPY/s-l1600.jpg'
+        },
+        {
+            name: 'ZEGNA Micromodal Stretch Short Sleeve Under T-shirt (BLACK)',
+            price: '1,944,530',
+            url: 'https://i.ebayimg.com/images/g/dX0AAOSwzBxkYjsj/s-l1600.png'
+        }
+    ]);
+
+    const [ongoingAuctions, setOngoingAuctions] = useState([
+        {
+            name: '6.3" Chinese Antique Porcelain Song dynasty ru kiln cyan glaze Five tube Vase',
+            price: '4,633,902',
+            url: 'https://i.ebayimg.com/images/g/dCMAAOSwRNBlEZ1h/s-l1600.jpg',
+            closedTime: 1695699788000
+        },
+        {
+            name: '7.4" China Ancient Bronze ware beast Food Vessel Wine Vessel Wineware Zun pot',
+            price: '6,271,707',
+            url: 'https://i.ebayimg.com/images/g/TAsAAOSwaHZkLiZG/s-l1600.jpg',
+            closedTime: '2023-09-27'
+        },
+        {
+            name: 'BIG FAMILLE ROSE CHINESE PORCELAIN HEXAGONAL QING ANTIQUES BRUSHPOT HAT STAND',
+            price: '3,658,536',
+            url: 'https://i.ebayimg.com/images/g/ljUAAOSwFQJk51-q/s-l1600.jpg',
+            closedTime: '2023-09-28'
+        },
+        {
+            name: 'antique chinese cloisonne incense burner',
+            price: '11,207,317',
+            url: 'https://i.ebayimg.com/images/g/0V4AAOSwY3pk7gm6/s-l1600.jpg',
+            closedTime: '2023-09-27'
+        }
+    ]);
+
+    const [categories, setCategories] = useState([
         {
             name: 'Beverages',
             url: 'https://f.hubspotusercontent00.net/hubfs/4662006/Beverage_compounds_drinks.jpg'
@@ -81,34 +108,29 @@ function Home(props) {
             name: 'Noodles',
             url: 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/veg-noodles-vegetable-noodles-recipe.jpg'
         }
-    ]
+    ]);
 
     return <View style={styles.container}>
-        {/* Fixed homepage section: logo and cart and search icon */}
-        <View style={{
-            height: 70,
-            flexDirection: 'row',
-            paddingLeft: 15,
-            paddingRight: 10,
-            justifyContent: 'space-between'
-        }}>
-            <Image source={require('../assets/logo/pah-logo.png')}
-                style={{
-                    resizeMode: 'cover',
-                    height: 35,
-                    width: 70,
-                    alignSelf: 'center'
-                }} />
+        {/* Fixed homepage title: logo and cart and search icon */}
+        <View style={styles.titleContainer}>
+            <Image source={images.logoImage}
+                style={styles.logoImage} />
             <View style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 8
             }}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton}
+                    onPress={() => {
+                        navigate('Search')
+                    }}>
                     <IconFeather name='search' size={18} color={'black'} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton}
+                    onPress={() => {
+                        navigate('Cart')
+                    }}>
                     <IconFeather name='shopping-cart' size={18} color={'black'} />
                 </TouchableOpacity>
             </View>
@@ -133,7 +155,10 @@ function Home(props) {
                         flexDirection: 'row',
                         alignItems: 'center',
                         flex: 1
-                    }}>
+                    }}
+                        onPress={() => {
+                            navigate('Search')
+                        }}>
                         <IconFeather name='search'
                             size={20} color={'black'}
                         />
@@ -144,7 +169,9 @@ function Home(props) {
                         }}
                         >Tìm kiếm sản phẩm...</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigate('Search')
+                    }}>
                         <IconSLI name='microphone'
                             size={20} color={'black'}
                         />
@@ -153,13 +180,13 @@ function Home(props) {
             </View>
 
             {/*  Optional section: sign in or register */}
-            <View style={{
+            {!authContext?.authState?.authenticated ? <View style={{
                 height: 150,
                 paddingTop: 10,
                 paddingHorizontal: 25
             }}>
                 <Text style={{
-                    color: colors.greyText,
+                    color: colors.darkGreyText,
                     fontSize: fontSizes.h3,
                     textAlign: 'center',
                     fontFamily: 'OpenSans-Medium'
@@ -171,145 +198,67 @@ function Home(props) {
                     marginTop: 10,
                     gap: 10
                 }}>
-                    <TouchableOpacity style={styles.loginButton}>
+                    <TouchableOpacity style={styles.loginButton}
+                        onPress={() => {
+                            navigate('Register')
+                        }}>
                         <Text style={styles.loginText}>Đăng ký</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.loginButton}>
+                    <TouchableOpacity style={styles.loginButton}
+                        onPress={() => {
+                            navigate('Login')
+                        }}>
                         <Text style={styles.loginText}>Đăng nhập</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </View> : <View></View>}
 
             {/*  Popular products section */}
             <View style={{
-                height: 350
+                marginBottom: 20
             }}>
-                <View style={{
-                    paddingHorizontal: 15,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 10
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontSize: fontSizes.h2,
-                        fontFamily: 'OpenSans-Bold'
-                    }}>Sản phẩm bán chạy</Text>
+                <View style={styles.headerLayout}>
+                    <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
                     <TouchableOpacity>
-                        <Text style={{
-                            color: colors.greyText,
-                            fontSize: fontSizes.h5,
-                            fontFamily: 'OpenSans-Medium',
-                            textDecorationLine: 'underline'
-                        }}>Xem tất cả</Text>
+                        <Text style={styles.headerSubText}>Xem tất cả</Text>
                     </TouchableOpacity>
                 </View>
-                <FlatList
+                {(Array.isArray(popularProducts) && popularProducts.length) ? <FlatList
                     horizontal={true}
+                    showsHorizontalScrollIndicator={false}
                     data={popularProducts}
                     renderItem={({ item }) => {
-                        return <TouchableOpacity
-                            onPress={() => alert(`Press item name ${item.name}`)}
-                            style={{
-                                alignItems: 'center'
-                            }}>
-                            <Image source={{ uri: item.url }}
-                                style={{
-                                    width: 150,
-                                    height: 150,
-                                    margin: 5,
-                                    resizeMode: 'cover',
-                                    borderRadius: 20
-                                }} />
-                            <Text numberOfLines={3}
-                                ellipsizeMode='tail'
-                                style={{
-                                    width: 150,
-                                    height: 60,
-                                    color: 'black',
-                                    fontFamily: 'OpenSans-Medium',
-                                    fontSize: fontSizes.h5
-                                }}>{item.name}</Text>
-                            <Text numberOfLines={3}
-                                ellipsizeMode='tail'
-                                style={{
-                                    width: 150,
-                                    height: 60,
-                                    color: 'black',
-                                    fontFamily: 'OpenSans-Bold',
-                                    fontSize: fontSizes.h2
-                                }}>{item.price} VND</Text>
-                        </TouchableOpacity>
+                        return <HomeItemCard item={item}
+                            onPress={() => alert(`Press item name ${item.name}`)} />
                     }}
                     keyExtractor={eachProduct => eachProduct.name}
-                />
+                /> : <View>
+                    <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
+                </View>}
             </View>
 
             {/*  Ongoing auctions section */}
             <View style={{
-                height: 350
+                marginBottom: 20
             }}>
-                <View style={{
-                    paddingHorizontal: 15,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 10
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontSize: fontSizes.h2,
-                        fontFamily: 'OpenSans-Bold'
-                    }}>Cuộc đấu giá đang diễn ra</Text>
+                <View style={styles.headerLayout}>
+                    <Text style={styles.headerText}>Cuộc đấu giá đang diễn ra</Text>
                     <TouchableOpacity>
-                        <Text style={{
-                            color: colors.greyText,
-                            fontSize: fontSizes.h5,
-                            fontFamily: 'OpenSans-Medium',
-                            textDecorationLine: 'underline'
-                        }}>Xem tất cả</Text>
+                        <Text style={styles.headerSubText}>Xem tất cả</Text>
                     </TouchableOpacity>
                 </View>
-                <FlatList
+                {(Array.isArray(ongoingAuctions) && ongoingAuctions.length) ? <FlatList
                     horizontal={true}
-                    data={popularProducts}
+                    showsHorizontalScrollIndicator={false}
+                    data={ongoingAuctions}
                     renderItem={({ item }) => {
-                        return <TouchableOpacity
-                            onPress={() => alert(`Press item name ${item.name}`)}
-                            style={{
-                                alignItems: 'center'
-                            }}>
-                            <Image source={{ uri: item.url }}
-                                style={{
-                                    width: 150,
-                                    height: 150,
-                                    margin: 5,
-                                    resizeMode: 'cover',
-                                    borderRadius: 20
-                                }} />
-                            <Text numberOfLines={3}
-                                ellipsizeMode='tail'
-                                style={{
-                                    width: 150,
-                                    height: 60,
-                                    color: 'black',
-                                    fontFamily: 'OpenSans-Medium',
-                                    fontSize: fontSizes.h5
-                                }}>{item.name}</Text>
-                            <Text numberOfLines={3}
-                                ellipsizeMode='tail'
-                                style={{
-                                    width: 150,
-                                    height: 60,
-                                    color: 'black',
-                                    fontFamily: 'OpenSans-Bold',
-                                    fontSize: fontSizes.h2
-                                }}>{item.price} VND</Text>
-                        </TouchableOpacity>
+                        return <HomeItemCard item={item}
+                            onPress={() => alert(`Press item name ${item.name}`)} />
                     }}
                     keyExtractor={eachProduct => eachProduct.name}
-                />
+                /> : <View>
+                    <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
+                </View>}
             </View>
 
             {/*  Categories section */}
@@ -317,50 +266,21 @@ function Home(props) {
                 flex: 1,
                 marginBottom: 20
             }}>
-                <View style={{
-                    paddingHorizontal: 15,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 10
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontSize: fontSizes.h2,
-                        fontFamily: 'OpenSans-Bold'
-                    }}>Khám phá các danh mục</Text>
+                <View style={styles.headerLayout}>
+                    <Text style={styles.headerText}>Khám phá các danh mục</Text>
                 </View>
-                <FlatList
+                {(Array.isArray(categories) && categories.length) ? <FlatList
                     horizontal={true}
+                    showsHorizontalScrollIndicator={false}
                     data={categories}
                     renderItem={({ item }) => {
-                        return <TouchableOpacity
-                            onPress={() => alert(`Press item name ${item.name}`)}
-                            style={{
-                                alignItems: 'center'
-                            }}>
-                            <Image source={{ uri: item.url }}
-                                style={{
-                                    width: 100,
-                                    height: 100,
-                                    margin: 10,
-                                    resizeMode: 'cover',
-                                    borderRadius: 50
-                                }} />
-                            <Text numberOfLines={1}
-                                ellipsizeMode='tail'
-                                style={{
-                                    width: 100,
-                                    height: 20,
-                                    color: 'black',
-                                    fontFamily: 'OpenSans-Medium',
-                                    fontSize: fontSizes.h5,
-                                    textAlign: 'center'
-                                }}>{item.name}</Text>
-                        </TouchableOpacity>
+                        return <HomeCategoryCard item={item}
+                            onPress={() => alert(`Press item name ${item.name}`)} />
                     }}
                     keyExtractor={eachProduct => eachProduct.name}
-                />
+                /> : <View>
+                    <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
+                </View>}
             </View>
         </ScrollView>
     </View>
@@ -389,6 +309,44 @@ const styles = StyleSheet.create({
         fontSize: fontSizes.h3,
         fontFamily: 'OpenSans-Medium',
         color: colors.primary
+    },
+    titleContainer: {
+        height: 70,
+        flexDirection: 'row',
+        paddingLeft: 15,
+        paddingRight: 10,
+        justifyContent: 'space-between'
+    },
+    logoImage: {
+        resizeMode: 'cover',
+        height: 35,
+        width: 70,
+        alignSelf: 'center'
+    },
+    headerLayout: {
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    headerText: {
+        color: 'black',
+        fontSize: fontSizes.h2,
+        fontFamily: 'OpenSans-Bold'
+    },
+    headerSubText: {
+        color: colors.greyText,
+        fontSize: fontSizes.h5,
+        fontFamily: 'OpenSans-Medium',
+        textDecorationLine: 'underline'
+    },
+    emptyText: {
+        color: colors.greyText,
+        fontSize: fontSizes.h4,
+        textAlign: 'center',
+        fontFamily: 'OpenSans-Medium',
+        marginVertical: 30
     }
 });
 

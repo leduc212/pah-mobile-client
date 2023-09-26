@@ -12,22 +12,25 @@ import {
     Register,
     Search
 } from '../screens';
+import { AuthProvider } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 function App(props) {
-    return <NavigationContainer>
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false
-            }}>
-            <Stack.Screen name={"UITabs"} component={UITabs} />
-            <Stack.Screen name={"ListingDetail"} component={ListingDetail} />
-            <Stack.Screen name={"Login"} component={Login} />
-            <Stack.Screen name={"Register"} component={Register} />
-            <Stack.Screen name={"Search"} component={Search} />
-        </Stack.Navigator>
-    </NavigationContainer>
+    return <AuthProvider>
+        <NavigationContainer>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false
+                }}>
+                <Stack.Screen name={"UITabs"} component={UITabs} />
+                <Stack.Screen name={"ListingDetail"} component={ListingDetail} />
+                <Stack.Screen name={"Login"} component={Login} />
+                <Stack.Screen name={"Register"} component={Register} />
+                <Stack.Screen name={"Search"} component={Search} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    </AuthProvider>
 }
 
 export default App;

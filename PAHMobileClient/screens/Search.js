@@ -1,13 +1,139 @@
 import React, { useState, useEffect } from 'react';
 import {
     Text,
-    View
+    View,
+    Image,
+    TouchableOpacity,
+    StyleSheet,
+    TextInput,
+    FlatList,
+    KeyboardAvoidingView
 } from 'react-native';
+import { colors, fontSizes } from '../constants';
+import IconFeather from 'react-native-vector-icons/Feather';
+import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
 
-function Search(props){
-    return <View>
-        <Text>Search page</Text>
+function Search(props) {
+    // Navigation
+    const { navigation, route } = props;
+
+    // Function of navigate to/back
+    const { navigate, goBack } = navigation;
+
+    // Data
+    const [searchText, setSearchText] = useState('');
+    const [autocompleteSearch, setAutocompleteSearch] = useState([
+        'đồ gốm',
+        'đồ gỗ',
+        'đá phong thủy',
+        'tràng hạt',
+        'bút bi kim cổ',
+        'đồng hồ gỗ óc chó'
+    ]);
+
+    return <View style={styles.container}>
+        {/* Search bar*/}
+        <View style={styles.titleContainer}>
+            <View style={{
+                backgroundColor: colors.grey,
+                flex: 1,
+                borderRadius: 30,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 15
+            }}>
+                <TouchableOpacity onPress={() => {
+                    goBack();
+                }}>
+                    <IconFeather name='arrow-left' size={30} color={'black'} />
+                </TouchableOpacity>
+                <TextInput
+                    value={searchText}
+                    placeholder='Tìm kiếm trên PAH...'
+                    returnKeyType='search'
+                    autoCapitalize='none'
+                    autoFocus={true}
+                    onChangeText={(text) => {
+                        setSearchText(text);
+                    }}
+                    onSubmitEditing={() => {
+                        navigate('Listing', { searchText: searchText })
+                    }}
+                    style={{
+                        flex: 1,
+                        marginHorizontal: 10,
+                        color: 'black',
+                        fontFamily: 'OpenSans-Medium',
+                        fontSize: fontSizes.h4
+                    }} />
+                <TouchableOpacity>
+                    <IconSLI name='microphone' size={25} color={'black'} />
+                </TouchableOpacity>
+            </View>
+        </View>
+        {/* Autocomplete search list */}
+        <KeyboardAvoidingView style={{
+            flex: 1
+        }}>
+            <FlatList data={autocompleteSearch}
+                renderItem={({ item }) => {
+                    return <TouchableOpacity style={{
+                        paddingLeft: 50,
+                        paddingRight: 15,
+                        paddingVertical: 12,
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }}
+                        onPress={() => {
+                            setSearchText(item)
+                            navigate('Listing', { searchText: searchText })
+                        }}>
+                        <Text style={{
+                            color: 'black',
+                            fontFamily: 'OpenSans-Medium',
+                            fontSize: fontSizes.h4
+                        }}>{item}</Text>
+                        <View style={{ flex: 1 }}></View>
+                        <IconFeather name='arrow-up-left' size={28} color={'black'} />
+                    </TouchableOpacity>
+                }}
+                keyExtractor={eachSearch => eachSearch} />
+        </KeyboardAvoidingView>
     </View>
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'white'
+    },
+    iconButton: {
+        backgroundColor: colors.grey,
+        padding: 12,
+        borderRadius: 50
+    },
+    titleContainer: {
+        height: 70,
+        flexDirection: 'row',
+        padding: 10,
+        justifyContent: 'space-between',
+    },
+    titleText: {
+        color: 'black',
+        fontFamily: 'OpenSans-Bold',
+        fontSize: fontSizes.h1,
+        alignSelf: 'center'
+    },
+    titleButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    separator: {
+        height: 1.5,
+        backgroundColor: colors.darkGreyText,
+        marginRight: 10
+    }
+});
 
 export default Search;

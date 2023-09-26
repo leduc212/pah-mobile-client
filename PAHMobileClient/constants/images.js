@@ -1,0 +1,6 @@
+export default {
+    benefit1: require('../assets/images/account-benefits-1.png'),
+    benefit2: require('../assets/images/account-benefits-2.png'),
+    benefit3: require('../assets/images/account-benefits-3.png'),
+    logoImage: require('../assets/logo/pah-logo.png'),
+}

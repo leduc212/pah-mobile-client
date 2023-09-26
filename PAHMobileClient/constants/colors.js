@@ -5,5 +5,6 @@ export default {
     darkGrey: '#DEE5F7',
     black: '#272727',
     inactive: 'rgba(0,0,0,0.5)',
-    greyText: '#767676'
+    greyText: '#767676',
+    darkGreyText: '#696969'
 }

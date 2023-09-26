@@ -8,7 +8,7 @@ const AuthProvider = ({children}) => {
   const [authState, setAuthState] = useState({
     accessToken: null,
     refreshToken: null,
-    authenticated: null,
+    authenticated: true,
   });
 
   const logout = async () => {
