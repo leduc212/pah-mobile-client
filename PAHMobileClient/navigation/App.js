@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import UITabs from './UITabs';
 import {
+    Cart,
     ListingDetail,
     Login,
     Register,
@@ -24,10 +25,11 @@ function App(props) {
                     headerShown: false
                 }}>
                 <Stack.Screen name={"UITabs"} component={UITabs} />
-                <Stack.Screen name={"ListingDetail"} component={ListingDetail} />
                 <Stack.Screen name={"Login"} component={Login} />
                 <Stack.Screen name={"Register"} component={Register} />
                 <Stack.Screen name={"Search"} component={Search} />
+                <Stack.Screen name={"ListingDetail"} component={ListingDetail} />
+                <Stack.Screen name={"Cart"} component={Cart} />
             </Stack.Navigator>
         </NavigationContainer>
     </AuthProvider>
