@@ -6,6 +6,7 @@ import ListingDetail from "./ListingDetail";
 import Login from "./Login";
 import Register from "./Register";
 import Search from "./Search";
+import Seller from "./Seller";
 
 export {
     Account,
@@ -15,5 +16,6 @@ export {
     ListingDetail,
     Login,
     Register,
-    Search
+    Search,
+    Seller
 }

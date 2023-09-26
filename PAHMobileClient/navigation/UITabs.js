@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Home, Account, Listing, Cart, Login } from '../screens';
+import { Home, Account, Listing, Seller, Login } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { fontSizes, colors } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -26,8 +26,8 @@ const screenOptions = ({ route }) => ({
         else if (screenName == 'Listing') {
             iconName = 'align-justify';
         }
-        else if (screenName == 'Cart') {
-            iconName = 'shopping-cart';
+        else if (screenName == 'Seller') {
+            iconName = 'tag';
         }
         return <IconFeather
             style={{ paddingTop: 5 }}
@@ -59,9 +59,9 @@ function UITabs(props) {
             options={{
                 tabBarLabel: 'Sản phẩm'
             }} />
-        <Tab.Screen name={'Cart'} component={Cart}
+        <Tab.Screen name={'Seller'} component={Seller}
             options={{
-                tabBarLabel: 'Giỏ hàng'
+                tabBarLabel: 'Bán hàng'
             }} />
     </Tab.Navigator>
 }

@@ -6,5 +6,6 @@ export default {
     black: '#272727',
     inactive: 'rgba(0,0,0,0.5)',
     greyText: '#767676',
-    darkGreyText: '#696969'
+    darkGreyText: '#696969',
+    info: '#3566F1'
 }
