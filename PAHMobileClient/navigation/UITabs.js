@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Home, Account, Listing, Cart } from '../screens';
+import { Home, Account, Listing, Cart, Login } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { fontSizes, colors } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -43,6 +43,13 @@ function UITabs(props) {
             options={{
                 tabBarLabel: 'Trang chủ'
                 
+            }} />
+            <Tab.Screen name={'Login'} component={Login}
+            options={{
+                tabBarLabel: 'Đăng nhập',
+                tabBarLabelStyle: {
+                    fontSize: fontSizes.h5
+                }
             }} />
         <Tab.Screen name={'Account'} component={Account}
             options={{
