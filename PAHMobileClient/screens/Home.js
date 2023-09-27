@@ -186,7 +186,7 @@ function Home(props) {
                 paddingHorizontal: 25
             }}>
                 <Text style={{
-                    color: colors.darkGreyText,
+                    color: 'black',
                     fontSize: fontSizes.h3,
                     textAlign: 'center',
                     fontFamily: 'OpenSans-Medium'

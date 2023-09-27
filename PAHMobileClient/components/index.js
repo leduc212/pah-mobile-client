@@ -8,6 +8,7 @@ import UICheckButton from "./UICheckButton"
 import RegisterView from "./RegisterView"
 import LoginView from "./LoginView"
 import UIHeader from "./UIHeader"
+import ProductListingCard from "./ProductListingCard";
 
 export {
     HomeItemCard,
@@ -20,4 +21,5 @@ export {
     UICheckButton,
     RegisterView,
     LoginView,
+    ProductListingCard
 }

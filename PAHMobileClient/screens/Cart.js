@@ -10,7 +10,7 @@ import {
     SafeAreaView,
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, images } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 
 function Cart(props) {
@@ -74,7 +74,7 @@ function Cart(props) {
         </View>
 
         {/* Cart View */}
-        <ScrollView style={{
+        {(Array.isArray(cart) && cart.length) ? <ScrollView style={{
             flex: 1,
         }}>
             {/* Optional: if cart contain items from different seller information */}
@@ -104,7 +104,7 @@ function Cart(props) {
                     fontSize: fontSizes.h3,
                     marginLeft: 15,
                     marginBottom: 10
-                }}>Giỏ hàng của bạn (2)</Text>
+                }}>Giỏ hàng của bạn (4)</Text>
                 <View style={{
                     height: 1,
                     backgroundColor: colors.darkGreyText
@@ -137,9 +137,8 @@ function Cart(props) {
                         marginBottom: 10
                     }}>{seller.shipping_cost} VND phí giao hàng (thông qua GHN)</Text>
                     {seller.cart_items.map((cart_item) =>
-                        <View>
+                        <View key={cart_item.name}>
                             <TouchableOpacity
-                                key={cart_item.name}
                                 style={{
                                     flexDirection: 'row',
                                     marginTop: 10
@@ -282,7 +281,25 @@ function Cart(props) {
                     textAlign: 'center'
                 }}>Tiến hành thanh toán</Text>
             </TouchableOpacity>
-        </ScrollView>
+        </ScrollView> : <View style={{
+            flex: 1,
+            alignItems: 'center',
+            paddingTop: 150
+        }}>
+            <Image source={images.cartImage} style ={{
+                resizeMode: 'cover',
+                width: 140,
+                height: 140
+            }} />
+            <Text style={{
+                fontSize: fontSizes.h4,
+                fontFamily: 'OpenSans-Medium',
+                color: 'black',
+                textAlign: 'center',
+                marginHorizontal: 35,
+                marginTop: 10
+            }}>Giỏ hàng của bạn hiện đang trống. Hãy lướt một vài sản phẩm trên PAH nào!</Text>
+            </View>}
     </View>
 }
 

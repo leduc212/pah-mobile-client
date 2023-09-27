@@ -31,6 +31,13 @@ function Search(props) {
         'đồng hồ gỗ óc chó'
     ]);
 
+    useEffect(()=>{
+        if (route.params) {
+            const { searchText } = route.params;
+            setSearchText(searchText);
+        }
+    },[]);
+
     return <View style={styles.container}>
         {/* Search bar*/}
         <View style={styles.titleContainer}>
@@ -86,7 +93,7 @@ function Search(props) {
                     }}
                         onPress={() => {
                             setSearchText(item)
-                            navigate('Listing', { searchText: searchText })
+                            navigate('Listing', { searchText: item })
                         }}>
                         <Text style={{
                             color: 'black',
