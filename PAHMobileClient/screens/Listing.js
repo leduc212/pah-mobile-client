@@ -232,7 +232,9 @@ function Listing(props) {
                     flex: 1
                 }}>
                     {products.map((product) =>
-                        <ProductListingCard key={product.name} product={product} />
+                        <ProductListingCard key={product.name} product={product} onPress={()=>{
+                            navigate('ListingDetail', {product_id: product.name})
+                        }}/>
                     )}
                 </View>
             </View> : <View style={{

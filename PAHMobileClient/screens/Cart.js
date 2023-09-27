@@ -5,9 +5,7 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    ScrollView,
-    FlatList,
-    SafeAreaView,
+    ScrollView
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { colors, fontSizes, images } from '../constants';
