@@ -1,40 +1,271 @@
 import React, {useState, useEffect} from 'react';
 import {
-  Text,
-  View,
-  TextInput,
-  Keyboard,
+  Alert,
   KeyboardAvoidingView,
+  Text,
+  TextInput,
   TouchableOpacity,
-  ScrollView,
+  View,
 } from 'react-native';
+import {colors, fontSizes} from '../constants';
 import {UIHeader, LoginView, RegisterView} from '../components';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 function Login(props) {
-  const [isSelected, setIsSelected] = useState(0);
+  // Navigation
+  const { navigation, route } = props;
+
+  // Function of navigate to/back
+  const { navigate, goBack } = navigation;
+  //states to store email/password
+  const [email, setEmail] = useState('kingericvt96@gmail.com');
+  const [password, setPassword] = useState('Lm123456');
+  //states for validating
+  const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const validationOk = () => email.length > 0 && password.length > 0;
+  const authenticationOk = () => email === 'kingericvt96@gmail.com' && password === 'Lm123456';
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{
         flex: 1,
-        backgroundColor: '#f2f2f0',
+        backgroundColor: 'white',
       }}>
-      <UIHeader leftIconName={'arrow-left'} title={'PAH'} />
-      {isSelected===0? <RegisterView
-        isSelected={isSelected}
-        setIsSelected={setIsSelected}
-        showPassword={showPassword}
-        setShowPassword={setShowPassword}
-      />:<LoginView
-        isSelected={isSelected}
-        setIsSelected={setIsSelected}
-        showPassword={showPassword}
-        setShowPassword={setShowPassword}
-        keepSignedIn={keepSignedIn}
-        setKeepSignedIn={setKeepSignedIn}
-      />}
+      <UIHeader
+        onPressLeftIcon={() => {
+          goBack();
+        }}
+        leftIconName={'arrow-left'}
+        title={'Đăng nhập'}
+      />
+
+      <View
+        style={{
+          padding: 15,
+        }}>
+        <Text
+          style={{
+            color: colors.black,
+            fontFamily: 'OpenSans-Medium',
+            fontSize: fontSizes.h1,
+            fontWeight: 'bold',
+            marginVertical: 10,
+          }}>
+          Xin chào
+        </Text>
+        {errorMessage == '' ? null : (
+          <View
+            style={{
+              height: 50,
+              borderRadius: 10,
+              borderWidth: 5,
+              borderColor: 'red',
+              marginVertical: 20,
+              justifyContent: 'center',
+            }}>
+            <Icon
+              style={{
+                position: 'absolute',
+                paddingStart: 10,
+                color: 'red',
+              }}
+              name="exclamation-circle"
+              size={20}
+            />
+            <Text
+              style={{
+                color: colors.black,
+                fontWeight: 'bold',
+                fontFamily: 'OpenSans-Medium',
+                fontSize: fontSizes.h3,
+                paddingStart: 40,
+              }}>
+              {errorMessage}
+            </Text>
+          </View>
+        )}
+        <View
+          style={{
+            justifyContent: 'center',
+            marginBottom: 20,
+          }}>
+          <TextInput
+            style={{
+              fontFamily: 'OpenSans-Medium',
+              height: 45,
+              borderColor: colors.black,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            value={email}
+            onChangeText={text => {
+              setEmail(text);
+            }}
+            placeholder="Nhập địa chỉ Email"
+          />
+          {email != '' ? (
+            <Icon
+              onPress={() => {
+                setEmail('');
+              }}
+              style={{
+                position: 'absolute',
+                right: 10,
+              }}
+              name="times"
+              size={20}
+            />
+          ) : null}
+        </View>
+        <View
+          style={{
+            justifyContent: 'center',
+            marginBottom: 20,
+          }}>
+          <TextInput
+            style={{
+              fontFamily: 'OpenSans-Medium',
+              height: 45,
+              borderColor: colors.black,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            value={password}
+            secureTextEntry={showPassword}
+            onChangeText={text => {
+              setPassword(text);
+            }}
+            placeholder="Nhập mật khẩu"
+          />
+          {password != '' ? (
+            <Icon
+              onPress={() => {
+                setPassword('');
+              }}
+              style={{
+                position: 'absolute',
+                right: 40,
+              }}
+              name="times"
+              size={20}
+            />
+          ) : null}
+          {showPassword == false ? (
+            <Icon
+              onPress={() => {
+                setShowPassword(!showPassword);
+              }}
+              style={{
+                position: 'absolute',
+                right: 10,
+              }}
+              name="eye"
+              size={20}
+            />
+          ) : (
+            <Icon
+              onPress={() => {
+                setShowPassword(!showPassword);
+              }}
+              style={{
+                position: 'absolute',
+                right: 10,
+              }}
+              name="eye-slash"
+              size={20}
+            />
+          )}
+        </View>
+        <TouchableOpacity
+          disabled={!validationOk() == true}
+          onPress={() => {
+            authenticationOk() == true
+              ? navigate('UITabs')
+              : setErrorMessage('Kiểm tra lại Email và mật khẩu!');
+          }}
+          style={{
+            backgroundColor:
+              validationOk() == true ? colors.secondary : colors.inactive,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            alignSelf: 'center',
+            borderRadius: 20,
+          }}>
+          <Text
+            style={{
+              fontFamily: 'OpenSans-Medium',
+              padding: 10,
+              fontSize: fontSizes.h3,
+              color: 'white',
+            }}>
+            Đăng nhập
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            alignSelf: 'center',
+            marginTop: 20,
+            borderRadius: 20,
+          }}>
+          <Icon
+            style={{
+              position: 'absolute',
+              left: 10,
+              color: 'blue',
+            }}
+            size={30}
+            name="google"
+          />
+          <Text
+            style={{
+              fontFamily: 'OpenSans-Medium',
+              padding: 10,
+              fontSize: fontSizes.h3,
+              color: colors.black,
+            }}>
+            Đăng nhập bằng Google
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text
+            style={{
+              marginVertical: 20,
+              alignSelf: 'center',
+              fontFamily: 'OpenSans-Medium',
+              color: 'blue',
+              fontSize: fontSizes.h4,
+            }}>
+            Lấy lại mật khẩu
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          alignSelf: 'center',
+          position: 'absolute',
+          bottom: 0,
+        }}>
+        <TouchableOpacity onPress={()=>{
+          navigate('Register')
+        }}>
+          <Text
+            style={{
+              marginBottom: 10,
+              alignSelf: 'center',
+              fontFamily: 'OpenSans-Medium',
+              color: 'blue',
+              fontSize: fontSizes.h4,
+            }}>
+            Tạo tài khoản
+          </Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
