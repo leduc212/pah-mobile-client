@@ -1,30 +1,45 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useContext } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colors, fontSizes} from '../constants';
-import {UIHeader, LoginView, RegisterView} from '../components';
+import { colors, fontSizes } from '../constants';
+import { UIHeader } from '../components';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { AuthContext } from '../context/AuthContext';
 
 function Login(props) {
+  // Auth Context
+  const authContext = useContext(AuthContext);
+
   // Navigation
   const { navigation, route } = props;
 
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
+
   //states to store email/password
   const [email, setEmail] = useState('kingericvt96@gmail.com');
   const [password, setPassword] = useState('Lm123456');
+  
   //states for validating
   const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const validationOk = () => email.length > 0 && password.length > 0;
   const authenticationOk = () => email === 'kingericvt96@gmail.com' && password === 'Lm123456';
+
+  // Test login function
+  function login() {
+    authContext.setAuthState({
+      accessToken: null,
+      refreshToken: null,
+      authenticated: true,
+    });
+    navigate('Account');
+  }
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -181,7 +196,7 @@ function Login(props) {
           disabled={!validationOk() == true}
           onPress={() => {
             authenticationOk() == true
-              ? navigate('UITabs')
+              ? login()
               : setErrorMessage('Kiểm tra lại Email và mật khẩu!');
           }}
           style={{
@@ -204,6 +219,7 @@ function Login(props) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => login()}
           style={{
             borderWidth: 1,
             justifyContent: 'center',
@@ -251,7 +267,7 @@ function Login(props) {
           position: 'absolute',
           bottom: 0,
         }}>
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity onPress={() => {
           navigate('Register')
         }}>
           <Text

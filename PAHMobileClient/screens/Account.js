@@ -31,20 +31,18 @@ function Account(props) {
         avatar_url: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
     });
 
-    // Test login state change
-    function changeAuthState() {
-        const currentState = authContext?.authState?.authenticated;
+    // Test logout function
+    function logout() {
         authContext.setAuthState({
-            accessToken: null,
-            refreshToken: null,
-            authenticated: !currentState,
+          accessToken: null,
+          refreshToken: null,
+          authenticated: false,
         });
-    }
-
+      }
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
         <View style={styles.titleContainer}>
-            <Text style={styles.titleText} onPress={() => changeAuthState()}>Tài khoản</Text>
+            <Text style={styles.titleText}>Tài khoản</Text>
             <View style={styles.titleButtonContainer}>
                 <TouchableOpacity style={styles.iconButton}
                     onPress={() => {
@@ -148,7 +146,7 @@ function Account(props) {
                 {/* Logout button */}
                 <AccountMenuItem iconName='log-out' text='Đăng xuất'
                     onPress={() => {
-                        navigate('Home')
+                        logout()
                     }} />
                 {/* Separator line */}
                 <View style={styles.separator}></View>
