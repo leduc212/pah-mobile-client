@@ -44,13 +44,6 @@ function UITabs(props) {
                 tabBarLabel: 'Trang chủ'
                 
             }} />
-            <Tab.Screen name={'Login'} component={Login}
-            options={{
-                tabBarLabel: 'Đăng nhập',
-                tabBarLabelStyle: {
-                    fontSize: fontSizes.h5
-                }
-            }} />
         <Tab.Screen name={'Account'} component={Account}
             options={{
                 tabBarLabel: 'Tài khoản'

@@ -3,10 +3,8 @@ import HomeCategoryCard from "./HomeCategoryCard";
 import TimeLeft from "./TimeLeft";
 import UnauthorizedAccountScreen from "./UnauthorizedAccountScreen";
 import AccountMenuItem from "./AccountMenuItem";
-import UIRadioButton from "./UIRadioButton"
-import UICheckButton from "./UICheckButton"
-import RegisterView from "./RegisterView"
-import LoginView from "./LoginView"
+import RegisterView1 from "./RegisterView1"
+import RegisterView2 from "./RegisterView2";
 import UIHeader from "./UIHeader"
 import ProductListingCard from "./ProductListingCard";
 
@@ -17,9 +15,7 @@ export {
     UnauthorizedAccountScreen,
     AccountMenuItem,
     UIHeader,
-    UIRadioButton,
-    UICheckButton,
-    RegisterView,
-    LoginView,
-    ProductListingCard
+    ProductListingCard,
+    RegisterView1,
+    RegisterView2,
 }
