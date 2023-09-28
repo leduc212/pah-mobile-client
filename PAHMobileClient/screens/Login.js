@@ -5,10 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  StyleSheet
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
-import { UIHeader } from '../components';
+import { colors, fontSizes, fonts } from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import IconFeather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../context/AuthContext';
 
 function Login(props) {
@@ -24,7 +25,7 @@ function Login(props) {
   //states to store email/password
   const [email, setEmail] = useState('kingericvt96@gmail.com');
   const [password, setPassword] = useState('Lm123456');
-  
+
   //states for validating
   const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,133 +41,59 @@ function Login(props) {
     });
     navigate('Account');
   }
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{
-        flex: 1,
-        backgroundColor: 'white',
-      }}>
-      <UIHeader
-        onPressLeftIcon={() => {
-          goBack();
-        }}
-        leftIconName={'arrow-left'}
-        title={'Đăng nhập'}
-      />
 
-      <View
-        style={{
-          padding: 15,
-        }}>
-        <Text
-          style={{
-            color: colors.black,
-            fontFamily: 'OpenSans-Medium',
-            fontSize: fontSizes.h1,
-            fontWeight: 'bold',
-            marginVertical: 10,
+  return (
+    <KeyboardAvoidingView style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+
+      {/* Fixed screen title: Login */}
+      <View style={styles.titleContainer}>
+        <TouchableOpacity style={styles.iconButton}
+          onPress={() => {
+            goBack()
           }}>
+          <IconFeather name='x' size={25} color={'black'} />
+        </TouchableOpacity>
+        <Text style={styles.titleText}>Đăng nhập</Text>
+      </View>
+
+      {/* Login form */}
+      <View style={{
+        paddingHorizontal: 15,
+      }}>
+        <Text style={styles.welcomeText}>
           Xin chào
         </Text>
         {errorMessage == '' ? null : (
-          <View
-            style={{
-              height: 50,
-              borderRadius: 10,
-              borderWidth: 5,
-              borderColor: 'red',
-              marginVertical: 20,
-              justifyContent: 'center',
-            }}>
-            <Icon
-              style={{
-                position: 'absolute',
-                paddingStart: 10,
-                color: 'red',
-              }}
-              name="exclamation-circle"
-              size={20}
-            />
+          <View style={styles.errorContainer}>
+            <Icon color='red' name="exclamation-circle" size={25} />
             <Text
-              style={{
-                color: colors.black,
-                fontWeight: 'bold',
-                fontFamily: 'OpenSans-Medium',
-                fontSize: fontSizes.h3,
-                paddingStart: 40,
-              }}>
+              style={styles.errorMessage}>
               {errorMessage}
             </Text>
           </View>
         )}
-        <View
-          style={{
-            justifyContent: 'center',
-            marginBottom: 20,
-          }}>
+        <View style={styles.inputContainer}>
           <TextInput
-            style={{
-              fontFamily: 'OpenSans-Medium',
-              height: 45,
-              borderColor: colors.black,
-              borderRadius: 10,
-              borderWidth: 1,
-            }}
+            style={styles.inputBox}
             value={email}
             onChangeText={text => {
               setEmail(text);
             }}
             placeholder="Nhập địa chỉ Email"
           />
-          {email != '' ? (
-            <Icon
-              onPress={() => {
-                setEmail('');
-              }}
-              style={{
-                position: 'absolute',
-                right: 10,
-              }}
-              name="times"
-              size={20}
-            />
-          ) : null}
         </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            marginBottom: 20,
-          }}>
+        <View style={styles.inputContainer}>
           <TextInput
-            style={{
-              fontFamily: 'OpenSans-Medium',
-              height: 45,
-              borderColor: colors.black,
-              borderRadius: 10,
-              borderWidth: 1,
-            }}
+            style={styles.inputBox}
             value={password}
-            secureTextEntry={showPassword}
+            secureTextEntry={!showPassword}
             onChangeText={text => {
               setPassword(text);
             }}
             placeholder="Nhập mật khẩu"
           />
-          {password != '' ? (
-            <Icon
-              onPress={() => {
-                setPassword('');
-              }}
-              style={{
-                position: 'absolute',
-                right: 40,
-              }}
-              name="times"
-              size={20}
-            />
-          ) : null}
-          {showPassword == false ? (
+          {!showPassword ? (
             <Icon
               onPress={() => {
                 setShowPassword(!showPassword);
@@ -193,91 +120,44 @@ function Login(props) {
           )}
         </View>
         <TouchableOpacity
-          disabled={!validationOk() == true}
+          disabled={!validationOk()}
           onPress={() => {
-            authenticationOk() == true
+            authenticationOk()
               ? login()
               : setErrorMessage('Kiểm tra lại Email và mật khẩu!');
           }}
-          style={{
-            backgroundColor:
-              validationOk() == true ? colors.secondary : colors.inactive,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            alignSelf: 'center',
-            borderRadius: 20,
-          }}>
-          <Text
-            style={{
-              fontFamily: 'OpenSans-Medium',
-              padding: 10,
-              fontSize: fontSizes.h3,
-              color: 'white',
-            }}>
+          style={[{
+            backgroundColor: validationOk() ? colors.primary : colors.grey
+          }, styles.loginButton]}>
+          <Text style={[{
+            color: validationOk() ? 'white' : colors.greyText
+          }, styles.loginText]}>
             Đăng nhập
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => login()}
-          style={{
-            borderWidth: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            alignSelf: 'center',
-            marginTop: 20,
-            borderRadius: 20,
-          }}>
-          <Icon
-            style={{
-              position: 'absolute',
-              left: 10,
-              color: 'blue',
-            }}
+        <TouchableOpacity style={styles.googleButton}
+          onPress={() => login()} >
+          <Icon style={{
+            position: 'absolute',
+            left: 15,
+            color: colors.google,
+          }}
             size={30}
             name="google"
           />
-          <Text
-            style={{
-              fontFamily: 'OpenSans-Medium',
-              padding: 10,
-              fontSize: fontSizes.h3,
-              color: colors.black,
-            }}>
+          <Text style={styles.googleText}>
             Đăng nhập bằng Google
           </Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text
-            style={{
-              marginVertical: 20,
-              alignSelf: 'center',
-              fontFamily: 'OpenSans-Medium',
-              color: 'blue',
-              fontSize: fontSizes.h4,
-            }}>
+          <Text style={[styles.infoText, { marginVertical: 40, }]}>
             Lấy lại mật khẩu
           </Text>
         </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          alignSelf: 'center',
-          position: 'absolute',
-          bottom: 0,
-        }}>
         <TouchableOpacity onPress={() => {
           navigate('Register')
         }}>
-          <Text
-            style={{
-              marginBottom: 10,
-              alignSelf: 'center',
-              fontFamily: 'OpenSans-Medium',
-              color: 'blue',
-              fontSize: fontSizes.h4,
-            }}>
+          <Text style={styles.infoText}>
             Tạo tài khoản
           </Text>
         </TouchableOpacity>
@@ -285,5 +165,91 @@ function Login(props) {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white'
+  },
+  iconButton: {
+    padding: 8,
+    borderRadius: 50,
+    backgroundColor: colors.grey
+  },
+  titleContainer: {
+    height: 70,
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingRight: 10,
+    alignItems: 'center',
+    gap: 10
+  },
+  titleText: {
+    color: 'black',
+    fontFamily: fonts.OpenSansBold,
+    fontSize: fontSizes.h1,
+    alignSelf: 'center'
+  },
+  welcomeText: {
+    color: colors.black,
+    fontFamily: fonts.OpenSansBold,
+    fontSize: fontSizes.h1 * 1.2,
+    marginVertical: 10
+  },
+  errorContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  errorMessage: {
+    color: colors.black,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h4,
+    marginLeft: 10
+  },
+  inputContainer: {
+    justifyContent: 'center',
+    marginBottom: 20
+  },
+  inputBox: {
+    fontFamily: fonts.OpenSansMedium,
+    height: 50,
+    borderColor: colors.black,
+    borderRadius: 8,
+    borderWidth: 1,
+    fontSize: fontSizes.h4,
+    paddingHorizontal: 15
+  },
+  loginButton: {
+    borderRadius: 35,
+    paddingVertical: 15
+  },
+  loginText: {
+    fontSize: fontSizes.h3,
+    fontFamily: fonts.OpenSansBold,
+    textAlign: 'center'
+  },
+  googleButton: {
+    borderWidth: 1,
+    marginTop: 20,
+    borderRadius: 35,
+    backgroundColor: 'white',
+    paddingVertical: 15,
+    justifyContent: 'center'
+  },
+  googleText: {
+    fontSize: fontSizes.h3,
+    fontFamily: fonts.OpenSansMedium,
+    color: 'black',
+    textAlign: 'center'
+  },
+  infoText: {
+    alignSelf: 'center',
+    fontFamily: fonts.OpenSansMedium,
+    color: colors.primary,
+    fontSize: fontSizes.h5,
+  }
+});
 
 export default Login;

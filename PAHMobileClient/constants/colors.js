@@ -7,5 +7,6 @@ export default {
     inactive: 'rgba(0,0,0,0.5)',
     greyText: '#767676',
     darkGreyText: '#696969',
-    info: '#3566F1'
+    info: '#3566F1',
+    google: '#de5246'
 }
