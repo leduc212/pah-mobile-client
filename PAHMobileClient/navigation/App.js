@@ -1,16 +1,20 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import UITabs from './UITabs';
 import {
     Cart,
     ListingDetail,
     Login,
     Register,
-    Search
+    Search,
+    ListingDescription,
+    ListingFeedback,
+    Profile
 } from '../screens';
 import { AuthProvider } from '../context/AuthContext';
+import { uuidv4 } from '../utilities/UUIDGenerate';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,8 +29,12 @@ function App(props) {
                 <Stack.Screen name={"Login"} component={Login} />
                 <Stack.Screen name={"Register"} component={Register} />
                 <Stack.Screen name={"Search"} component={Search} />
-                <Stack.Screen name={"ListingDetail"} component={ListingDetail} />
+                <Stack.Screen name={"ListingDetail"} component={ListingDetail}
+                    getId={() => uuidv4()} />
                 <Stack.Screen name={"Cart"} component={Cart} />
+                <Stack.Screen name={"ListingDescription"} component={ListingDescription} />
+                <Stack.Screen name={"ListingFeedback"} component={ListingFeedback} />
+                <Stack.Screen name={"Profile"} component={Profile} />
             </Stack.Navigator>
         </NavigationContainer>
     </AuthProvider>

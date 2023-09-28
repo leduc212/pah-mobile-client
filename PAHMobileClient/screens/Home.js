@@ -229,7 +229,7 @@ function Home(props) {
                     data={popularProducts}
                     renderItem={({ item }) => {
                         return <HomeItemCard item={item}
-                            onPress={() => alert(`Press item name ${item.name}`)} />
+                            onPress={() => navigate('ListingDetail', {product_id: item.name})} />
                     }}
                     keyExtractor={eachProduct => eachProduct.name}
                 /> : <View>

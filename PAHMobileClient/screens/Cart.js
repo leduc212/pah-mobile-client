@@ -140,7 +140,8 @@ function Cart(props) {
                                 style={{
                                     flexDirection: 'row',
                                     marginTop: 10
-                                }}>
+                                }}
+                                onPress={() => navigate('ListingDetail', { product_id: cart_item.name })}>
                                 <Image source={{ uri: cart_item.url }}
                                     style={{
                                         width: 150,
@@ -284,7 +285,7 @@ function Cart(props) {
             alignItems: 'center',
             paddingTop: 150
         }}>
-            <Image source={images.cartImage} style ={{
+            <Image source={images.cartImage} style={{
                 resizeMode: 'cover',
                 width: 140,
                 height: 140
@@ -297,7 +298,7 @@ function Cart(props) {
                 marginHorizontal: 35,
                 marginTop: 10
             }}>Giỏ hàng của bạn hiện đang trống. Hãy lướt một vài sản phẩm trên PAH nào!</Text>
-            </View>}
+        </View>}
     </View>
 }
 

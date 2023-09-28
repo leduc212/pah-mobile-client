@@ -11,6 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 import { colors, fontSizes, images } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
+import Modal from 'react-native-modal';
 
 function ListingDetail(props) {
     // Get product_id from routes
@@ -38,7 +39,27 @@ function ListingDetail(props) {
             seller_name: 'avd seller',
             seller_address: 'Thành phố Hồ Chí Minh',
             seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-        }
+        },
+        feedbacks: [
+            {
+                id: 12,
+                star: 4,
+                user_name: 'Lê Đức Hiền',
+                content: 'Sản phẩm tốt, đẹp'
+            },
+            {
+                id: 15,
+                star: 3,
+                user_name: 'Trần Ngọc Châu',
+                content: 'Nhìn có vẻ tạm'
+            },
+            {
+                id: 26,
+                star: 5,
+                user_name: 'Nguyễn Huỳnh Tuấn',
+                content: 'Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời'
+            }
+        ]
     });
 
     const [shippingPrice, setShippingPrice] = useState('120,000');
@@ -51,6 +72,10 @@ function ListingDetail(props) {
 
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
+
+    // Modal const
+    const [sellerModalVisible, setSellerModalVisible] = useState(false);
+    const [shippingModalVisible, setShippingModalVisible] = useState(false);
 
     return <View style={styles.container}>
         {/* Fixed screen title: Product detail */}
@@ -109,7 +134,8 @@ function ListingDetail(props) {
                 paddingHorizontal: 15,
                 gap: 15,
                 marginVertical: 10
-            }}>
+            }}
+                onPress={() => setSellerModalVisible(!sellerModalVisible)}>
                 <Image source={{ uri: product.seller.seller_avatar }}
                     style={{
                         resizeMode: 'cover',
@@ -181,7 +207,7 @@ function ListingDetail(props) {
                     <View style={{
                         flexDirection: 'row'
                     }}>
-                        <Text style={styles.productInformationLabel}>Bộ bao gồm</Text>
+                        <Text style={styles.productInformationLabel}>Bao gồm</Text>
                         <Text style={styles.productInformationText}
                         >{product.package_content}</Text>
                     </View>
@@ -252,16 +278,20 @@ function ListingDetail(props) {
                     marginTop: 5,
                     flexDirection: 'row',
                     alignItems: 'center'
-                }}>
+                }}
+                    onPress={() => navigate('ListingDescription', { product_id: product.name })}>
                     <View style={{
                         flex: 1,
                         gap: 10
                     }}>
-                        <Text style={{
-                            color: 'black',
-                            fontFamily: 'OpenSans-Medium',
-                            fontSize: fontSizes.h4
-                        }}
+                        <Text
+                            numberOfLines={3}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: 'black',
+                                fontFamily: 'OpenSans-Medium',
+                                fontSize: fontSizes.h4
+                            }}
                         >{product.description}</Text>
                         <Text style={{
                             color: 'black',
@@ -290,7 +320,8 @@ function ListingDetail(props) {
                     marginTop: 5,
                     flexDirection: 'row',
                     alignItems: 'center'
-                }}>
+                }}
+                    onPress={() => setShippingModalVisible(!shippingModalVisible)}>
                     <View style={{ gap: 10, flex: 1 }}>
                         <View style={{
                             flexDirection: 'row'
@@ -366,7 +397,7 @@ function ListingDetail(props) {
                     fontSize: fontSizes.h2
                 }}>Về người bán</Text>
                 <View style={{ gap: 10, marginTop: 5 }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.seller_name })}>
                         <View style={{
                             flexDirection: 'row',
                             gap: 15
@@ -404,13 +435,10 @@ function ListingDetail(props) {
                             <IconFeather name='calendar' size={20} color='black' />
                             <Text style={{
                                 color: 'black',
-                                fontFamily: 'OpenSans-Bold',
-                                fontSize: fontSizes.h5
+                                fontFamily: 'OpenSans-Medium',
+                                fontSize: fontSizes.h4
                             }}>Tham gia ngày 12/8/2023</Text>
                         </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.primaryButton}>
-                        <Text style={styles.primaryButtonText}>Các sản phẩm khác của người bán</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -419,18 +447,257 @@ function ListingDetail(props) {
             <View style={{
                 paddingHorizontal: 15,
                 gap: 10,
-                marginVertical: 10
+                marginTop: 10,
+                marginBottom: 20
             }}>
                 <Text style={{
                     color: 'black',
                     fontFamily: 'OpenSans-Bold',
                     fontSize: fontSizes.h2
                 }}>Phản hồi về sản phẩm</Text>
-                <View style={{ gap: 10, marginTop: 5, height: 100, backgroundColor: 'yellow' }}>
-                    
+                <View style={{ marginTop: 5 }}>
+                    {(Array.isArray(product.feedbacks) && product.feedbacks.length) ? <View>
+                        {product.feedbacks.map((feedback, index) =>
+                            <View key={feedback.id} style={{
+                                marginBottom: 15
+                            }}>
+                                <View style={{
+                                    flexDirection: 'row'
+                                }}>
+                                    <Text style={{
+                                        color: colors.darkGreyText,
+                                        fontFamily: 'OpenSans-Medium',
+                                        fontSize: fontSizes.h5
+                                    }}>{feedback.user_name}</Text>
+                                    <Text style={{
+                                        color: colors.darkGreyText,
+                                        fontFamily: 'OpenSans-Medium',
+                                        fontSize: fontSizes.h5
+                                    }}> - 1 tháng trước</Text>
+                                </View>
+                                <Text style={{
+                                    color: colors.greyText,
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h5
+                                }}>Đánh giá: {feedback.star} sao</Text>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                    marginVertical: 15,
+                                }}>{feedback.content}</Text>
+                                {index != (product.feedbacks.length - 1) && <View style={styles.separator}></View>}
+                            </View>)}
+                        <TouchableOpacity style={styles.secondaryButton}
+                            onPress={() => navigate('ListingFeedback', { product_id: product.name })}>
+                            <Text style={styles.secondaryButtonText}>Xem tất cả phản hồi</Text>
+                        </TouchableOpacity>
+                    </View> : <View>
+                        <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
+                    </View>}
                 </View>
             </View>
         </ScrollView>
+
+        {/* Seller modal */}
+        <Modal
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            isVisible={sellerModalVisible}
+            onRequestClose={() => {
+                setSellerModalVisible(!sellerModalVisible);
+            }}
+            style={{ margin: 0 }}>
+            <View style={{
+                flex: 1
+            }}>
+                <TouchableOpacity style={{ flex: 1 }}
+                    onPress={() => {
+                        setSellerModalVisible(!sellerModalVisible);
+                    }}></TouchableOpacity>
+                <View style={{
+                    backgroundColor: 'white',
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25
+                }}>
+                    {/* Seller modal title */}
+                    <Text style={{
+                        color: 'black',
+                        fontSize: fontSizes.h3,
+                        fontFamily: 'OpenSans-Bold',
+                        marginLeft: 20,
+                        marginVertical: 20
+                    }}>Thông tin người bán</Text>
+
+                    {/* Seller information */}
+                    <View style={{
+                        gap: 10,
+                        marginTop: 5,
+                        marginHorizontal: 20,
+                        marginBottom: 20
+                    }}>
+                        <TouchableOpacity onPress={() => {
+                            setSellerModalVisible(!sellerModalVisible);
+                            navigate('Profile', { user_id: product.seller.seller_name })
+                        }}>
+                            <View style={{
+                                flexDirection: 'row',
+                                gap: 15
+                            }}>
+                                <Image source={{ uri: product.seller.seller_avatar }}
+                                    style={{
+                                        resizeMode: 'cover',
+                                        width: 80,
+                                        height: 80,
+                                        borderRadius: 50
+                                    }} />
+                                <View style={{ gap: 2 }}>
+                                    <Text style={{
+                                        color: 'black',
+                                        fontFamily: 'OpenSans-Medium',
+                                        fontSize: fontSizes.h5
+                                    }}>{product.seller.seller_name}</Text>
+                                    <Text style={{
+                                        color: colors.darkGreyText,
+                                        fontFamily: 'OpenSans-Medium',
+                                        fontSize: fontSizes.h5
+                                    }}>{product.seller.seller_address}</Text>
+                                    <Text style={{
+                                        color: colors.darkGreyText,
+                                        fontFamily: 'OpenSans-Medium',
+                                        fontSize: fontSizes.h5
+                                    }}>Đánh giá: 5</Text>
+                                </View>
+                            </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                marginVertical: 15,
+                                gap: 10
+                            }}>
+                                <IconFeather name='calendar' size={20} color='black' />
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4
+                                }}>Tham gia ngày 12/8/2023</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+
+        {/* Shipping modal */}
+        <Modal
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            isVisible={shippingModalVisible}
+            onRequestClose={() => {
+                setShippingModalVisible(!shippingModalVisible);
+            }}
+            style={{ margin: 0 }}>
+            <View style={{
+                flex: 1
+            }}>
+                <TouchableOpacity style={{ flex: 1 }}
+                    onPress={() => {
+                        setShippingModalVisible(!shippingModalVisible);
+                    }}></TouchableOpacity>
+                <View style={{
+                    backgroundColor: 'white',
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25
+                }}>
+                    {/* Shipping modal title */}
+                    <Text style={{
+                        color: 'black',
+                        fontSize: fontSizes.h3,
+                        fontFamily: 'OpenSans-Bold',
+                        marginLeft: 20,
+                        marginVertical: 20
+                    }}>Giao hàng, đổi trả và thanh toán</Text>
+
+                    {/* Shipping information */}
+                    <View style={{
+                        gap: 10,
+                        marginHorizontal: 20,
+                        marginBottom: 30
+                    }}>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.productInformationLabel}>Giao dự kiến</Text>
+                            <View style={{ flex: 3, gap: 5 }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >Thứ 2, 2 tháng 10 2023</Text>
+                            </View>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.productInformationLabel}>Giao từ</Text>
+                            <View style={{ flex: 3, gap: 5 }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >{product.seller.seller_address}</Text>
+                            </View>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.productInformationLabel}>Giao đến</Text>
+                            <View style={{ flex: 3, gap: 5 }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >Địa chỉ mặc định hoặc không có</Text>
+                            </View>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.productInformationLabel}>Đổi trả</Text>
+                            <View style={{ flex: 3, gap: 5 }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >Trong vòng 30 ngày</Text>
+                                <Text style={{
+                                    color: colors.darkGreyText,
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >Người mua trả phí vận chuyển</Text>
+                            </View>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.productInformationLabel}>Thanh toán</Text>
+                            <View style={{ flex: 3, gap: 5 }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: 'OpenSans-Medium',
+                                    fontSize: fontSizes.h4,
+                                }}
+                                >Ví PAH, Zalopay, COD</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        </Modal>
     </View>
 }
 
@@ -464,8 +731,8 @@ const styles = StyleSheet.create({
         gap: 8
     },
     separator: {
-        height: 1.5,
-        backgroundColor: colors.darkGreyText,
+        height: 1,
+        backgroundColor: colors.darkGrey,
         marginRight: 10
     },
     iconButton: {
@@ -509,6 +776,13 @@ const styles = StyleSheet.create({
         fontFamily: 'OpenSans-Medium',
         fontSize: fontSizes.h4,
         flex: 3
+    },
+    emptyText: {
+        color: colors.greyText,
+        fontSize: fontSizes.h4,
+        textAlign: 'center',
+        fontFamily: 'OpenSans-Medium',
+        marginVertical: 30
     }
 });
 

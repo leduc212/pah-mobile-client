@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Home, Account, Listing, Seller, Login } from '../screens';
+import { Home, Account, Listing, Seller, AuctionListing } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { fontSizes, colors } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -11,7 +11,7 @@ const screenOptions = ({ route }) => ({
     tabBarInactiveTintColor: colors.black,
     tabBarActiveBackgroundColor: colors.grey,
     tabBarInactiveBackgroundColor: colors.grey,
-    tabBarStyle: {height: 60},
+    tabBarStyle: { height: 60 },
     tabBarLabelStyle: {
         fontSize: fontSizes.h6,
         marginBottom: 8,
@@ -24,10 +24,13 @@ const screenOptions = ({ route }) => ({
             iconName = 'user';
         }
         else if (screenName == 'Listing') {
-            iconName = 'align-justify';
+            iconName = 'shopping-bag';
         }
         else if (screenName == 'Seller') {
             iconName = 'tag';
+        }
+        else if (screenName == 'AuctionListing') {
+            iconName = 'align-justify';
         }
         return <IconFeather
             style={{ paddingTop: 5 }}
@@ -42,7 +45,7 @@ function UITabs(props) {
         <Tab.Screen name={'Home'} component={Home}
             options={{
                 tabBarLabel: 'Trang chủ'
-                
+
             }} />
         <Tab.Screen name={'Account'} component={Account}
             options={{
@@ -51,6 +54,10 @@ function UITabs(props) {
         <Tab.Screen name={'Listing'} component={Listing}
             options={{
                 tabBarLabel: 'Sản phẩm'
+            }} />
+        <Tab.Screen name={'AuctionListing'} component={AuctionListing}
+            options={{
+                tabBarLabel: 'Đấu giá'
             }} />
         <Tab.Screen name={'Seller'} component={Seller}
             options={{
