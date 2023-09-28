@@ -5,8 +5,8 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
-import TimeLeft from './TimeLeft';
+import { colors, fontSizes, fonts } from '../../constants';
+import TimeLeft from '../TimeLeft';
 
 function HomeItemCard(props) {
     const { item, onPress } = props;
@@ -19,13 +19,13 @@ function HomeItemCard(props) {
         }}>
         <Image source={{ uri: url }}
             style={styles.itemImage} />
-        <Text numberOfLines={3}
+        <Text numberOfLines={2}
             ellipsizeMode='tail'
             style={styles.itemTitle}>{name}</Text>
         <Text numberOfLines={2}
             ellipsizeMode='tail'
             style={styles.itemPrice}>{price} VND</Text>
-        {closedTime != undefined && <TimeLeft closedTime={closedTime}/>}
+        {closedTime != undefined && <TimeLeft width={150} closedTime={closedTime}/>}
     </TouchableOpacity>
 }
 
@@ -39,15 +39,15 @@ const styles = StyleSheet.create({
     },
     itemTitle: {
         width: 150,
-        height: 60,
+        height: 45,
         color: 'black',
-        fontFamily: 'OpenSans-Medium',
-        fontSize: fontSizes.h5
+        fontFamily: fonts.OpenSansMedium,
+        fontSize: fontSizes.h4
     },
     itemPrice: {
         width: 150,
         color: 'black',
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         fontSize: fontSizes.h2
     }
 })

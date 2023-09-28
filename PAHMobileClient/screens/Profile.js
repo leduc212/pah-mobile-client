@@ -8,7 +8,7 @@ import {
   Image
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes, images } from '../constants';
+import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { ProductListingCard } from '../components';
 
@@ -35,24 +35,28 @@ function Profile(props) {
   // Data for products
   const [products, setProducts] = useState([
     {
-      name: 'New Basic Stussy Mens Black/White L/S Tee T Shirt Size Medium',
-      price: '553,658',
-      url: 'https://i.ebayimg.com/images/g/SqQAAOSw9w9jYyqQ/s-l1600.jpg'
+      id: 1,
+      name: 'Đá thạch anh hồng phong thuỷ',
+      price: '1,220,000',
+      url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg'
     },
     {
-      name: 'Trump shirt Wanted for President rea Mugshot DJT Tee shirt Republican party tee',
-      price: '426,097',
-      url: 'https://i.ebayimg.com/images/g/r-YAAOSwe4Vk63Ai/s-l1600.jpg'
+      id: 2,
+      name: 'Đá thạch anh xanh phong thuỷ',
+      price: '6,430,000',
+      url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg'
     },
     {
-      name: 'adidas Originals Mens Street Grp Tea Graphic Shirt AZ1138 White XS-XL',
-      price: '699,268',
-      url: 'https://i.ebayimg.com/images/g/PeoAAOSwiFFesyqM/s-l1600.jpg'
+      id: 3,
+      name: 'Đá thạch anh trắng phong thuỷ',
+      price: '1,960,000',
+      url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg'
     },
     {
-      name: 'Supreme Scarface The World Is Yours T-Shirt Black XL 100% Authentic Tee',
-      price: '4,756,097',
-      url: 'https://i.ebayimg.com/images/g/fIUAAOSwmnFk2PPY/s-l1600.jpg'
+      id: 4,
+      name: 'Đá fluorite xanh phong thuỷ',
+      price: '1,216,000',
+      url: 'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
     }
   ]);
 
@@ -88,17 +92,17 @@ function Profile(props) {
         <View style={{ gap: 2 }}>
           <Text style={{
             color: 'black',
-            fontFamily: 'OpenSans-Bold',
+            fontFamily: fonts.OpenSansBold,
             fontSize: fontSizes.h3
           }}>{userProfile.name}</Text>
           <Text style={{
             color: 'black',
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             fontSize: fontSizes.h5
           }}>{userProfile.address}</Text>
           <Text style={{
             color: 'black',
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             fontSize: fontSizes.h5
           }}>Đánh giá: 5</Text>
         </View>
@@ -117,7 +121,7 @@ function Profile(props) {
           onPress={() => setCurrentTab(1)}>
           <Text style={{
             color: currentTab == 1 ? 'black' : colors.darkGreyText,
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             fontSize: fontSizes.h5
           }}>Đang bán</Text>
           {currentTab == 1 && <View style={{
@@ -134,7 +138,7 @@ function Profile(props) {
           onPress={() => setCurrentTab(2)}>
           <Text style={{
             color: currentTab == 2 ? 'black' : colors.darkGreyText,
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             fontSize: fontSizes.h5
           }}>Đang đấu giá</Text>
           {currentTab == 2 && <View style={{
@@ -151,7 +155,7 @@ function Profile(props) {
           onPress={() => setCurrentTab(3)}>
           <Text style={{
             color: currentTab == 3 ? 'black' : colors.darkGreyText,
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             fontSize: fontSizes.h5
           }}>Thêm</Text>
           {currentTab == 3 && <View style={{
@@ -173,7 +177,7 @@ function Profile(props) {
           }}>
             <Text style={{
               color: 'black',
-              fontFamily: 'OpenSans-Bold',
+              fontFamily: fonts.OpenSansBold,
               fontSize: fontSizes.h2
             }}>Tất cả sản phẩm</Text>
           </View>
@@ -182,8 +186,8 @@ function Profile(props) {
             flex: 1
           }}>
             {products.map((product) =>
-              <ProductListingCard key={product.name} product={product} onPress={() => {
-                navigate('ListingDetail', { product_id: product.name })
+              <ProductListingCard key={product.id} product={product} onPress={() => {
+                navigate('ListingDetail', { product_id: product.id })
               }} />
             )}
           </View>
@@ -199,7 +203,7 @@ function Profile(props) {
           }} />
           <Text style={{
             fontSize: fontSizes.h4,
-            fontFamily: 'OpenSans-Medium',
+            fontFamily: fonts.OpenSansMedium,
             color: 'black',
             textAlign: 'center',
             marginHorizontal: 35,
@@ -219,12 +223,12 @@ function Profile(props) {
           }}>
             <Text style={{
               fontSize: fontSizes.h4,
-              fontFamily: 'OpenSans-Medium',
+              fontFamily: fonts.OpenSansMedium,
               color: colors.darkGreyText
             }}>Địa chỉ: </Text>
             <Text style={{
               fontSize: fontSizes.h4,
-              fontFamily: 'OpenSans-Bold',
+              fontFamily: fonts.OpenSansBold,
               color: 'black'
             }}>Thành phố Hồ Chí Minh</Text>
           </View>
@@ -234,12 +238,12 @@ function Profile(props) {
           }}>
             <Text style={{
               fontSize: fontSizes.h4,
-              fontFamily: 'OpenSans-Medium',
+              fontFamily: fonts.OpenSansMedium,
               color: colors.darkGreyText
             }}>Ngày gia nhập: </Text>
             <Text style={{
               fontSize: fontSizes.h4,
-              fontFamily: 'OpenSans-Bold',
+              fontFamily: fonts.OpenSansBold,
               color: 'black'
             }}>17/09/2022</Text>
           </View>
@@ -268,7 +272,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: fonts.OpenSansBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   },

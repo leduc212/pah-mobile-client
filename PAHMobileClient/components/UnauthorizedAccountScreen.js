@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
     Text,
     View,
@@ -6,9 +6,7 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes, images } from '../constants';
-import IconFeather from 'react-native-vector-icons/Feather';
+import { colors, fontSizes, images, fonts } from '../constants';
 
 function UnauthorizedAccountScreen(props) {
     // Navigation
@@ -49,7 +47,7 @@ function UnauthorizedAccountScreen(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: 'OpenSans-Medium',
+                        fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h5
                     }}>Mở tài khoản người bán? </Text>
                     <TouchableOpacity onPress={() => {
@@ -57,7 +55,7 @@ function UnauthorizedAccountScreen(props) {
                     }}>
                         <Text style={{
                             color: colors.primary,
-                            fontFamily: 'OpenSans-Medium',
+                            fontFamily: fonts.OpenSansMedium,
                             fontSize: fontSizes.h5
                         }}>Đăng ký tài khoản</Text>
                     </TouchableOpacity>
@@ -99,7 +97,7 @@ const styles = StyleSheet.create({
     },
     loginText: {
         fontSize: fontSizes.h3,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         color: 'white',
         textAlign: 'center'
     },
@@ -111,7 +109,7 @@ const styles = StyleSheet.create({
     },
     registerText: {
         fontSize: fontSizes.h3,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         color: colors.primary,
         textAlign: 'center'
     },
@@ -134,7 +132,7 @@ const styles = StyleSheet.create({
     benefitText: {
         flex: 1,
         color: 'black',
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         fontSize: fontSizes.h4,
         alignSelf: 'center'
     },
@@ -142,7 +140,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: fontSizes.h2,
         textAlign: 'center',
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         marginTop: 20
     }
 });

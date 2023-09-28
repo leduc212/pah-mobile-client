@@ -4,7 +4,7 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 
 function AccountMenuItem(props) {
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     },
     menuText: {
         color: colors.darkGreyText,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         fontSize: fontSizes.h4,
         marginLeft: 10
     }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -7,17 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colors, fontSizes} from '../constants';
-import {UIHeader, LoginView, RegisterView} from '.';
-import {isValidPassword} from '../utilities/validation';
+import { colors, fontSizes } from '../../constants';
+import { UIHeader, LoginView, RegisterView } from '.';
+import { isValidPassword } from '../../utilities/Validation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default function RegisterView2(props) {
-   //states to store password
-   const [password, setPassword] = useState('Lm100102@');
-   //states for validating
-   const [showPassword, setShowPassword] = useState(false);
-   const passwordValidation = () => isValidPassword(password);
+  //states to store password
+  const [password, setPassword] = useState('Lm100102@');
+  //states for validating
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordValidation = () => isValidPassword(password);
   return (
     <View
       style={{
@@ -170,7 +170,7 @@ export default function RegisterView2(props) {
       </TouchableOpacity>
       <TouchableOpacity
         disabled={!passwordValidation() == true}
-        onPress={()=>{
+        onPress={() => {
           alert('Account created')
         }}
         style={{

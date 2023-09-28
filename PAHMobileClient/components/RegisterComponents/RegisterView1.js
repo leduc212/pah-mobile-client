@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colors, fontSizes} from '../constants';
-import {isValidEmail} from '../utilities/validation';
+import {colors, fontSizes} from '../../constants';
+import {isValidEmail} from '../../utilities/Validation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 function RegisterView1(props) {

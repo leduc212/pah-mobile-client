@@ -5,11 +5,12 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
-import { colors, fontSizes, images } from '../constants';
+import { colors, fontSizes, fonts } from '../../constants';
+import TimeLeft from '../TimeLeft';
 
 function ProductListingCard(props) {
     const { product, onPress } = props;
-    const { name, url, price } = product;
+    const { name, url, price, closedTime } = product;
 
     return <View style={{
         paddingHorizontal: 15
@@ -41,24 +42,25 @@ function ProductListingCard(props) {
                     ellipsizeMode='tail'
                     style={{
                         color: 'black',
-                        fontFamily: 'OpenSans-Medium',
-                        fontSize: fontSizes.h5,
-                        height: 60
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h4,
+                        marginBottom: 5
                     }}>{name}</Text>
                 <Text
                     numberOfLines={2}
                     ellipsizeMode='tail'
                     style={{
                         color: 'black',
-                        fontFamily: 'OpenSans-Bold',
+                        fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h2
                     }}>{price} VNĐ</Text>
                 <Text
                     style={{
                         color: colors.darkGreyText,
-                        fontFamily: 'OpenSans-Medium',
+                        fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h6
                     }}>Thành phố Hồ Chí Minh</Text>
+                {closedTime != undefined && <TimeLeft width={200} closedTime={closedTime} />}
             </View>
         </TouchableOpacity>
     </View>

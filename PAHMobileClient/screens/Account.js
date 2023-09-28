@@ -8,7 +8,7 @@ import {
     ScrollView,
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     UnauthorizedAccountScreen,
@@ -81,7 +81,7 @@ function Account(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: 'OpenSans-Bold',
+                        fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h3
                     }}>{user.name}</Text>
                     <View style={{ flex: 1 }}></View>
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

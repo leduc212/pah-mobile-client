@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {colors, fontSizes} from '../constants';
 import {UIHeader, RegisterView2, RegisterView1} from '../components';
-import {isValidPassword} from '../utilities/validation';
+import {isValidPassword} from '../utilities/Validation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 function Register(props) {

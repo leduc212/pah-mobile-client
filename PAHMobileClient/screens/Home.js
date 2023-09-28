@@ -8,7 +8,7 @@ import {
     StyleSheet,
     FlatList
 } from 'react-native';
-import { colors, fontSizes, images } from '../constants';
+import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
 import { AuthContext } from '../context/AuthContext';
@@ -30,83 +30,90 @@ function Home(props) {
     // Data for popular products, ongoing auction and categories
     const [popularProducts, setPopularProducts] = useState([
         {
-            name: 'New Basic Stussy Mens Black/White L/S Tee T Shirt Size Medium',
-            price: '553,658',
-            url: 'https://i.ebayimg.com/images/g/SqQAAOSw9w9jYyqQ/s-l1600.jpg'
+            id: 1,
+            name: 'Đá thạch anh hồng phong thuỷ',
+            price: '1,220,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg'
         },
         {
-            name: 'Trump shirt Wanted for President rea Mugshot DJT Tee shirt Republican party tee',
-            price: '426,097',
-            url: 'https://i.ebayimg.com/images/g/r-YAAOSwe4Vk63Ai/s-l1600.jpg'
+            id: 2,
+            name: 'Đá thạch anh xanh phong thuỷ',
+            price: '6,430,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg'
         },
         {
-            name: 'adidas Originals Mens Street Grp Tea Graphic Shirt AZ1138 White XS-XL',
-            price: '699,268',
-            url: 'https://i.ebayimg.com/images/g/PeoAAOSwiFFesyqM/s-l1600.jpg'
+            id: 3,
+            name: 'Đá thạch anh trắng phong thuỷ',
+            price: '1,960,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg'
         },
         {
-            name: 'Supreme Scarface The World Is Yours T-Shirt Black XL 100% Authentic Tee',
-            price: '4,756,097',
-            url: 'https://i.ebayimg.com/images/g/fIUAAOSwmnFk2PPY/s-l1600.jpg'
+            id: 4,
+            name: 'Đá fluorite xanh phong thuỷ',
+            price: '1,216,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
         },
         {
-            name: 'ZEGNA Micromodal Stretch Short Sleeve Under T-shirt (BLACK)',
-            price: '1,944,530',
-            url: 'https://i.ebayimg.com/images/g/dX0AAOSwzBxkYjsj/s-l1600.png'
+            id: 5,
+            name: 'Đá thạch anh vàng phong thuỷ',
+            price: '4,632,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/img01082-copy.jpg'
+        },
+        {
+            id: 6,
+            name: 'Đe đồng của thợ bạc mini',
+            price: '1,550,000',
+            url: 'https://cloud.muaban.net/images/2022/07/06/047/aa389f6f32ab4738bfd68313b5c52c42.jpg'
         }
     ]);
 
     const [ongoingAuctions, setOngoingAuctions] = useState([
         {
-            name: '6.3" Chinese Antique Porcelain Song dynasty ru kiln cyan glaze Five tube Vase',
-            price: '4,633,902',
-            url: 'https://i.ebayimg.com/images/g/dCMAAOSwRNBlEZ1h/s-l1600.jpg',
-            closedTime: 1695699788000
+            id: 11,
+            name: 'Vòng đá mắt hổ xanh phong thuỷ',
+            price: '8,550,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg',
+            closedTime: '2023-09-30'
         },
         {
-            name: '7.4" China Ancient Bronze ware beast Food Vessel Wine Vessel Wineware Zun pot',
-            price: '6,271,707',
-            url: 'https://i.ebayimg.com/images/g/TAsAAOSwaHZkLiZG/s-l1600.jpg',
-            closedTime: '2023-09-27'
+            id: 12,
+            name: 'Dây chuyền nanh heo rừng bằng đồng',
+            price: '20,000,000',
+            url: 'https://cloud.muaban.net/images/2023/06/22/334/50c23df095054b36a8c6cd4176c79f00.jpg',
+            closedTime: '2023-09-30'
         },
         {
-            name: 'BIG FAMILLE ROSE CHINESE PORCELAIN HEXAGONAL QING ANTIQUES BRUSHPOT HAT STAND',
-            price: '3,658,536',
-            url: 'https://i.ebayimg.com/images/g/ljUAAOSwFQJk51-q/s-l1600.jpg',
-            closedTime: '2023-09-28'
+            id: 13,
+            name: 'Bàn ủi con gà bằng đồng',
+            price: '9,000,000',
+            url: 'https://cloud.muaban.net/images/thumb-detail/2022/05/11/497/375f25ac384c4de6805b153996d77d2d.jpg',
+            closedTime: '2023-10-02'
         },
         {
-            name: 'antique chinese cloisonne incense burner',
-            price: '11,207,317',
-            url: 'https://i.ebayimg.com/images/g/0V4AAOSwY3pk7gm6/s-l1600.jpg',
-            closedTime: '2023-09-27'
+            id: 14,
+            name: 'Thỏi bạc quý',
+            price: '25,000,000',
+            url: 'https://cloud.muaban.net/images/2023/07/29/586/1f7e228a67674cdf9e3a2d07632475fe.jpg',
+            closedTime: '2023-10-04'
         }
     ]);
 
     const [categories, setCategories] = useState([
         {
-            name: 'Beverages',
-            url: 'https://f.hubspotusercontent00.net/hubfs/4662006/Beverage_compounds_drinks.jpg'
+            name: 'Đá phong thuỷ',
+            url: 'https://media.loveitopcdn.com/26429/800k-2.jpg'
         },
         {
-            name: 'Coffee',
-            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/800px-A_small_cup_of_coffee.JPG'
+            name: 'Trang sức cổ',
+            url: 'https://vanchuyenhangquangchau.vn/file/tuvan/1634630797-trang-suc-co-trang-trung-quoc.jpg'
         },
         {
-            name: 'Salad',
-            url: 'https://cdn.loveandlemons.com/wp-content/uploads/2021/04/green-salad.jpg'
+            name: 'Nội thất cổ',
+            url: 'https://antiquesworld.co.uk/wp-content/uploads/2021/04/antique-furniture.jpg'
         },
         {
-            name: 'Fast food',
-            url: 'https://www.eatthis.com/wp-content/uploads/sites/4/2022/06/fast-food-assortment-soda.jpg?quality=82&strip=1'
-        },
-        {
-            name: 'Dessert',
-            url: 'https://stordfkenticomedia.blob.core.windows.net/df-us/rms/media/recipemediafiles/recipes/retail/x17/17244-caramel-topped-ice-cream-dessert-600x600.jpg?ext=.jpg'
-        },
-        {
-            name: 'Noodles',
-            url: 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/veg-noodles-vegetable-noodles-recipe.jpg'
+            name: 'Trang sức phong thuỷ',
+            url: 'https://vcdn-giadinh.vnecdn.net/2020/05/01/5d0c91a77fcc7-NQVT0745-V-ng-Ta-5030-3611-1588267934.jpg'
         }
     ]);
 
@@ -163,7 +170,7 @@ function Home(props) {
                             size={20} color={'black'}
                         />
                         <Text style={{
-                            fontFamily: 'OpenSans-Medium',
+                            fontFamily: fonts.OpenSansMedium,
                             color: 'black',
                             marginLeft: 15
                         }}
@@ -189,7 +196,7 @@ function Home(props) {
                     color: 'black',
                     fontSize: fontSizes.h3,
                     textAlign: 'center',
-                    fontFamily: 'OpenSans-Medium'
+                    fontFamily: fonts.OpenSansMedium
                 }}>Hãy đăng nhập để trải nghiệm tối đa nền tảng của chúng tôi</Text>
                 <View style={{
                     flexDirection: 'row',
@@ -219,7 +226,7 @@ function Home(props) {
             }}>
                 <View style={styles.headerLayout}>
                     <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigate('Listing')}>
                         <Text style={styles.headerSubText}>Xem tất cả</Text>
                     </TouchableOpacity>
                 </View>
@@ -229,9 +236,9 @@ function Home(props) {
                     data={popularProducts}
                     renderItem={({ item }) => {
                         return <HomeItemCard item={item}
-                            onPress={() => navigate('ListingDetail', {product_id: item.name})} />
+                            onPress={() => navigate('ListingDetail', {product_id: item.id})} />
                     }}
-                    keyExtractor={eachProduct => eachProduct.name}
+                    keyExtractor={eachProduct => eachProduct.id}
                 /> : <View>
                     <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
                 </View>}
@@ -243,7 +250,7 @@ function Home(props) {
             }}>
                 <View style={styles.headerLayout}>
                     <Text style={styles.headerText}>Cuộc đấu giá đang diễn ra</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigate('AuctionListing')}>
                         <Text style={styles.headerSubText}>Xem tất cả</Text>
                     </TouchableOpacity>
                 </View>
@@ -257,7 +264,7 @@ function Home(props) {
                     }}
                     keyExtractor={eachProduct => eachProduct.name}
                 /> : <View>
-                    <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
+                    <Text style={styles.emptyText}>Không có cuộc đấu giá để hiển thị</Text>
                 </View>}
             </View>
 
@@ -277,7 +284,7 @@ function Home(props) {
                         return <HomeCategoryCard item={item}
                             onPress={() => alert(`Press item name ${item.name}`)} />
                     }}
-                    keyExtractor={eachProduct => eachProduct.name}
+                    keyExtractor={eachCategory => eachCategory.name}
                 /> : <View>
                     <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
                 </View>}
@@ -307,7 +314,7 @@ const styles = StyleSheet.create({
     },
     loginText: {
         fontSize: fontSizes.h3,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         color: colors.primary
     },
     titleContainer: {
@@ -333,19 +340,19 @@ const styles = StyleSheet.create({
     headerText: {
         color: 'black',
         fontSize: fontSizes.h2,
-        fontFamily: 'OpenSans-Bold'
+        fontFamily: fonts.OpenSansBold
     },
     headerSubText: {
         color: colors.greyText,
         fontSize: fontSizes.h5,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         textDecorationLine: 'underline'
     },
     emptyText: {
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         marginVertical: 30
     }
 });

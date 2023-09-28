@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     Text,
     View,
@@ -6,12 +6,11 @@ import {
     StyleSheet,
     ScrollView,
     Image,
-    FlatList,
     TextInput
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes, images } from '../constants';
+import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     ProductListingCard
@@ -34,54 +33,32 @@ function AuctionListing(props) {
     // Data for products
     const [products, setProducts] = useState([
         {
-            name: 'New Basic Stussy Mens Black/White L/S Tee T Shirt Size Medium',
-            price: '553,658',
-            url: 'https://i.ebayimg.com/images/g/SqQAAOSw9w9jYyqQ/s-l1600.jpg'
+            id: 11,
+            name: 'Vòng đá mắt hổ xanh phong thuỷ',
+            price: '8,550,000',
+            url: 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg',
+            closedTime: '2023-09-30'
         },
         {
-            name: 'Trump shirt Wanted for President rea Mugshot DJT Tee shirt Republican party tee',
-            price: '426,097',
-            url: 'https://i.ebayimg.com/images/g/r-YAAOSwe4Vk63Ai/s-l1600.jpg'
+            id: 12,
+            name: 'Dây chuyền nanh heo rừng bằng đồng',
+            price: '20,000,000',
+            url: 'https://cloud.muaban.net/images/2023/06/22/334/50c23df095054b36a8c6cd4176c79f00.jpg',
+            closedTime: '2023-09-30'
         },
         {
-            name: 'adidas Originals Mens Street Grp Tea Graphic Shirt AZ1138 White XS-XL',
-            price: '699,268',
-            url: 'https://i.ebayimg.com/images/g/PeoAAOSwiFFesyqM/s-l1600.jpg'
+            id: 13,
+            name: 'Bàn ủi con gà bằng đồng',
+            price: '9,000,000',
+            url: 'https://cloud.muaban.net/images/thumb-detail/2022/05/11/497/375f25ac384c4de6805b153996d77d2d.jpg',
+            closedTime: '2023-10-02'
         },
         {
-            name: 'Supreme Scarface The World Is Yours T-Shirt Black XL 100% Authentic Tee',
-            price: '4,756,097',
-            url: 'https://i.ebayimg.com/images/g/fIUAAOSwmnFk2PPY/s-l1600.jpg'
-        },
-        {
-            name: 'ZEGNA Micromodal Stretch Short Sleeve Under T-shirt (BLACK)',
-            price: '1,944,530',
-            url: 'https://i.ebayimg.com/images/g/dX0AAOSwzBxkYjsj/s-l1600.png'
-        },
-        {
-            name: 'New Basic Stussy Mens Black/White L/S Tee T Shirt Size Medium 1',
-            price: '553,658',
-            url: 'https://i.ebayimg.com/images/g/SqQAAOSw9w9jYyqQ/s-l1600.jpg'
-        },
-        {
-            name: 'Trump shirt Wanted for President rea Mugshot DJT Tee shirt Republican party tee 1',
-            price: '426,097',
-            url: 'https://i.ebayimg.com/images/g/r-YAAOSwe4Vk63Ai/s-l1600.jpg'
-        },
-        {
-            name: 'adidas Originals Mens Street Grp Tea Graphic Shirt AZ1138 White XS-XL 2',
-            price: '699,268',
-            url: 'https://i.ebayimg.com/images/g/PeoAAOSwiFFesyqM/s-l1600.jpg'
-        },
-        {
-            name: 'Supreme Scarface The World Is Yours T-Shirt Black XL 100% Authentic Tee 3',
-            price: '4,756,097',
-            url: 'https://i.ebayimg.com/images/g/fIUAAOSwmnFk2PPY/s-l1600.jpg'
-        },
-        {
-            name: 'ZEGNA Micromodal Stretch Short Sleeve Under T-shirt (BLACK) 4',
-            price: '1,944,530',
-            url: 'https://i.ebayimg.com/images/g/dX0AAOSwzBxkYjsj/s-l1600.png'
+            id: 14,
+            name: 'Thỏi bạc quý',
+            price: '25,000,000',
+            url: 'https://cloud.muaban.net/images/2023/07/29/586/1f7e228a67674cdf9e3a2d07632475fe.jpg',
+            closedTime: '2023-10-04'
         }
     ]);
 
@@ -96,11 +73,10 @@ function AuctionListing(props) {
 
     const [categories, setCategories] = useState([
         'Tất cả',
-        'Trang sức',
-        'Nội thất',
-        'Đồ trang trí',
-        'Bát đĩa',
-        'Ấm chén',
+        'Đá phong thuỷ',
+        'Trang sức cổ',
+        'Nội thất cổ',
+        'Trang sức phong thuỷ',
         'Khác'
     ]);
 
@@ -108,11 +84,15 @@ function AuctionListing(props) {
 
     const [materials, setMaterials] = useState([
         'Tất cả',
-        'Đồ gỗ',
-        'Đồ gốm',
-        'Sơn mài',
-        'Tre nứa',
         'Đá quý',
+        'Gỗ',
+        'Bạc',
+        'Thủy tinh',
+        'Đồng',
+        'Sắt',
+        'Titan',
+        'Vải',
+        'Lụa',
         'Khác'
     ]);
 
@@ -158,7 +138,7 @@ function AuctionListing(props) {
                     }}>
                     <Text style={{
                         color: colors.primary,
-                        fontFamily: 'OpenSans-Bold',
+                        fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h5,
                     }}>Sắp xếp</Text>
                     <IconFeather name='align-center' size={16} color={colors.primary} />
@@ -174,7 +154,7 @@ function AuctionListing(props) {
                     }}>
                     <Text style={{
                         color: colors.primary,
-                        fontFamily: 'OpenSans-Bold',
+                        fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h5,
                     }}>Bộ lọc</Text>
                     <IconFeather name='filter' size={16} color={colors.primary} />
@@ -191,17 +171,18 @@ function AuctionListing(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: 'OpenSans-Bold',
+                        fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h2
                     }}>Các cuộc đấu giá đang diễn ra</Text>
                 </View>
 
                 <View style={{
-                    flex: 1
+                    flex: 1,
+                    marginBottom: 15
                 }}>
                     {products.map((product) =>
-                        <ProductListingCard key={product.name} product={product} onPress={()=>{
-                            navigate('ListingDetail', {product_id: product.name})
+                        <ProductListingCard key={product.id} product={product} onPress={()=>{
+                            navigate('ListingDetail', {product_id: product.id})
                         }}/>
                     )}
                 </View>
@@ -217,7 +198,7 @@ function AuctionListing(props) {
                 }} />
                 <Text style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: 'OpenSans-Medium',
+                    fontFamily: fonts.OpenSansMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -269,14 +250,14 @@ function AuctionListing(props) {
                         </TouchableOpacity>
                         <Text style={{
                             color: 'black',
-                            fontFamily: 'OpenSans-Bold',
+                            fontFamily: fonts.OpenSansBold,
                             fontSize: fontSizes.h1
                         }}
                         >Bộ lọc</Text>
                         <TouchableOpacity>
                             <Text style={{
                                 color: colors.primary,
-                                fontFamily: 'OpenSans-Bold',
+                                fontFamily: fonts.OpenSansBold,
                                 fontSize: fontSizes.h4
                             }}
                                 numberOfLines={1}
@@ -303,7 +284,7 @@ function AuctionListing(props) {
                                             setCurrentSortOrder(item);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentSortOrder ? 'OpenSans-Bold' : 'OpenSans-Medium',
+                                            fontFamily: item == currentSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
                                         }, styles.filterPillText]}>{item}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -325,7 +306,7 @@ function AuctionListing(props) {
                                             setCurrentCategory(item);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentCategory ? 'OpenSans-Bold' : 'OpenSans-Medium'
+                                            fontFamily: item == currentCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
                                         }, styles.filterPillText]}>{item}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -347,7 +328,7 @@ function AuctionListing(props) {
                                             setCurrentMaterial(item);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentMaterial ? 'OpenSans-Bold' : 'OpenSans-Medium'
+                                            fontFamily: item == currentMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
                                         }, styles.filterPillText]}>{item}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -454,7 +435,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center',
         flex: 1,
@@ -472,7 +453,7 @@ const styles = StyleSheet.create({
     },
     filterTitle: {
         fontSize: fontSizes.h4,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         color: 'black',
         marginLeft: 15,
         marginBottom: 15
@@ -509,12 +490,12 @@ const styles = StyleSheet.create({
         width: 120,
         paddingBottom: 0,
         fontSize: fontSizes.h4,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         color: 'black'
     },
     priceLabel: {
         fontSize: fontSizes.h6,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         color: 'black',
         marginTop: 5
     },
@@ -529,7 +510,7 @@ const styles = StyleSheet.create({
     },
     primaryButtonText: {
         fontSize: fontSizes.h4,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         color: 'white',
         textAlign: 'center'
     },
@@ -541,7 +522,7 @@ const styles = StyleSheet.create({
     sortModalTitle: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         marginLeft: 20,
         marginVertical: 20
     },
@@ -568,7 +549,7 @@ const styles = StyleSheet.create({
     radioText: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: 'OpenSans-Medium'
+        fontFamily: fonts.OpenSansMedium
     }
 });
 

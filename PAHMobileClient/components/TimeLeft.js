@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
     Text,
-    Image,
-    TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, fonts } from '../constants';
 import moment from 'moment';
 import "moment/min/locales";
 
 function TimeLeft(props) {
-    const { closedTime } = props;
+    const { closedTime, width = 150 } = props;
     moment.locale('vi');
     const [timeLeft, setTimeLeft] = useState(moment(closedTime).fromNow());
     const timeText = moment(closedTime).isBefore(moment()) ? 'Đã kết thúc' : 'Kết thúc trong';
@@ -24,14 +22,15 @@ function TimeLeft(props) {
 
     return <Text numberOfLines={2}
         ellipsizeMode='tail'
-        style={styles.itemDateLeft}>{timeText} {timeLeft}</Text>
+        style={[styles.itemDateLeft, {
+            width: width
+        }]}>{timeText} {timeLeft}</Text>
 }
 
 const styles = StyleSheet.create({
     itemDateLeft: {
-        width: 150,
         color: colors.darkGreyText,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         fontSize: fontSizes.h6
     }
 })

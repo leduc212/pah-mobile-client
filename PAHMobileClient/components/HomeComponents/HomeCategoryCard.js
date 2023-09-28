@@ -5,7 +5,7 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, fonts } from '../../constants';
 
 function HomeCategoryCard(props) {
     const { item, onPress } = props;
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 20,
         color: 'black',
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         fontSize: fontSizes.h5,
         textAlign: 'center'
     }

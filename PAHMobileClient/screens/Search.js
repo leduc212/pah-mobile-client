@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
     Text,
     View,
-    Image,
     TouchableOpacity,
     StyleSheet,
     TextInput,
     FlatList,
     KeyboardAvoidingView
 } from 'react-native';
-import { colors, fontSizes } from '../constants';
+import { colors, fontSizes, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
 
@@ -70,7 +69,7 @@ function Search(props) {
                         flex: 1,
                         marginHorizontal: 10,
                         color: 'black',
-                        fontFamily: 'OpenSans-Medium',
+                        fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
                     }} />
                 <TouchableOpacity>
@@ -97,7 +96,7 @@ function Search(props) {
                         }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: 'OpenSans-Medium',
+                            fontFamily: fonts.OpenSansMedium,
                             fontSize: fontSizes.h4
                         }}>{item}</Text>
                         <View style={{ flex: 1 }}></View>
@@ -127,7 +126,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

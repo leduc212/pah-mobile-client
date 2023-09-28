@@ -6,10 +6,10 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes, images } from '../constants';
+import { AuthContext } from '../../context/AuthContext';
+import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import Modal from 'react-native-modal';
+import { ListingDetailFeedback } from '../../components';
 
 function ListingFeedback(props) {
     // Get product_id from routes
@@ -95,36 +95,10 @@ function ListingFeedback(props) {
             <View style={{ marginTop: 5 }}>
                 {(Array.isArray(feedbacks) && feedbacks.length) ? <View>
                     {feedbacks.map((feedback, index) =>
-                        <View key={feedback.id} style={{
-                            marginBottom: 15
-                        }}>
-                            <View style={{
-                                flexDirection: 'row'
-                            }}>
-                                <Text style={{
-                                    color: colors.darkGreyText,
-                                    fontFamily: 'OpenSans-Medium',
-                                    fontSize: fontSizes.h5
-                                }}>{feedback.user_name}</Text>
-                                <Text style={{
-                                    color: colors.darkGreyText,
-                                    fontFamily: 'OpenSans-Medium',
-                                    fontSize: fontSizes.h5
-                                }}> - 1 tháng trước</Text>
-                            </View>
-                            <Text style={{
-                                color: colors.greyText,
-                                fontFamily: 'OpenSans-Medium',
-                                fontSize: fontSizes.h5
-                            }}>Đánh giá: {feedback.star} sao</Text>
-                            <Text style={{
-                                color: 'black',
-                                fontFamily: 'OpenSans-Medium',
-                                fontSize: fontSizes.h4,
-                                marginVertical: 15,
-                            }}>{feedback.content}</Text>
-                            {index != (feedbacks.length - 1) && <View style={styles.separator}></View>}
-                        </View>)}
+                        <ListingDetailFeedback feedback={feedback}
+                            key={feedback.id}
+                            index={index}
+                            length={feedbacks.length - 1} />)}
                 </View> : <View>
                     <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
                 </View>}
@@ -151,7 +125,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: fonts.OpenSansBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -170,7 +144,7 @@ const styles = StyleSheet.create({
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.OpenSansMedium,
         marginVertical: 30
     }
 });
