@@ -18,7 +18,11 @@ import {
     BiddingHistory,
     CheckoutNow,
     CheckoutCart,
-    CheckoutComplete
+    CheckoutComplete,
+    EditAccount,
+    Address,
+    EditAddress,
+    AddAddress
 } from '../screens';
 import { AuthProvider } from '../context/AuthContext';
 import { uuidv4 } from '../utilities/UUIDGenerate';
@@ -49,6 +53,10 @@ function App(props) {
                 <Stack.Screen name={"CheckoutNow"} component={CheckoutNow} />
                 <Stack.Screen name={"CheckoutCart"} component={CheckoutCart} />
                 <Stack.Screen name={"CheckoutComplete"} component={CheckoutComplete} />
+                <Stack.Screen name={"Address"} component={Address} />
+                <Stack.Screen name={"AddAddress"} component={AddAddress} />
+                <Stack.Screen name={"EditAddress"} component={EditAddress} />
+                <Stack.Screen name={"EditAccount"} component={EditAccount} />
             </Stack.Navigator>
         </NavigationContainer>
     </AuthProvider>

@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   inputBox: {
+    color: colors.black,
     fontFamily: fonts.OpenSansMedium,
     height: 50,
     borderColor: colors.black,
