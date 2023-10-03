@@ -70,6 +70,21 @@ function CheckoutNow(props) {
         },
     ]);
     const [paymentModal, setPaymentModal] = useState(false);
+    const [shippingAddress, setShippingAddress] = useState([
+        {
+            id: 1,
+            name: 'Lê Minh Đức',
+            phone: '0931856541',
+            address: '2, đường D4, khu phố 6, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
+        },
+        {
+            id: 2,
+            name: 'Lê Đức Hiền',
+            phone: '0918031377',
+            address: '16 đường D3, kdc Kiến Á, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
+        },
+    ]);
+    const [currentShippingAddress, setCurrentShippingAddress] = useState(shippingAddress.at(0));
     const [addressModal, setAddressModal] = useState(false);
     // validating
     const validationPaymentMethod = () => selectedPaymentMethod.id !== '';
@@ -113,11 +128,14 @@ function CheckoutNow(props) {
                         flex: 1,
                         gap: 10
                     }}>
-                        <Text style={{
-                            color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
-                            fontSize: fontSizes.h2
-                        }}>{product.name}</Text>
+                        <Text
+                            numberOfLines={2}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: 'black',
+                                fontFamily: fonts.OpenSansMedium,
+                                fontSize: fontSizes.h3
+                            }}>{product.name}</Text>
                         <Text style={{
                             color: 'black',
                             fontFamily: fonts.OpenSansBold,
@@ -128,31 +146,32 @@ function CheckoutNow(props) {
                             fontFamily: fonts.OpenSansMedium,
                             fontSize: fontSizes.h4
                         }}>Số lượng: 1</Text>
-
-                        <View>
-                            <Text style={{
-                                color: 'black',
-                                fontFamily: fonts.OpenSansMedium,
-                                fontSize: fontSizes.h4
-                            }}>Vận chuyển</Text>
-                            <Text style={{
-                                color: colors.darkGreyText,
-                                fontFamily: fonts.OpenSansMedium,
-                                fontSize: fontSizes.h5
-                            }}>Giao dự kiến: 6/10 - 8/10</Text>
-                            <Text style={{
-                                color: colors.darkGreyText,
-                                fontFamily: fonts.OpenSansMedium,
-                                fontSize: fontSizes.h5
-                            }}>Thông qua Giao hàng nhanh</Text>
-                            <Text style={{
-                                color: colors.darkGreyText,
-                                fontFamily: fonts.OpenSansMedium,
-                                fontSize: fontSizes.h4,
-                                marginTop: 5
-                            }}>80,000 VNĐ</Text>
-                        </View>
                     </View>
+                </View>
+                <View style={{
+                    marginTop: 10,
+                    gap: 5
+                }}>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansBold,
+                        fontSize: fontSizes.h4
+                    }}>Vận chuyển</Text>
+                    <Text style={{
+                        color: colors.darkGreyText,
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h4
+                    }}>Giao dự kiến: 6/10 - 8/10</Text>
+                    <Text style={{
+                        color: colors.darkGreyText,
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h4
+                    }}>Thông qua Giao hàng nhanh</Text>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h4
+                    }}>Phí vận chuyển: 80,000 VNĐ </Text>
                 </View>
             </View>
             <View style={styles.separator}></View>
@@ -170,7 +189,7 @@ function CheckoutNow(props) {
                     alignItems: 'center',
                     marginEnd: 15
                 }}
-                    onPress={() => { }}>
+                    onPress={() => setAddressModal(!addressModal)}>
                     <View style={{
                         flexDirection: 'row'
                     }}>
@@ -186,19 +205,19 @@ function CheckoutNow(props) {
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >Lê Minh Đức</Text>
+                            >{currentShippingAddress.name}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >2, đường D4, khu phố 6, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh</Text>
+                            >{currentShippingAddress.address}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >0931856541</Text>
+                            >{currentShippingAddress.phone}</Text>
                         </View>
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
@@ -303,7 +322,11 @@ function CheckoutNow(props) {
             marginVertical: 5,
             marginHorizontal: 15
         }}
-        disabled={!validationPaymentMethod()}>
+            disabled={!validationPaymentMethod()}
+            onPress={() => {
+                navigation.pop();
+                navigate('CheckoutComplete');
+            }}>
             <Text style={{
                 fontSize: fontSizes.h3,
                 fontFamily: fonts.OpenSansBold,
@@ -333,7 +356,7 @@ function CheckoutNow(props) {
                         }}>
                         <IconFeather name='x' size={30} color={'black'} />
                     </TouchableOpacity>
-                    <Text style={styles.titleText}>Phương thức thanh toán</Text>
+                    <Text style={styles.titleText}>Địa chỉ</Text>
                 </View>
 
                 {/* All address information */}
@@ -342,7 +365,45 @@ function CheckoutNow(props) {
                     marginHorizontal: 20,
                     marginBottom: 30
                 }}>
-                    
+                    {/* Address options */}
+                    <View>
+                        {shippingAddress.map(item =>
+                            <View key={item.id} style={{
+                                flexDirection: 'row',
+                                alignItems: 'center'
+                            }}>
+                                <TouchableOpacity style={[styles.sortModalOptionContainer, { flex: 1 }]}
+                                    onPress={() => {
+                                        setCurrentShippingAddress(item);
+                                        setAddressModal(!addressModal);
+                                    }}>
+                                    <View style={[{
+                                        borderColor: item === currentShippingAddress ? colors.primary : 'black',
+                                    }, styles.radioButtonOuter]}>
+                                        <View style={[{
+                                            backgroundColor: item === currentShippingAddress ? colors.primary : 'white',
+                                        }, styles.radioButtonInner]}></View>
+                                    </View>
+                                    <View style={{ flexShrink: 1 }}>
+                                        <Text style={styles.radioTextSecondary}>{item.name}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.phone}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.address}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <IconFeather name='more-vertical' size={25} color={'black'} />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+                    <TouchableOpacity>
+                        <Text style={{
+                            color: colors.primary,
+                            fontSize: fontSizes.h4,
+                            fontFamily: fonts.OpenSansMedium,
+                            alignSelf: 'flex-end'
+                        }}>Thêm địa chỉ mới</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>
@@ -471,6 +532,11 @@ const styles = StyleSheet.create({
     radioText: {
         color: 'black',
         fontSize: fontSizes.h3,
+        fontFamily: fonts.OpenSansMedium
+    },
+    radioTextSecondary: {
+        color: colors.darkGreyText,
+        fontSize: fontSizes.h4,
         fontFamily: fonts.OpenSansMedium
     }
 });

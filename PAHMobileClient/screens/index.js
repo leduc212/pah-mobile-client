@@ -20,6 +20,7 @@ import AuctionBidding from "./AuctionDetail/AuctionBidding";
 import BiddingHistory from "./AuctionDetail/BiddingHistory";
 import CheckoutNow from "./Checkout/CheckoutNow";
 import CheckoutCart from "./Checkout/CheckoutCart";
+import CheckoutComplete from "./Checkout/CheckoutComplete";
 
 export {
     Account,
@@ -45,4 +46,5 @@ export {
     AuctionListing,
     Address,
     AddAddress,
+    CheckoutComplete
 }

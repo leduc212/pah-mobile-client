@@ -5,4 +5,5 @@ export default {
     logoImage: require('../assets/logo/pah-logo.png'),
     cartImage: require('../assets/images/cart.png'),
     searchImage: require('../assets/images/search.png'),
+    orderSuccessImage: require('../assets/images/order-success.png'),
 }
