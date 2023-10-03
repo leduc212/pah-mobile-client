@@ -1,4 +1,4 @@
-import Account from "./Account";
+import Account from "./Account/Account";
 import Cart from "./Cart";
 import Home from "./Home";
 import Listing from "./Listing";
@@ -10,6 +10,9 @@ import Seller from "./Seller";
 import ListingDescription from "./ListingDetail/ListingDescription";
 import ListingFeedback from "./ListingDetail/ListingFeedback";
 import Profile from "./Profile";
+import Address from "./Address/Address";
+import AddAddress from "./Address/AddAddress";
+import EditAccount from "./Account/EditAccount";
 import AuctionListing from "./AuctionListing";
 
 export {
@@ -25,5 +28,8 @@ export {
     ListingDescription,
     ListingFeedback,
     Profile,
-    AuctionListing
+    EditAccount,
+    AuctionListing,
+    Address,
+    AddAddress,
 }

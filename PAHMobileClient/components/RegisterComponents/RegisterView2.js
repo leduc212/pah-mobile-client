@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../../constants';
-import { isValidPassword } from '../../utilities/Validation';
+import { isValidPassword } from '../../utilities/validation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 function RegisterView2(props) {

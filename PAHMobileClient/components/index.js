@@ -8,6 +8,7 @@ import RegisterView2 from "./RegisterComponents/RegisterView2";
 import ProductListingCard from "./ProductListingComponents/ProductListingCard";
 import ListingDetailInfoText from "./ListingDetailComponents/ListingDetailInfoText";
 import ListingDetailFeedback from "./ListingDetailComponents/ListingDetailFeedBack";
+import EditAddress from "./AddressComponent/EditAddress";
 
 export {
     HomeItemCard,
@@ -19,5 +20,6 @@ export {
     RegisterView1,
     RegisterView2,
     ListingDetailInfoText,
-    ListingDetailFeedback
+    ListingDetailFeedback,
+    EditAddress
 }

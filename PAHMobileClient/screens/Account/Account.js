@@ -7,13 +7,13 @@ import {
     StyleSheet,
     ScrollView,
 } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-import { colors, fontSizes, fonts } from '../constants';
+import { AuthContext } from '../../context/AuthContext';
+import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     UnauthorizedAccountScreen,
     AccountMenuItem
-} from '../components';
+} from '../../components';
 
 function Account(props) {
     // Auth Context
@@ -111,12 +111,12 @@ function Account(props) {
                 {/* User's profile navigation */}
                 <AccountMenuItem iconName='user' text='Thông tin cá nhân'
                     onPress={() => {
-                        navigate('Home')
+                        navigate('EditAccount')
                     }} />
                 {/* User's address navigation */}
                 <AccountMenuItem iconName='map-pin' text='Địa chỉ'
                     onPress={() => {
-                        navigate('Home')
+                        navigate('Address')
                     }} />
                 {/* User's orders navigation */}
                 <AccountMenuItem iconName='box' text='Đơn hàng'

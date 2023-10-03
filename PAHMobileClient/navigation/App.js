@@ -11,7 +11,11 @@ import {
     Search,
     ListingDescription,
     ListingFeedback,
-    Profile
+    Profile,
+    EditAccount,
+    Address,
+    EditAddress,
+    AddAddress
 } from '../screens';
 import { AuthProvider } from '../context/AuthContext';
 import { uuidv4 } from '../utilities/UUIDGenerate';
@@ -35,6 +39,9 @@ function App(props) {
                 <Stack.Screen name={"ListingDescription"} component={ListingDescription} />
                 <Stack.Screen name={"ListingFeedback"} component={ListingFeedback} />
                 <Stack.Screen name={"Profile"} component={Profile} />
+                <Stack.Screen name={"Address"} component={Address} />
+                <Stack.Screen name={"AddAddress"} component={AddAddress} />
+                <Stack.Screen name={"EditAccount"} component={EditAccount} />
             </Stack.Navigator>
         </NavigationContainer>
     </AuthProvider>
