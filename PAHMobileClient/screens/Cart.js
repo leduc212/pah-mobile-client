@@ -275,7 +275,9 @@ function Cart(props) {
                 backgroundColor: colors.primary,
                 paddingVertical: 10,
                 margin: 20
-            }}>
+            }}
+                onPress={() => navigate('CheckoutCart')}
+            >
                 <Text style={{
                     fontSize: fontSizes.h3,
                     fontFamily: fonts.OpenSansBold,
