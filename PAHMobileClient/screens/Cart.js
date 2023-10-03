@@ -273,7 +273,7 @@ function Cart(props) {
                 borderColor: colors.primary,
                 borderRadius: 35,
                 backgroundColor: colors.primary,
-                paddingVertical: 15,
+                paddingVertical: 10,
                 margin: 20
             }}>
                 <Text style={{

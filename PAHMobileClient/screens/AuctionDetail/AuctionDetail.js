@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
@@ -16,10 +16,11 @@ import {
     ListingDetailInfoText,
     ListingDetailFeedback
 } from '../../components';
+import { useIsFocused } from "@react-navigation/native";
 
-function ListingDetail(props) {
-    // Get product_id from routes
-    const { product_id } = props.route.params;
+function AuctionDetail(props) {
+    // Get auction_id from routes
+    const { auction_id } = props.route.params;
 
     const [product, setProduct] = useState({
         name: 'Đá thạch anh hồng phong thuỷ',
@@ -43,27 +44,7 @@ function ListingDetail(props) {
             seller_name: 'avd seller',
             seller_address: 'Thành phố Hồ Chí Minh',
             seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-        },
-        feedbacks: [
-            {
-                id: 12,
-                star: 4,
-                user_name: 'Lê Đức Hiền',
-                content: 'Sản phẩm tốt, đẹp'
-            },
-            {
-                id: 15,
-                star: 3,
-                user_name: 'Trần Ngọc Châu',
-                content: 'Nhìn có vẻ tạm'
-            },
-            {
-                id: 26,
-                star: 5,
-                user_name: 'Nguyễn Huỳnh Tuấn',
-                content: 'Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời'
-            }
-        ]
+        }
     });
 
     const [shippingPrice, setShippingPrice] = useState('120,000');
@@ -81,6 +62,13 @@ function ListingDetail(props) {
     const [sellerModalVisible, setSellerModalVisible] = useState(false);
     const [shippingModalVisible, setShippingModalVisible] = useState(false);
 
+    // onMOunt
+    // const isFocused = useIsFocused();
+    // const [uuid, setUuid] = useState('');
+    // useEffect(() => {
+    //     setUuid(uuidv4);
+    // }, [isFocused])
+
     return <View style={styles.container}>
         {/* Fixed screen title: Product detail */}
         <View style={styles.titleContainer}>
@@ -91,7 +79,7 @@ function ListingDetail(props) {
                     }}>
                     <IconFeather name='arrow-left' size={30} color={'black'} />
                 </TouchableOpacity>
-                <Text style={styles.titleText}>Sản phẩm</Text>
+                <Text style={styles.titleText}>Đấu giá</Text>
             </View>
             <View style={styles.titleButtonContainer}>
                 <TouchableOpacity style={styles.iconButton}
@@ -141,6 +129,12 @@ function ListingDetail(props) {
             <View style={styles.priceContainer}>
                 <Text style={styles.pricePrimary}>{product.price} VNĐ</Text>
                 <Text style={styles.priceSecondary}>+ {shippingPrice} VNĐ vận chuyển</Text>
+                <Text style={{
+                    fontFamily: fonts.OpenSansMedium,
+                    color: 'black',
+                    fontSize: fontSizes.h3,
+                    marginTop: 5
+                }}>Còn 2 ngày 13 giờ</Text>
             </View>
 
             {/* Buy and add to cart buttons */}
@@ -150,11 +144,8 @@ function ListingDetail(props) {
                 marginVertical: 10,
             }}>
                 <TouchableOpacity style={styles.primaryButton}
-                onPress={() => navigate('CheckoutNow', {product_id: product.id})}>
-                    <Text style={styles.primaryButtonText}>Mua ngay</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.secondaryButton}>
-                    <Text style={styles.secondaryButtonText}>Thêm vào giỏ hàng</Text>
+                    onPress={() => navigate('AuctionBidding', { auction_id: product.id })}>
+                    <Text style={styles.primaryButtonText}>Đặt giá</Text>
                 </TouchableOpacity>
             </View>
 
@@ -189,7 +180,7 @@ function ListingDetail(props) {
                     flexDirection: 'row',
                     alignItems: 'center'
                 }}
-                    onPress={() => navigate('ListingDescription', { product_id: product.id })}>
+                    onPress={() => navigate('AuctionDescription', { auction_id: product.id })}>
                     <View style={{
                         flex: 1,
                         gap: 10
@@ -201,6 +192,29 @@ function ListingDetail(props) {
                         >{product.description}</Text>
                         <Text style={styles.descriptionLink}
                         >Xem đầy đủ thông tin thêm</Text>
+                    </View>
+                    <IconFeather name='chevron-right' size={30} color='black' />
+                </TouchableOpacity>
+            </View>
+
+            {/* Bidding section */}
+            <View style={{
+                paddingHorizontal: 15,
+                gap: 10,
+                marginVertical: 10
+            }}>
+                <Text style={styles.sectionTitle}>Thông tin đấu giá</Text>
+                <TouchableOpacity style={{
+                    marginTop: 5,
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}
+                    onPress={() => navigate('BiddingHistory', { auction_id: product.id })}>
+                    <View style={{ gap: 10, flex: 1 }}>
+                        <ListingDetailInfoText label='Thời gian còn lại' text='2 ngày 13 giờ'
+                            secondText='Chủ nhật, 8 tháng 10 2023, 09:56 PM' />
+                        <ListingDetailInfoText label='Số lần đặt' text='3' />
+                        <ListingDetailInfoText label='Người tham gia' text='2' />
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
@@ -225,7 +239,8 @@ function ListingDetail(props) {
                             thirdText='Thông qua Giao hàng nhanh' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
-                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
+                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
+                            secondText='Người đặt giá cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
@@ -261,31 +276,6 @@ function ListingDetail(props) {
                             <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
                         </View>
                     </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Product feedback section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginTop: 10,
-                marginBottom: 20
-            }}>
-                <Text style={styles.sectionTitle}>Phản hồi về sản phẩm</Text>
-                <View style={{ marginTop: 5 }}>
-                    {(Array.isArray(product.feedbacks) && product.feedbacks.length) ? <View>
-                        {product.feedbacks.map((feedback, index) =>
-                            <ListingDetailFeedback feedback={feedback}
-                                key={feedback.id}
-                                index={index}
-                                length={product.feedbacks.length - 1} />)}
-                        <TouchableOpacity style={styles.secondaryButton}
-                            onPress={() => navigate('ListingFeedback', { product_id: product.id })}>
-                            <Text style={styles.secondaryButtonText}>Xem tất cả phản hồi</Text>
-                        </TouchableOpacity>
-                    </View> : <View>
-                        <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
-                    </View>}
                 </View>
             </View>
         </ScrollView>
@@ -378,7 +368,8 @@ function ListingDetail(props) {
                         <ListingDetailInfoText label='Giao đến' text='Địa chỉ mặc định hoặc không có' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
-                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
+                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
+                            secondText='Người đặt giá cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                     </View>
                 </View>
             </View>
@@ -442,7 +433,7 @@ const styles = StyleSheet.create({
         borderWidth: 1.2,
         borderColor: colors.primary,
         borderRadius: 35,
-        paddingVertical: 10,
+        paddingVertical: 15,
     },
     secondaryButtonText: {
         fontSize: fontSizes.h3,
@@ -549,4 +540,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ListingDetail;
+export default AuctionDetail;
