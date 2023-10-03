@@ -8,6 +8,7 @@ import RegisterView2 from "./RegisterComponents/RegisterView2";
 import ProductListingCard from "./ProductListingComponents/ProductListingCard";
 import ListingDetailInfoText from "./ListingDetailComponents/ListingDetailInfoText";
 import ListingDetailFeedback from "./ListingDetailComponents/ListingDetailFeedBack";
+import BidHistoryItem from "./ListingDetailComponents/BidHistoryItem";
 import EditAddress from "./AddressComponent/EditAddress";
 
 export {
@@ -21,5 +22,6 @@ export {
     RegisterView2,
     ListingDetailInfoText,
     ListingDetailFeedback,
+    BidHistoryItem
     EditAddress
 }

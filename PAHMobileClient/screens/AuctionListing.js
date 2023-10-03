@@ -182,7 +182,7 @@ function AuctionListing(props) {
                 }}>
                     {products.map((product) =>
                         <ProductListingCard key={product.id} product={product} onPress={()=>{
-                            navigate('ListingDetail', {product_id: product.id})
+                            navigate('AuctionDetail', {product_id: product.id})
                         }}/>
                     )}
                 </View>

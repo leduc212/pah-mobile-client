@@ -12,6 +12,12 @@ import {
     ListingDescription,
     ListingFeedback,
     Profile,
+    AuctionDetail,
+    AuctionDescription,
+    AuctionBidding,
+    BiddingHistory,
+    CheckoutNow,
+    CheckoutCart
     EditAccount,
     Address,
     EditAddress,
@@ -39,6 +45,12 @@ function App(props) {
                 <Stack.Screen name={"ListingDescription"} component={ListingDescription} />
                 <Stack.Screen name={"ListingFeedback"} component={ListingFeedback} />
                 <Stack.Screen name={"Profile"} component={Profile} />
+                <Stack.Screen name={"AuctionDetail"} component={AuctionDetail} />
+                <Stack.Screen name={"AuctionDescription"} component={AuctionDescription} />
+                <Stack.Screen name={"AuctionBidding"} component={AuctionBidding} />
+                <Stack.Screen name={"BiddingHistory"} component={BiddingHistory} />
+                <Stack.Screen name={"CheckoutNow"} component={CheckoutNow} />
+                <Stack.Screen name={"CheckoutCart"} component={CheckoutCart} />
                 <Stack.Screen name={"Address"} component={Address} />
                 <Stack.Screen name={"AddAddress"} component={AddAddress} />
                 <Stack.Screen name={"EditAccount"} component={EditAccount} />
