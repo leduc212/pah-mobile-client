@@ -20,7 +20,6 @@ import {
     CheckoutCart
     EditAccount,
     Address,
-    EditAddress,
     AddAddress
     CheckoutComplete
 } from '../screens';

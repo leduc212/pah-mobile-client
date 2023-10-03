@@ -43,7 +43,6 @@ export {
     CheckoutNow,
     CheckoutCart
     EditAccount,
-    AuctionListing,
     Address,
     AddAddress,
     CheckoutComplete
