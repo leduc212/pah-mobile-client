@@ -44,7 +44,6 @@ export {
     CheckoutCart,
     CheckoutComplete,
     EditAccount,
-    AuctionListing,
     Address,
     AddAddress,
 }

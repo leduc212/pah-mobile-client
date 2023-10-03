@@ -7,7 +7,7 @@ import {
   StyleSheet
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../../constants';
-import { isValidEmail } from '../../utilities/validation';
+import { isValidEmail } from '../../utilities/Validation';
 
 function RegisterView1(props) {
 
