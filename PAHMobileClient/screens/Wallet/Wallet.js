@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
@@ -6,12 +6,19 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
-    TextInput
+    TextInput,
+    NativeModules,
+    NativeEventEmitter
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
+import CryptoJS from 'crypto-js';
+
+const { PayZaloBridge } = NativeModules;
+
+const payZaloBridgeEmitter = new NativeEventEmitter(PayZaloBridge);
 
 function Wallet(props) {
     // Auth Context
@@ -39,13 +46,94 @@ function Wallet(props) {
             text: 'ZaloPay'
         }
     ]);
+
+    // modal data
+    const [topupModal, setTopupModal] = useState(false);
+
+    // Payment
     const [topupAmount, setTopupAmount] = useState('20000');
+    const [token, setToken] = useState('')
+    const [returncode, setReturnCode] = React.useState('')
+
+
+    function getCurrentDateYYMMDD() {
+        const todayDate = new Date().toISOString().slice(2, 10);
+        return todayDate.split('-').join('');
+    }
+
+    async function payOrder() {
+        let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime()
+
+        let appid = 2553
+        let amount = parseInt(topupAmount)
+        let appuser = "ZaloPayDemo"
+        let apptime = (new Date).getTime()
+        let embeddata = "{}"
+        let item = "[]"
+        let description = "Nạp tiền vào ví PAH"
+        let hmacInput = appid + "|" + apptransid + "|" + appuser + "|" + amount + "|" + apptime + "|" + embeddata + "|" + item
+        let mac = CryptoJS.HmacSHA256(hmacInput, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+        console.log('====================================');
+        console.log("hmacInput: " + hmacInput);
+        console.log("mac: " + mac)
+        console.log('====================================');
+        var order = {
+            'app_id': appid,
+            'app_user': appuser,
+            'app_time': apptime,
+            'amount': amount,
+            'app_trans_id': apptransid,
+            'embed_data': embeddata,
+            'item': item,
+            'description': description,
+            'mac': mac
+        }
+
+        console.log(order)
+
+        let formBody = []
+        for (let i in order) {
+            var encodedKey = encodeURIComponent(i);
+            var encodedValue = encodeURIComponent(order[i]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+
+        await fetch('https://sb-openapi.zalopay.vn/v2/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
+        })
+            .then(response => response.json())
+            .then(resJson => {
+                setToken(resJson.zp_trans_token);
+                setReturnCode(resJson.return_code);
+                var payZP = NativeModules.PayZaloBridge;
+                payZP.payOrder(resJson.zp_trans_token);
+            })
+            .catch((error) => {
+                console.log("error ", error)
+            });
+    }
+
     // validating
     const validationTopupAmount = () => parseInt(topupAmount) >= 20000;
     const validationAll = () => (validationTopupAmount() && selectedPaymentMethod.id !== '');
 
-    // modal data
-    const [topupModal, setTopupModal] = useState(false);
+    useEffect(() => {
+        const subscription = payZaloBridgeEmitter.addListener(
+            'EventPayZalo',
+            (data) => {
+                if (data.returnCode == 1) {
+                    alert('Pay success!');
+                } else {
+                    alert('Pay errror! ' + data.returnCode);
+                }
+            }
+        );
+    }, [])
 
     return <View style={styles.container}>
         {/* Fixed screen title: Checkout */}
@@ -260,8 +348,7 @@ function Wallet(props) {
                                 paddingVertical: 10
                             }}
                             onPress={() => {
-                                alert('Nap tien thanh cong');
-                                setTopupModal(!topupModal);
+                                payOrder()
                             }}>
                             <Text style={{
                                 fontSize: fontSizes.h3,
