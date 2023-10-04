@@ -20,6 +20,8 @@ import {
     CheckoutCart
     EditAccount,
     Address,
+    AddAddress,
+    Wallet
     AddAddress
     CheckoutComplete
 } from '../screens';
@@ -54,6 +56,7 @@ function App(props) {
                 <Stack.Screen name={"Address"} component={Address} />
                 <Stack.Screen name={"AddAddress"} component={AddAddress} />
                 <Stack.Screen name={"EditAccount"} component={EditAccount} />
+                <Stack.Screen name={"Wallet"} component={Wallet} />
                 <Stack.Screen name={"CheckoutComplete"} component={CheckoutComplete} />
             </Stack.Navigator>
         </NavigationContainer>

@@ -34,11 +34,11 @@ function Account(props) {
     // Test logout function
     function logout() {
         authContext.setAuthState({
-          accessToken: null,
-          refreshToken: null,
-          authenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            authenticated: false,
         });
-      }
+    }
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
         <View style={styles.titleContainer}>
@@ -66,7 +66,8 @@ function Account(props) {
                 paddingLeft: 15,
                 paddingRight: 10
             }}>
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => navigate('Profile', { user_id: 1 })}>
                 <Image source={{ uri: user.avatar_url }}
                     style={{
                         resizeMode: 'cover',
@@ -123,10 +124,10 @@ function Account(props) {
                     onPress={() => {
                         navigate('Home')
                     }} />
-                {/* User's waller information */}
+                {/* User's wallet information */}
                 <AccountMenuItem iconName='credit-card' text='Ví PAH'
                     onPress={() => {
-                        navigate('Home')
+                        navigate('Wallet')
                     }} />
                 {/* Bids and offers history */}
                 <AccountMenuItem iconName='book-open' text='Lịch sử đấu giá'
