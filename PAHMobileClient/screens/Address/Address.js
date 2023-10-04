@@ -76,10 +76,14 @@ function Address(props) {
                 }}
                 key={address.street}
                 style={{
-                  justifyContent: 'center',
+                  flexDirection:'row',
+                  alignItems:'center',
                   borderColor: colors.darkGrey,
+                  paddingVertical:10,
+                  paddingHorizontal:5,
                   borderBottomWidth: 1,
                 }}>
+                <View>
                 {address.isDefault == true ? (
                   <Text
                     style={{
@@ -87,7 +91,7 @@ function Address(props) {
                       fontFamily: fonts.OpenSansBold,
                       fontSize: fontSizes.h5,
                       borderWidth: 1,
-                      paddingStart: 10,
+                      paddingHorizontal: 10,
                     }}>
                     Địa chỉ giao hàng mặc định
                   </Text>
@@ -102,7 +106,18 @@ function Address(props) {
                   style={{
                     color: colors.black,
                   }}>
-                  {address.street} {address.ward} {address.district}{' '}
+                  {address.street}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.black,
+                  }}>
+                  {address.ward}, {address.district}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.black,
+                  }}>
                   {address.province}
                 </Text>
                 <Text
@@ -111,13 +126,16 @@ function Address(props) {
                   }}>
                   {address.phone}
                 </Text>
+                </View>
+                <View style={{
+                  marginLeft:'auto'
+                }}>
                 <IconFeather
-                  position="absolute"
-                  right={0}
                   name="chevron-right"
-                  size={25}
+                  size={20}
                   color={'black'}
                 />
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>

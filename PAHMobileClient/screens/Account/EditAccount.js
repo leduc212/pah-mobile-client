@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -8,14 +8,33 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   TextInput,
+  Button,
 } from 'react-native';
 import {colors, fonts, fontSizes} from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import {
+  DateTimePicker,
+  DateTimePickerAndroid,
+} from '@react-native-community/datetimepicker';
 
 function EditAccount(props) {
+  //Date
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+  const [mode, setMode] = useState('date');
+
+  const onChange = (e, selectedDate) => {
+    setDate(selectedDate);
+    setShowPicker(false);
+  };
+
+  const showMode = modeToShow => {
+    setShowPicker(true);
+    setMode(modeToShow);
+  };
   //Enable save
-  const[isEnabledSave,setEnabledSave]=useState(false)
+  const [isEnabledSave, setEnabledSave] = useState(false);
   // Navigation
   const {navigation, route} = props;
   // Function of navigate to/back
@@ -109,7 +128,7 @@ function EditAccount(props) {
           </TouchableOpacity>
         </View>
       </View>
-      {/* Description */}
+      {/* Info title*/}
       <View
         style={{
           paddingHorizontal: 15,
@@ -122,47 +141,42 @@ function EditAccount(props) {
               fontSize: fontSizes.h3,
               paddingVertical: 15,
             }}>
-            Mô tả về bạn
-          </Text>
-          <Text
-            style={{
-              color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
-              fontSize: fontSizes.h6,
-              paddingBottom: 15,
-            }}>
-            Dùng khoảng trống dưới đây để chia sẻ cho mọi người trên nền tảng về
-            bản thân bạn và đam mê của bạn. Cho mọi người thêm lý do để theo dõi
-            bạn!
+            Thông tin cá nhân cùa bạn
           </Text>
         </View>
-        <TextInput
-          value={description}
-          onChangeText={text => {
-            setDescription(text);
-            setEnabledSave(true)
-          }}
-          multiline={true}
-          maxLength={500}
-          style={{
-            color: colors.black,
-            borderColor: colors.darkGrey,
-            borderWidth: 1,
-            borderRadius: 10,
-            height: 100,
-          }}
-        />
       </View>
-      <View
+      {/* Info detail */}
+      <ScrollView
         style={{
           paddingHorizontal: 15,
         }}>
-        <TouchableOpacity 
-        disabled={!isEnabledSave}
-        onPress={()=>{
-          setEnabledSave(false)
-        }}
-        style={[styles.saveButton,{backgroundColor: isEnabledSave==true ? colors.primary : colors.darkGreyText,}]}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputTitle}>Tên</Text>
+          <TextInput style={styles.inputBox} placeholder="Nhập tên của bạn" />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputTitle}>Điện thoại</Text>
+          <TextInput style={styles.inputBox} placeholder="Nhập số điện thoại" />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputTitle}>Ngày sinh</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputTitle}>Giới tính</Text>
+          <TextInput style={styles.inputBox} placeholder="Nhập số điện thoại" />
+        </View>
+        <TouchableOpacity
+          disabled={!isEnabledSave}
+          onPress={() => {
+            setEnabledSave(false);
+          }}
+          style={[
+            styles.saveButton,
+            {
+              backgroundColor:
+                isEnabledSave == true ? colors.primary : colors.darkGreyText,
+            },
+          ]}>
           <Text
             style={[
               {
@@ -173,11 +187,11 @@ function EditAccount(props) {
             Lưu
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-        onPress={()=>{
-          goBack();
-        }}
-        style={styles.cancelButton}>
+        <TouchableOpacity
+          onPress={() => {
+            goBack();
+          }}
+          style={styles.cancelButton}>
           <Text
             style={[
               {
@@ -188,7 +202,7 @@ function EditAccount(props) {
             Hủy
           </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -274,6 +288,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15,
+  },
+  inputTitle: {
+    fontSize: fontSizes.h3,
+    color: colors.black,
+    fontFamily: fonts.OpenSansBold,
   },
 });
 export default EditAccount;
