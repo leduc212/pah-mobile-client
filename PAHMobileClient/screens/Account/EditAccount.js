@@ -134,6 +134,14 @@ function EditAccount(props) {
             <Text style={styles.inputTitle}>Tên</Text>
             <TextInput
               value={user.name}
+              onChange={(text)=>{
+                setUser(newUser=>{
+                  return{
+                    ...newUser,
+                    name: text
+                  }
+                })
+              }}
               style={styles.inputBox}
               placeholder="Nhập tên của bạn"
             />
@@ -142,6 +150,14 @@ function EditAccount(props) {
             <Text style={styles.inputTitle}>Điện thoại</Text>
             <TextInput
               value={user.phone}
+              onChange={(text)=>{
+                setUser(newUser=>{
+                  return{
+                    ...newUser,
+                    phone: text
+                  }
+                })
+              }}
               style={styles.inputBox}
               placeholder="Nhập số điện thoại"
               keyboardType="numeric"

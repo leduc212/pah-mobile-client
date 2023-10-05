@@ -42,10 +42,10 @@ export {
     AuctionBidding,
     BiddingHistory,
     CheckoutNow,
-    CheckoutCart
+    CheckoutCart,
     EditAccount,
     Address,
     AddAddress,
-    CheckoutComplete
+    CheckoutComplete,
     Wallet
 }

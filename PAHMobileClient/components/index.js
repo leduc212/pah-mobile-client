@@ -22,6 +22,6 @@ export {
     RegisterView2,
     ListingDetailInfoText,
     ListingDetailFeedback,
-    BidHistoryItem
+    BidHistoryItem,
     EditAddress
 }

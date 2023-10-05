@@ -17,12 +17,11 @@ import {
     AuctionBidding,
     BiddingHistory,
     CheckoutNow,
-    CheckoutCart
+    CheckoutCart,
     EditAccount,
     Address,
     AddAddress,
-    Wallet
-    AddAddress
+    Wallet,
     CheckoutComplete
 } from '../screens';
 import { AuthProvider } from '../context/AuthContext';
