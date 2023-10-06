@@ -1,11 +1,13 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
     Image,
     TouchableOpacity,
     StyleSheet,
-    ScrollView
+    ScrollView,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { colors, fontSizes, fonts } from '../../constants';
@@ -16,58 +18,11 @@ import {
     ListingDetailInfoText,
     ListingDetailFeedback
 } from '../../components';
+import { Product as ProductRepository } from '../../repositories';
+import { conditionText } from '../../utilities/Condition';
 
 function ListingDetail(props) {
-    // Get product_id from routes
-    const { product_id } = props.route.params;
-
-    const [product, setProduct] = useState({
-        name: 'Đá thạch anh hồng phong thuỷ',
-        price: '1,220,000',
-        package_content: 'Đá cảnh + đế gỗ + túi giấy sang trọng + dầu dưỡng đá + giấy kiểm định chất lượng đá',
-        package_method: 'Hộp kèm đế',
-        condition: 'Tốt',
-        category: 'Đá Phong Thủy',
-        material: 'Đá quý',
-        origin: 'Việt Nam',
-        dimension: '14.8x12x6.3 cm',
-        weight: '1,5',
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-        images: [
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
-        ],
-        seller: {
-            seller_name: 'avd seller',
-            seller_address: 'Thành phố Hồ Chí Minh',
-            seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-        },
-        feedbacks: [
-            {
-                id: 12,
-                star: 4,
-                user_name: 'Lê Đức Hiền',
-                content: 'Sản phẩm tốt, đẹp'
-            },
-            {
-                id: 15,
-                star: 3,
-                user_name: 'Trần Ngọc Châu',
-                content: 'Nhìn có vẻ tạm'
-            },
-            {
-                id: 26,
-                star: 5,
-                user_name: 'Nguyễn Huỳnh Tuấn',
-                content: 'Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời'
-            }
-        ]
-    });
-
-    const [shippingPrice, setShippingPrice] = useState('120,000');
-
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
 
@@ -77,9 +32,60 @@ function ListingDetail(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Modal const
+    // Get product_id from routes
+    const { product_id } = props.route.params;
+
+    //// DATA
+    // Data for product detail
+    const [product, setProduct] = useState({
+        seller: {},
+        feedbacks: [],
+        imageUrls: []
+    });
+
+    // Calculate data for shipping price
+    const [shippingPrice, setShippingPrice] = useState('120,000');
+
+    // Modal data
     const [sellerModalVisible, setSellerModalVisible] = useState(false);
     const [shippingModalVisible, setShippingModalVisible] = useState(false);
+
+    // Data for loading and refreshing
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    //// FUNCTION
+    // Get product detail from current product id
+    function getProductDetail() {
+        setIsLoading(true);
+        
+        ProductRepository.getProductDetail(product_id)
+            .then(response => {
+                setProduct(response)
+                setIsLoading(false);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
+
+    useEffect(() => {
+        getProductDetail();
+
+        // If authenticated, get default address and shipping price
+    }, []);
+
+    // Price format function
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        getProductDetail();
+        setRefreshing(false);
+    };
 
     return <View style={styles.container}>
         {/* Fixed screen title: Product detail */}
@@ -115,9 +121,16 @@ function ListingDetail(props) {
             </View>
         </View>
 
-        <ScrollView>
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
+        }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
             {/* Images slider */}
-            <SliderBox images={product.images}
+            <SliderBox images={product.imageUrls}
                 sliderBoxHeight={480}
                 dotColor={colors.primary}
                 inactiveDotColor='#90A4AE' />
@@ -128,18 +141,18 @@ function ListingDetail(props) {
             {/* Top Seller section */}
             <TouchableOpacity style={styles.topSellerContainer}
                 onPress={() => setSellerModalVisible(!sellerModalVisible)}>
-                <Image source={{ uri: product.seller.seller_avatar }}
+                <Image source={{ uri: product.seller.profilePicture }}
                     style={styles.topSellerImage} />
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.topSellerName}>{product.seller.seller_name}</Text>
-                    <Text style={styles.topSellerInformation}>{product.seller.seller_address}</Text>
+                    <Text style={styles.topSellerName}>{product.seller.name}</Text>
+                    <Text style={styles.topSellerInformation}>{product.seller.province}</Text>
                 </View>
                 <IconFeather name='chevron-right' size={30} color='black' />
             </TouchableOpacity>
 
             {/* Pricing section */}
             <View style={styles.priceContainer}>
-                <Text style={styles.pricePrimary}>{product.price} VNĐ</Text>
+                <Text style={styles.pricePrimary}>{numberWithCommas(product.price)} VNĐ</Text>
                 <Text style={styles.priceSecondary}>+ {shippingPrice} VNĐ vận chuyển</Text>
             </View>
 
@@ -150,7 +163,7 @@ function ListingDetail(props) {
                 marginVertical: 10,
             }}>
                 <TouchableOpacity style={styles.primaryButton}
-                onPress={() => navigate('CheckoutNow', {product_id: product.id})}>
+                    onPress={() => navigate('CheckoutNow', { product_id: product.id })}>
                     <Text style={styles.primaryButtonText}>Mua ngay</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.secondaryButton}>
@@ -166,14 +179,14 @@ function ListingDetail(props) {
             }}>
                 <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
                 <View style={{ gap: 10, marginTop: 5 }}>
-                    <ListingDetailInfoText label='Bao gồm' text={product.package_content} />
-                    <ListingDetailInfoText label='Tình trạng' text={product.condition} />
-                    <ListingDetailInfoText label='Danh mục' text={product.category} />
-                    <ListingDetailInfoText label='Chất liệu' text={product.material} />
+                    <ListingDetailInfoText label='Bao gồm' text={product.packageContent} />
+                    <ListingDetailInfoText label='Tình trạng' text={conditionText(product.condition)} />
+                    <ListingDetailInfoText label='Danh mục' text={product.categoryName} />
+                    <ListingDetailInfoText label='Chất liệu' text={product.materialName} />
                     <ListingDetailInfoText label='Xuất xứ' text={product.origin} />
                     <ListingDetailInfoText label='Kích thước' text={product.dimension} />
-                    <ListingDetailInfoText label='Khối lượng' text={product.weight + ' kg'} />
-                    <ListingDetailInfoText label='Đóng gói' text={product.package_method} />
+                    <ListingDetailInfoText label='Khối lượng' text={product.weight + ' g'} />
+                    <ListingDetailInfoText label='Đóng gói' text={product.packageMethod} />
                 </View>
             </View>
 
@@ -189,7 +202,7 @@ function ListingDetail(props) {
                     flexDirection: 'row',
                     alignItems: 'center'
                 }}
-                    onPress={() => navigate('ListingDescription', { product_id: product.id })}>
+                    onPress={() => navigate('ListingDescription', { description: product.description })}>
                     <View style={{
                         flex: 1,
                         gap: 10
@@ -221,7 +234,7 @@ function ListingDetail(props) {
                     onPress={() => setShippingModalVisible(!shippingModalVisible)}>
                     <View style={{ gap: 10, flex: 1 }}>
                         <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023'
-                            secondText={'Từ ' + product.seller.seller_address}
+                            secondText={'Từ ' + `${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`}
                             thirdText='Thông qua Giao hàng nhanh' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
@@ -239,17 +252,17 @@ function ListingDetail(props) {
             }}>
                 <Text style={styles.sectionTitle}>Về người bán</Text>
                 <View style={{ gap: 10, marginTop: 5 }}>
-                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.seller_name })}>
+                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.id })}>
                         <View style={{
                             flexDirection: 'row',
                             gap: 15
                         }}>
-                            <Image source={{ uri: product.seller.seller_avatar }}
+                            <Image source={{ uri: product.seller.profilePicture }}
                                 style={styles.bottomSellerImage} />
                             <View style={{ gap: 2 }}>
-                                <Text style={styles.bottomSellerPrimary}>{product.seller.seller_name}</Text>
-                                <Text style={styles.bottomSellerSecondary}>{product.seller.seller_address}</Text>
-                                <Text style={styles.bottomSellerSecondary}>Đánh giá: 5</Text>
+                                <Text style={styles.bottomSellerPrimary}>{product.seller.name}</Text>
+                                <Text style={styles.bottomSellerSecondary}>{product.seller.province}</Text>
+                                <Text style={styles.bottomSellerSecondary}>Đánh giá: {product.seller.ratings}</Text>
                             </View>
                         </View>
                         <View style={{
@@ -288,7 +301,7 @@ function ListingDetail(props) {
                     </View>}
                 </View>
             </View>
-        </ScrollView>
+        </ScrollView>}
 
         {/* Seller modal */}
         <Modal
@@ -319,18 +332,18 @@ function ListingDetail(props) {
                     }}>
                         <TouchableOpacity onPress={() => {
                             setSellerModalVisible(!sellerModalVisible);
-                            navigate('Profile', { user_id: product.seller.seller_name })
+                            navigate('Profile', { user_id: product.seller.id })
                         }}>
                             <View style={{
                                 flexDirection: 'row',
                                 gap: 15
                             }}>
-                                <Image source={{ uri: product.seller.seller_avatar }}
+                                <Image source={{ uri: product.seller.profilePicture }}
                                     style={styles.bottomSellerImage} />
                                 <View style={{ gap: 2 }}>
-                                    <Text style={styles.bottomSellerPrimary}>{product.seller.seller_name}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>{product.seller.seller_address}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: 5</Text>
+                                    <Text style={styles.bottomSellerPrimary}>{product.seller.name}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>{product.seller.province}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {product.seller.ratings}</Text>
                                 </View>
                             </View>
                             <View style={{
@@ -374,7 +387,7 @@ function ListingDetail(props) {
                         marginBottom: 30
                     }}>
                         <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023' />
-                        <ListingDetailInfoText label='Giao từ' text={product.seller.seller_address} />
+                        <ListingDetailInfoText label='Giao từ' text={`${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`} />
                         <ListingDetailInfoText label='Giao đến' text='Địa chỉ mặc định hoặc không có' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />

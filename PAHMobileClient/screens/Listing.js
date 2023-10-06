@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
     Text,
     View,
@@ -6,8 +6,9 @@ import {
     StyleSheet,
     ScrollView,
     Image,
-    FlatList,
-    TextInput
+    TextInput,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
@@ -16,8 +17,14 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import {
     ProductListingCard
 } from '../components';
+import {
+    Category as CategoryRepository,
+    Material as MaterialRepository,
+    Product as ProductRepository
+} from '../repositories';
 
 function Listing(props) {
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
 
@@ -27,100 +34,227 @@ function Listing(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
+    //// DATA
+    // Data for screen title and search
     const [screenTitle, setScreenTitle] = useState('Tất cả sản phẩm');
     const [searchTextFilter, setSearchTextFilter] = useState('');
     const isDefault = screenTitle === 'Tất cả sản phẩm';
 
+    // Modal data
     const [filterModalVisible, setFilterModalVisible] = useState(false);
-    const [sortModalVisible, setSortModalVisible] = useState(false);
 
-    React.useEffect(() => {
+    // Loading and refreshing state
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Data for products and filters
+    const [products, setProducts] = useState([]);
+    const [sortOrders, setSortOrders] = useState([
+        {
+            id: 0,
+            name: 'Từ mới đến cũ'
+        },
+        {
+            id: 1,
+            name: 'Từ cũ đến mới'
+        },
+        {
+            id: 2,
+            name: 'Giá tăng dần'
+        },
+        {
+            id: 3,
+            name: 'Giá giảm dần'
+        }
+    ]);
+    const [currentSortOrder, setCurrentSortOrder] = useState(0);
+    const [selectedSortOrder, setSelectedSortOrder] = useState(0);
+    const [categories, setCategories] = useState([]);
+    const [currentCategory, setCurrentCategory] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [materials, setMaterials] = useState([]);
+    const [currentMaterial, setCurrentMaterial] = useState(0);
+    const [selectedMaterial, setSelectedMaterial] = useState(0);
+
+    // Data for filter count
+    const filterCount = () => {
+        let count = 0;
+        if (selectedCategory !== 0) count++;
+        if (selectedMaterial !== 0) count++;
+        return count;
+    }
+
+    //// FUNCTION AND USEEFFECT
+    // Set filter default state
+    function setFilterDefault() {
+        // Set default state
+        setSelectedCategory(0);
+        setSelectedSortOrder(0);
+        setSelectedMaterial(0);
+        setCurrentCategory(0);
+        setCurrentSortOrder(0);
+        setCurrentMaterial(0);
+    }
+
+    // Get search param on screen focus
+    useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             if (route.params) {
                 const { searchText } = route.params;
                 setSearchTextFilter(searchText);
                 setScreenTitle(searchText != '' ? searchText : 'Tất cả sản phẩm');
+                setFilterDefault();
+
+                // Get Products
+                setIsLoading(true);
+                ProductRepository.getProducts({
+                    nameSearch: searchText, materialId: 0,
+                    categoryId: 0, orderBy: 0
+                })
+                    .then(response => {
+                        setProducts(response);
+                        setIsLoading(false);
+                    }).catch(error => {
+                        setIsLoading(false);
+                    });
             }
         });
         return unsubscribe;
     }, [route]);
 
-    // Data for products
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            name: 'Đá thạch anh hồng phong thuỷ',
-            price: '1,220,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg'
-        },
-        {
-            id: 2,
-            name: 'Đá thạch anh xanh phong thuỷ',
-            price: '6,430,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg'
-        },
-        {
-            id: 3,
-            name: 'Đá thạch anh trắng phong thuỷ',
-            price: '1,960,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg'
-        },
-        {
-            id: 4,
-            name: 'Đá fluorite xanh phong thuỷ',
-            price: '1,216,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
-        },
-        {
-            id: 5,
-            name: 'Đá thạch anh vàng phong thuỷ',
-            price: '4,632,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/img01082-copy.jpg'
-        },
-        {
-            id: 6,
-            name: 'Đe đồng của thợ bạc mini',
-            price: '1,550,000',
-            url: 'https://cloud.muaban.net/images/2022/07/06/047/aa389f6f32ab4738bfd68313b5c52c42.jpg'
-        }
-    ]);
+    // Initialize data for categories, materials and products on screen start
+    function initializeDataListing() {
+        setIsLoading(true);
 
-    const [sortOrders, setSortOrders] = useState([
-        'Từ mới đến cũ',
-        'Từ cũ đến mới',
-        'Giá tăng dần',
-        'Giá giảm dần'
-    ]);
+        // Get Categories
+        const promiseCategory = CategoryRepository.getCategories()
+            .then(response => {
+                const categoriesArray = [{
+                    id: 0,
+                    name: 'Tất cả'
+                }].concat(response)
+                setCategories(categoriesArray);
+            });
 
-    const [currentSortOrder, setCurrentSortOrder] = useState('Từ mới đến cũ');
+        // Get Materials
+        const promiseMaterial = MaterialRepository.getMaterials()
+            .then(response => {
+                const materialsArray = [{
+                    id: 0,
+                    name: 'Tất cả'
+                }].concat(response)
+                setMaterials(materialsArray);
+            });
 
-    const [categories, setCategories] = useState([
-        'Tất cả',
-        'Đá phong thuỷ',
-        'Trang sức cổ',
-        'Nội thất cổ',
-        'Trang sức phong thuỷ',
-        'Khác'
-    ]);
+        // Get Products
+        const promiseProduct = ProductRepository.getProducts({
+            nameSearch: searchTextFilter, materialId: selectedMaterial,
+            categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setProducts(response);
+            });
 
-    const [currentCategory, setCurrentCategory] = useState('Tất cả');
+        Promise.all([promiseCategory, promiseProduct, promiseMaterial])
+            .then((values) => {
+                setIsLoading(false);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
 
-    const [materials, setMaterials] = useState([
-        'Tất cả',
-        'Đá quý',
-        'Gỗ',
-        'Bạc',
-        'Thủy tinh',
-        'Đồng',
-        'Sắt',
-        'Titan',
-        'Vải',
-        'Lụa',
-        'Khác'
-    ]);
+    useEffect(() => {
+        initializeDataListing();
+    }, []);
 
-    const [currentMaterial, setCurrentMaterial] = useState('Tất cả');
+    useEffect(() => {
+        setFilterDefault();
+        // Get Products
+        setIsLoading(true);
+        ProductRepository.getProducts({
+            nameSearch: searchTextFilter, materialId: 0,
+            categoryId: 0, orderBy: 0
+        })
+            .then(response => {
+                setProducts(response);
+                setIsLoading(false);
+            }).catch(error => {
+                setIsLoading(false);
+            });
+    }, [searchTextFilter]);
+
+    // Close filter modal
+    function closeFilterModal() {
+        setFilterModalVisible(!filterModalVisible);
+        setSelectedCategory(currentCategory);
+        setSelectedSortOrder(currentSortOrder);
+        setSelectedMaterial(currentMaterial);
+    }
+
+    // Filter submit function
+    function filter() {
+        setCurrentCategory(selectedCategory);
+        setCurrentSortOrder(selectedSortOrder);
+        setCurrentMaterial(selectedMaterial);
+
+        // Get Products
+        setIsLoading(true);
+        ProductRepository.getProducts({
+            nameSearch: searchTextFilter, materialId: selectedMaterial,
+            categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setProducts(response);
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            }).catch(error => {
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            });
+    }
+
+    // Reset filter function
+    function resetFilter() {
+        setFilterDefault();
+
+        // Get Products
+        setIsLoading(true);
+        ProductRepository.getProducts({
+            nameSearch: searchTextFilter, materialId: 0,
+            categoryId: 0, orderBy: 0
+        })
+            .then(response => {
+                setProducts(response);
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            }).catch(error => {
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            });
+    }
+
+    // Get filtered products function
+    function filteredProducts() {
+        setIsLoading(true);
+        ProductRepository.getProducts({
+            nameSearch: searchTextFilter, materialId: selectedMaterial,
+            categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setProducts(response);
+                setIsLoading(false);
+            }).catch(error => {
+                setIsLoading(false);
+            });
+    }
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        filteredProducts();
+        setRefreshing(false);
+    };
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -134,7 +268,7 @@ function Listing(props) {
                     setSearchTextFilter('');
                     navigation.setParams({ searchText: '' })
                 }}>
-                <IconFeather name='arrow-left' size={30} color={'black'} />
+                <IconFeather name='x' size={30} color={'black'} />
             </TouchableOpacity>}
             <Text style={styles.titleText}
                 numberOfLines={1}
@@ -156,35 +290,27 @@ function Listing(props) {
             </View>
         </View>
 
-        {/* Filter section */}
-        <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 15,
-            paddingHorizontal: 15
+        {/* Loading section */}
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
         }}>
-            <View style={{ flex: 1 }}></View>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+            {/* Title (type of list: for sale/auction) section */}
             <View style={{
+                paddingVertical: 10,
+                paddingHorizontal: 15,
                 flexDirection: 'row',
-                gap: 15
+                justifyContent: 'space-between'
             }}>
-                <TouchableOpacity style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 5
-                }}
-                    onPress={() => {
-                        setSortModalVisible(!sortModalVisible)
-                    }}>
-                    <Text style={{
-                        color: colors.primary,
-                        fontFamily: fonts.OpenSansBold,
-                        fontSize: fontSizes.h5,
-                    }}>Sắp xếp</Text>
-                    <IconFeather name='align-center' size={16} color={colors.primary} />
-                </TouchableOpacity>
-
+                <Text style={{
+                    color: 'black',
+                    fontFamily: fonts.OpenSansBold,
+                    fontSize: fontSizes.h2
+                }}>Sản phẩm đăng bán ({products.length})</Text>
                 <TouchableOpacity style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -199,32 +325,18 @@ function Listing(props) {
                         fontSize: fontSizes.h5,
                     }}>Bộ lọc</Text>
                     <IconFeather name='filter' size={16} color={colors.primary} />
+                    {filterCount() != 0 && <Text style={styles.filterNumber}>{filterCount()}</Text>}
                 </TouchableOpacity>
             </View>
-        </View>
-
-        <ScrollView>
-            {/* Title (type of list: for sale/auction) section */}
             {(Array.isArray(products) && products.length) ? <View>
-                <View style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 15
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontFamily: fonts.OpenSansBold,
-                        fontSize: fontSizes.h2
-                    }}>Sản phẩm đăng bán</Text>
-                </View>
-
                 <View style={{
                     flex: 1,
                     marginBottom: 15
                 }}>
                     {products.map((product) =>
-                        <ProductListingCard key={product.id} product={product} onPress={()=>{
-                            navigate('ListingDetail', {product_id: product.id})
-                        }}/>
+                        <ProductListingCard key={product.id} product={product} onPress={() => {
+                            navigate('ListingDetail', { product_id: product.id })
+                        }} />
                     )}
                 </View>
             </View> : <View style={{
@@ -246,7 +358,7 @@ function Listing(props) {
                     marginTop: 10
                 }}>Không thể tìm thấy sản phẩm nào. Bạn hãy thử tìm kiếm với từ khóa khác xem sao!</Text>
             </View>}
-        </ScrollView>
+        </ScrollView>}
 
         {/* Filter Modal */}
         <Modal
@@ -254,7 +366,7 @@ function Listing(props) {
             animationOut="slideOutRight"
             isVisible={filterModalVisible}
             onRequestClose={() => {
-                setFilterModalVisible(!filterModalVisible);
+                closeFilterModal()
             }}
             style={{ margin: 0 }}>
             <View style={{
@@ -265,7 +377,7 @@ function Listing(props) {
                     width: '20%'
                 }}
                     onPress={() => {
-                        setFilterModalVisible(!filterModalVisible);
+                        closeFilterModal()
                     }}></TouchableOpacity>
                 <View style={{
                     backgroundColor: 'white',
@@ -285,7 +397,7 @@ function Listing(props) {
                             borderRadius: 50
                         }}
                             onPress={() => {
-                                setFilterModalVisible(!filterModalVisible);
+                                closeFilterModal()
                             }}>
                             <IconFeather name='x' size={25} color={'black'} />
                         </TouchableOpacity>
@@ -295,7 +407,7 @@ function Listing(props) {
                             fontSize: fontSizes.h1
                         }}
                         >Bộ lọc</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => resetFilter()}>
                             <Text style={{
                                 color: colors.primary,
                                 fontFamily: fonts.OpenSansBold,
@@ -317,16 +429,16 @@ function Listing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {sortOrders.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentSortOrder ? 'black' : colors.darkGrey,
+                                            borderColor: item.id == selectedSortOrder ? 'black' : colors.darkGrey,
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentSortOrder(item);
+                                            setSelectedSortOrder(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -339,16 +451,16 @@ function Listing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {categories.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentCategory ? 'black' : colors.darkGrey,
+                                            borderColor: item.id == selectedCategory ? 'black' : colors.darkGrey,
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentCategory(item);
+                                            setSelectedCategory(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -361,16 +473,16 @@ function Listing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {materials.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentMaterial ? 'black' : colors.darkGrey
+                                            borderColor: item.id == selectedMaterial ? 'black' : colors.darkGrey
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentMaterial(item);
+                                            setSelectedMaterial(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -400,56 +512,15 @@ function Listing(props) {
 
                     {/* Show result button */}
                     <View style={styles.separator}></View>
-                    <TouchableOpacity style={styles.primaryButton}>
-                        <Text style={styles.primaryButtonText}>Hiện kết quả</Text>
+                    <TouchableOpacity style={[styles.primaryButton, {
+                        backgroundColor: isLoading ? colors.grey : colors.primary,
+                    }]}
+                        disabled={isLoading}
+                        onPress={() => filter()}>
+                        <Text style={[styles.primaryButtonText, {
+                            color: isLoading ? colors.darkGreyText : 'white',
+                        }]}>Hiện kết quả</Text>
                     </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
-
-        {/* Sort Modal */}
-        <Modal
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            isVisible={sortModalVisible}
-            onRequestClose={() => {
-                setSortModalVisible(!sortModalVisible);
-            }}
-            style={{ margin: 0 }}>
-            <View style={{
-                flex: 1
-            }}>
-                <TouchableOpacity style={{ flex: 1 }}
-                    onPress={() => {
-                        setSortModalVisible(!sortModalVisible);
-                    }}></TouchableOpacity>
-                <View style={styles.sortModal}>
-                    {/* Sort title */}
-                    <Text style={styles.sortModalTitle}>Sắp xếp</Text>
-
-                    {/* Sort options */}
-                    <View>
-                        {sortOrders.map(item =>
-                            <View key={item} style={{
-                                paddingHorizontal: 15
-                            }}>
-                                <TouchableOpacity style={styles.sortModalOptionContainer}
-                                    onPress={() => {
-                                        setCurrentSortOrder(item);
-                                    }}>
-                                    <View style={[{
-                                        borderColor: item === currentSortOrder ? colors.primary : 'black',
-                                    }, styles.radioButtonOuter]}>
-                                        <View style={[{
-                                            backgroundColor: item === currentSortOrder ? colors.primary : 'white',
-                                        }, styles.radioButtonInner]}></View>
-                                    </View>
-                                    <Text style={styles.radioText}>{item}</Text>
-                                </TouchableOpacity>
-                                <View style={styles.separator}></View>
-                            </View>
-                        )}
-                    </View>
                 </View>
             </View>
         </Modal>
@@ -541,10 +612,7 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     primaryButton: {
-        borderWidth: 1.2,
-        borderColor: colors.primary,
         borderRadius: 35,
-        backgroundColor: colors.primary,
         paddingVertical: 10,
         marginHorizontal: 15,
         marginVertical: 10
@@ -552,7 +620,6 @@ const styles = StyleSheet.create({
     primaryButtonText: {
         fontSize: fontSizes.h4,
         fontFamily: fonts.OpenSansBold,
-        color: 'white',
         textAlign: 'center'
     },
     sortModal: {
@@ -591,6 +658,17 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: fontSizes.h3,
         fontFamily: fonts.OpenSansMedium
+    },
+    filterNumber: {
+        position: 'absolute',
+        top: 0,
+        right: 1,
+        borderRadius: 20,
+        fontFamily: fonts.OpenSansMedium,
+        color: 'white',
+        fontSize: fontSizes.h6 / 1.5,
+        backgroundColor: 'red',
+        paddingHorizontal: 3
     }
 });
 

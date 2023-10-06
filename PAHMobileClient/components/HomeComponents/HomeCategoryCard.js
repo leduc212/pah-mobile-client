@@ -9,14 +9,14 @@ import { colors, fontSizes, fonts } from '../../constants';
 
 function HomeCategoryCard(props) {
     const { item, onPress } = props;
-    const { name, url } = item;
+    const { name, imageUrl } = item;
 
     return <TouchableOpacity
         onPress={onPress}
         style={{
             alignItems: 'center'
         }}>
-        <Image source={{ uri: url }}
+        <Image source={{ uri: imageUrl }}
             style={styles.itemImage} />
         <Text numberOfLines={1}
             ellipsizeMode='tail'

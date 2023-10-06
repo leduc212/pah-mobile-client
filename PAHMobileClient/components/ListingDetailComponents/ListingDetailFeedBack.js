@@ -5,9 +5,11 @@ import {
     View
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../../constants';
+import TimeLeft from '../TimeLeft';
 
 function ListingDetailFeedback(props) {
     const { feedback, index, length } = props;
+    const { id, ratings, buyerFeedback, timestamp } = feedback;
 
     return <View key={feedback.id} style={{
         marginBottom: 15
@@ -15,11 +17,11 @@ function ListingDetailFeedback(props) {
         <View style={{
             flexDirection: 'row'
         }}>
-            <Text style={styles.feedbackLabel}>{feedback.user_name}</Text>
-            <Text style={styles.feedbackLabel}> - 1 tháng trước</Text>
+            <Text style={styles.feedbackLabel}>Ẩn danh -</Text>
+            <TimeLeft closedTime={ timestamp} textStyle={styles.feedbackLabel} showText={false}/>
         </View>
-        <Text style={styles.feedbackLabel}>Đánh giá: {feedback.star} sao</Text>
-        <Text style={styles.feedbackContent}>{feedback.content}</Text>
+        <Text style={styles.feedbackLabel}>Đánh giá: {ratings} sao</Text>
+        <Text style={styles.feedbackContent}>{buyerFeedback}</Text>
         {index != length && <View style={styles.separator}></View>}
     </View>
 }

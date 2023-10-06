@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
@@ -6,17 +6,24 @@ import {
     StyleSheet,
     ScrollView,
     Image,
-    TextInput
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
 import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
-    ProductListingCard
+    AuctionListingCard
 } from '../components';
+import {
+    Category as CategoryRepository,
+    Material as MaterialRepository,
+    Auction as AuctionRepository
+} from '../repositories';
 
 function AuctionListing(props) {
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
 
@@ -26,77 +33,176 @@ function AuctionListing(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
+    //// DATA
+    // Data for modal
     const [filterModalVisible, setFilterModalVisible] = useState(false);
-    const [sortModalVisible, setSortModalVisible] = useState(false);
 
-    // Data for products
-    const [products, setProducts] = useState([
+    // Loading and refreshing state
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Data for auctions and filters
+    const [auctions, setAuctions] = useState([]);
+    const [sortOrders, setSortOrders] = useState([
         {
-            id: 11,
-            name: 'Vòng đá mắt hổ xanh phong thuỷ',
-            price: '8,550,000',
-            url: 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg',
-            closedTime: '2023-09-30'
+            id: 0,
+            name: 'Từ mới đến cũ'
         },
         {
-            id: 12,
-            name: 'Dây chuyền nanh heo rừng bằng đồng',
-            price: '20,000,000',
-            url: 'https://cloud.muaban.net/images/2023/06/22/334/50c23df095054b36a8c6cd4176c79f00.jpg',
-            closedTime: '2023-09-30'
+            id: 1,
+            name: 'Từ cũ đến mới'
         },
         {
-            id: 13,
-            name: 'Bàn ủi con gà bằng đồng',
-            price: '9,000,000',
-            url: 'https://cloud.muaban.net/images/thumb-detail/2022/05/11/497/375f25ac384c4de6805b153996d77d2d.jpg',
-            closedTime: '2023-10-02'
+            id: 2,
+            name: 'Giá tăng dần'
         },
         {
-            id: 14,
-            name: 'Thỏi bạc quý',
-            price: '25,000,000',
-            url: 'https://cloud.muaban.net/images/2023/07/29/586/1f7e228a67674cdf9e3a2d07632475fe.jpg',
-            closedTime: '2023-10-04'
+            id: 3,
+            name: 'Giá giảm dần'
         }
     ]);
+    const [currentSortOrder, setCurrentSortOrder] = useState(0);
+    const [selectedSortOrder, setSelectedSortOrder] = useState(0);
+    const [categories, setCategories] = useState([]);
+    const [currentCategory, setCurrentCategory] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [materials, setMaterials] = useState([]);
+    const [currentMaterial, setCurrentMaterial] = useState(0);
+    const [selectedMaterial, setSelectedMaterial] = useState(0);
 
-    const [sortOrders, setSortOrders] = useState([
-        'Từ mới đến cũ',
-        'Từ cũ đến mới',
-        'Giá tăng dần',
-        'Giá giảm dần'
-    ]);
+    // Data for filter count
+    const filterCount = () => {
+        let count = 0;
+        if (selectedCategory !== 0) count++;
+        if (selectedMaterial !== 0) count++;
+        return count;
+    }
 
-    const [currentSortOrder, setCurrentSortOrder] = useState('Từ mới đến cũ');
+    //// FUNCTION AND USEEFFECT
+    // Set filter default state
+    function setFilterDefault() {
+        // Set default state
+        setSelectedCategory(0);
+        setSelectedSortOrder(0);
+        setSelectedMaterial(0);
+        setCurrentCategory(0);
+        setCurrentSortOrder(0);
+        setCurrentMaterial(0);
+    }
 
-    const [categories, setCategories] = useState([
-        'Tất cả',
-        'Đá phong thuỷ',
-        'Trang sức cổ',
-        'Nội thất cổ',
-        'Trang sức phong thuỷ',
-        'Khác'
-    ]);
+    // Initialize data for categories, materials and auctions on screen start
+    function initializeDataListing() {
+        setIsLoading(true);
 
-    const [currentCategory, setCurrentCategory] = useState('Tất cả');
+        // Get Categories
+        const promiseCategory = CategoryRepository.getCategories()
+            .then(response => {
+                const categoriesArray = [{
+                    id: 0,
+                    name: 'Tất cả'
+                }].concat(response)
+                setCategories(categoriesArray);
+            });
 
-    const [materials, setMaterials] = useState([
-        'Tất cả',
-        'Đá quý',
-        'Gỗ',
-        'Bạc',
-        'Thủy tinh',
-        'Đồng',
-        'Sắt',
-        'Titan',
-        'Vải',
-        'Lụa',
-        'Khác'
-    ]);
+        // Get Materials
+        const promiseMaterial = MaterialRepository.getMaterials()
+            .then(response => {
+                const materialsArray = [{
+                    id: 0,
+                    name: 'Tất cả'
+                }].concat(response)
+                setMaterials(materialsArray);
+            });
 
-    const [currentMaterial, setCurrentMaterial] = useState('Tất cả');
+        // Get Auctions
+        const promiseAuction = AuctionRepository.getAuctions({
+            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setAuctions(response);
+            });
+
+        Promise.all([promiseCategory, promiseAuction, promiseMaterial])
+            .then((values) => {
+                setIsLoading(false);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
+
+    useEffect(() => {
+        initializeDataListing();
+    }, []);
+
+    // Close filter modal
+    function closeFilterModal() {
+        setFilterModalVisible(!filterModalVisible);
+        setSelectedCategory(currentCategory);
+        setSelectedSortOrder(currentSortOrder);
+        setSelectedMaterial(currentMaterial);
+    }
+
+    // Filter submit function
+    function filter() {
+        setCurrentCategory(selectedCategory);
+        setCurrentSortOrder(selectedSortOrder);
+        setCurrentMaterial(selectedMaterial);
+
+        // Get auctions
+        setIsLoading(true);
+        AuctionRepository.getAuctions({
+            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setAuctions(response);
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            }).catch(error => {
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            });
+    }
+
+    // Reset filter function
+    function resetFilter() {
+        setFilterDefault();
+
+        // Get Auctions
+        setIsLoading(true);
+        AuctionRepository.getAuctions({
+            materialId: 0, categoryId: 0, orderBy: 0
+        })
+            .then(response => {
+                setAuctions(response);
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            }).catch(error => {
+                setIsLoading(false);
+                setFilterModalVisible(!filterModalVisible);
+            });
+    }
+
+    // Get filtered auctions function
+    function filteredAuctions() {
+        setIsLoading(true);
+        AuctionRepository.getAuctions({
+            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+        })
+            .then(response => {
+                setAuctions(response);
+                setIsLoading(false);
+            }).catch(error => {
+                setIsLoading(false);
+            });
+    }
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        filteredAuctions();
+        setRefreshing(false);
+    };
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -114,36 +220,27 @@ function AuctionListing(props) {
                 </TouchableOpacity>
             </View>
         </View>
-
-        {/* Filter section */}
-        <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 15,
-            paddingHorizontal: 15
+        {/* Loading section */}
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
         }}>
-            <View style={{ flex: 1 }}></View>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+            {/* Title (type of list: for sale/auction) section */}
             <View style={{
+                paddingVertical: 10,
+                paddingHorizontal: 15,
                 flexDirection: 'row',
-                gap: 15
+                justifyContent: 'space-between'
             }}>
-                <TouchableOpacity style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 5
-                }}
-                    onPress={() => {
-                        setSortModalVisible(!sortModalVisible)
-                    }}>
-                    <Text style={{
-                        color: colors.primary,
-                        fontFamily: fonts.OpenSansBold,
-                        fontSize: fontSizes.h5,
-                    }}>Sắp xếp</Text>
-                    <IconFeather name='align-center' size={16} color={colors.primary} />
-                </TouchableOpacity>
-
+                <Text style={{
+                    color: 'black',
+                    fontFamily: fonts.OpenSansBold,
+                    fontSize: fontSizes.h2
+                }}>Đấu giá đang diễn ra ({auctions.length})</Text>
                 <TouchableOpacity style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -158,32 +255,18 @@ function AuctionListing(props) {
                         fontSize: fontSizes.h5,
                     }}>Bộ lọc</Text>
                     <IconFeather name='filter' size={16} color={colors.primary} />
+                    {filterCount() != 0 && <Text style={styles.filterNumber}>{filterCount()}</Text>}
                 </TouchableOpacity>
             </View>
-        </View>
-
-        <ScrollView>
-            {/* Title (type of list: for sale/auction) section */}
-            {(Array.isArray(products) && products.length) ? <View>
-                <View style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 15
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontFamily: fonts.OpenSansBold,
-                        fontSize: fontSizes.h2
-                    }}>Các cuộc đấu giá đang diễn ra</Text>
-                </View>
-
+            {(Array.isArray(auctions) && auctions.length) ? <View>
                 <View style={{
                     flex: 1,
                     marginBottom: 15
                 }}>
-                    {products.map((product) =>
-                        <ProductListingCard key={product.id} product={product} onPress={()=>{
-                            navigate('AuctionDetail', {product_id: product.id})
-                        }}/>
+                    {auctions.map((auction) =>
+                        <AuctionListingCard key={auction.id} auction={auction} onPress={() => {
+                            navigate('AuctionDetail', { auction_id: auction.id })
+                        }} />
                     )}
                 </View>
             </View> : <View style={{
@@ -203,9 +286,9 @@ function AuctionListing(props) {
                     textAlign: 'center',
                     marginHorizontal: 35,
                     marginTop: 10
-                }}>Không thể tìm thấy sản phẩm nào. Bạn hãy thử tìm kiếm với từ khóa khác xem sao!</Text>
+                }}>Không thể tìm thấy cuộc đấu giá nào. Bạn hãy thử đặt lại bộ lọc xem sao!</Text>
             </View>}
-        </ScrollView>
+        </ScrollView>}
 
         {/* Filter Modal */}
         <Modal
@@ -213,7 +296,7 @@ function AuctionListing(props) {
             animationOut="slideOutRight"
             isVisible={filterModalVisible}
             onRequestClose={() => {
-                setFilterModalVisible(!filterModalVisible);
+                closeFilterModal()
             }}
             style={{ margin: 0 }}>
             <View style={{
@@ -224,7 +307,7 @@ function AuctionListing(props) {
                     width: '20%'
                 }}
                     onPress={() => {
-                        setFilterModalVisible(!filterModalVisible);
+                        closeFilterModal()
                     }}></TouchableOpacity>
                 <View style={{
                     backgroundColor: 'white',
@@ -244,7 +327,7 @@ function AuctionListing(props) {
                             borderRadius: 50
                         }}
                             onPress={() => {
-                                setFilterModalVisible(!filterModalVisible);
+                                closeFilterModal()
                             }}>
                             <IconFeather name='x' size={25} color={'black'} />
                         </TouchableOpacity>
@@ -254,7 +337,7 @@ function AuctionListing(props) {
                             fontSize: fontSizes.h1
                         }}
                         >Bộ lọc</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => resetFilter()}>
                             <Text style={{
                                 color: colors.primary,
                                 fontFamily: fonts.OpenSansBold,
@@ -276,16 +359,16 @@ function AuctionListing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {sortOrders.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentSortOrder ? 'black' : colors.darkGrey,
+                                            borderColor: item.id == selectedSortOrder ? 'black' : colors.darkGrey,
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentSortOrder(item);
+                                            setSelectedSortOrder(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -298,16 +381,16 @@ function AuctionListing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {categories.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentCategory ? 'black' : colors.darkGrey,
+                                            borderColor: item.id == selectedCategory ? 'black' : colors.darkGrey,
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentCategory(item);
+                                            setSelectedCategory(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -320,95 +403,33 @@ function AuctionListing(props) {
                             <View style={styles.filterPillsContainer}>
                                 {materials.map(item =>
                                     <TouchableOpacity
-                                        key={item}
+                                        key={item.id}
                                         style={[{
-                                            borderColor: item == currentMaterial ? 'black' : colors.darkGrey
+                                            borderColor: item.id == selectedMaterial ? 'black' : colors.darkGrey
                                         }, styles.filterPill]}
                                         onPress={() => {
-                                            setCurrentMaterial(item);
+                                            setSelectedMaterial(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item == currentMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
-                                        }, styles.filterPillText]}>{item}</Text>
+                                            fontFamily: item.id == selectedMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                        }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
-                            </View>
-                        </View>
-                        <View style={styles.separator}></View>
-                        <View style={{
-                            paddingVertical: 15
-                        }}>
-                            <Text style={styles.filterTitle}>Giá thành</Text>
-                            <View style={styles.priceContainer}>
-                                <View>
-                                    <TextInput style={styles.priceInput} />
-                                    <Text style={styles.priceLabel}>Thấp nhất</Text>
-                                </View>
-                                <View style={{
-                                    height: 1.2,
-                                    width: 10,
-                                    backgroundColor: 'black',
-                                }}></View>
-                                <View>
-                                    <TextInput style={styles.priceInput} />
-                                    <Text style={styles.priceLabel}>Cao nhất</Text>
-                                </View>
                             </View>
                         </View>
                     </ScrollView>
 
                     {/* Show result button */}
                     <View style={styles.separator}></View>
-                    <TouchableOpacity style={styles.primaryButton}>
-                        <Text style={styles.primaryButtonText}>Hiện kết quả</Text>
+                    <TouchableOpacity style={[styles.primaryButton, {
+                        backgroundColor: isLoading ? colors.grey : colors.primary,
+                    }]}
+                        disabled={isLoading}
+                        onPress={() => filter()}>
+                        <Text style={[styles.primaryButtonText, {
+                            color: isLoading ? colors.darkGreyText : 'white',
+                        }]}>Hiện kết quả</Text>
                     </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
-
-        {/* Sort Modal */}
-        <Modal
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            isVisible={sortModalVisible}
-            onRequestClose={() => {
-                setSortModalVisible(!sortModalVisible);
-            }}
-            style={{ margin: 0 }}>
-            <View style={{
-                flex: 1
-            }}>
-                <TouchableOpacity style={{ flex: 1 }}
-                    onPress={() => {
-                        setSortModalVisible(!sortModalVisible);
-                    }}></TouchableOpacity>
-                <View style={styles.sortModal}>
-                    {/* Sort title */}
-                    <Text style={styles.sortModalTitle}>Sắp xếp</Text>
-
-                    {/* Sort options */}
-                    <View>
-                        {sortOrders.map(item =>
-                            <View key={item} style={{
-                                paddingHorizontal: 15
-                            }}>
-                                <TouchableOpacity style={styles.sortModalOptionContainer}
-                                    onPress={() => {
-                                        setCurrentSortOrder(item);
-                                    }}>
-                                    <View style={[{
-                                        borderColor: item === currentSortOrder ? colors.primary : 'black',
-                                    }, styles.radioButtonOuter]}>
-                                        <View style={[{
-                                            backgroundColor: item === currentSortOrder ? colors.primary : 'white',
-                                        }, styles.radioButtonInner]}></View>
-                                    </View>
-                                    <Text style={styles.radioText}>{item}</Text>
-                                </TouchableOpacity>
-                                <View style={styles.separator}></View>
-                            </View>
-                        )}
-                    </View>
                 </View>
             </View>
         </Modal>
@@ -550,6 +571,17 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: fontSizes.h3,
         fontFamily: fonts.OpenSansMedium
+    },
+    filterNumber: {
+        position: 'absolute',
+        top: 0,
+        right: 1,
+        borderRadius: 20,
+        fontFamily: fonts.OpenSansMedium,
+        color: 'white',
+        fontSize: fontSizes.h6 / 1.5,
+        backgroundColor: 'red',
+        paddingHorizontal: 3
     }
 });
 

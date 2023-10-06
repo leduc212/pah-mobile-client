@@ -11,9 +11,7 @@ import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 
 function ListingDescription(props) {
-  // Get product_id from routes
-  const { product_id } = props.route.params;
-
+  //// AUTH AND NAVIGATION
   // Auth Context
   const authContext = useContext(AuthContext);
 
@@ -23,11 +21,8 @@ function ListingDescription(props) {
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
 
-  // Data
-  const [description, setDescription] = useState(`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mauris rhoncus aenean vel elit scelerisque mauris. Ut consequat semper viverra nam libero justo laoreet sit amet. Hendrerit dolor magna eget est lorem ipsum dolor sit. Tempus iaculis urna id volutpat lacus laoreet.
-  {"\n"}{"\n"}Lacus vestibulum sed arcu non odio euismod lacinia at. Ipsum suspendisse ultrices gravida dictum fusce ut placerat orci nulla. Ac feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper. Ultricies mi quis hendrerit dolor magna eget. Elit ullamcorper dignissim cras tincidunt lobortis. Semper quis lectus nulla at. Mollis aliquam ut porttitor leo a diam sollicitudin tempor id.
-  {"\n"}{"\n"}Vitae nunc sed velit dignissim sodales ut eu sem. Massa enim nec dui nunc mattis enim ut tellus. Massa id neque aliquam vestibulum morbi blandit. Lacus suspendisse faucibus interdum posuere lorem. Semper viverra nam libero justo laoreet sit amet cursus sit. Nulla facilisi morbi tempus iaculis urna. Quis vel eros donec ac odio tempor orci dapibus ultrices.
-  {"\n"}{"\n"}Et leo duis ut diam quam nulla porttitor massa. Mattis ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget. Quisque egestas diam in arcu cursus euismod quis viverra. Vitae turpis massa sed elementum tempus egestas sed sed. Eget mi proin sed libero enim sed faucibus turpis in. Condimentum id venenatis a condimentum vitae sapien pellentesque. Ac feugiat sed lectus vestibulum mattis ullamcorper velit.`);
+  // Get description from routes
+  const { description } = props.route.params;
 
   return <View style={styles.container}>
     {/* Fixed screen title: Cart */}
@@ -86,8 +81,7 @@ const styles = StyleSheet.create({
   descriptionText: {
     color: 'black',
     fontFamily: fonts.OpenSansMedium,
-    fontSize: fontSizes.h3,
-    alignSelf: 'center'
+    fontSize: fontSizes.h3
   }
 });
 

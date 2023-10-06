@@ -8,9 +8,9 @@ import {
 import { colors, fontSizes, fonts } from '../../constants';
 import TimeLeft from '../TimeLeft';
 
-function ProductListingCard(props) {
-    const { product, onPress } = props;
-    const { name, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', price } = product;
+function AuctionListingCard(props) {
+    const { auction, onPress } = props;
+    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', currentPrice, endedAt } = auction;
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -47,7 +47,7 @@ function ProductListingCard(props) {
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h3,
                         marginBottom: 5
-                    }}>{name}</Text>
+                    }}>{title}</Text>
                 <Text
                     numberOfLines={2}
                     ellipsizeMode='tail'
@@ -55,16 +55,17 @@ function ProductListingCard(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h2
-                    }}>{numberWithCommas(price)} VNĐ</Text>
+                    }}>{numberWithCommas(currentPrice)} VNĐ</Text>
                 <Text
                     style={{
                         color: colors.darkGreyText,
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h5
                     }}>Thành phố Hồ Chí Minh</Text>
+                {endedAt != undefined && <TimeLeft width={200} closedTime={endedAt} />}
             </View>
         </TouchableOpacity>
     </View>
 }
 
-export default ProductListingCard;
+export default AuctionListingCard;

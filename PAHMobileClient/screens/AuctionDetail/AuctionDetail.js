@@ -5,7 +5,9 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    ScrollView
+    ScrollView,
+    RefreshControl,
+    ActivityIndicator
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { colors, fontSizes, fonts } from '../../constants';
@@ -14,40 +16,17 @@ import { SliderBox } from "react-native-image-slider-box";
 import Modal from 'react-native-modal';
 import {
     ListingDetailInfoText,
-    ListingDetailFeedback
+    TimeLeft
 } from '../../components';
 import { useIsFocused } from "@react-navigation/native";
+import { Auction as AuctionRepository } from '../../repositories';
+import { conditionText } from '../../utilities/Condition';
+import moment from 'moment';
 
 function AuctionDetail(props) {
+    //// AUTH AND NAVIGATION
     // Get auction_id from routes
     const { auction_id } = props.route.params;
-
-    const [product, setProduct] = useState({
-        name: 'Đá thạch anh hồng phong thuỷ',
-        price: '1,220,000',
-        package_content: 'Đá cảnh + đế gỗ + túi giấy sang trọng + dầu dưỡng đá + giấy kiểm định chất lượng đá',
-        package_method: 'Hộp kèm đế',
-        condition: 'Tốt',
-        category: 'Đá Phong Thủy',
-        material: 'Đá quý',
-        origin: 'Việt Nam',
-        dimension: '14.8x12x6.3 cm',
-        weight: '1,5',
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-        images: [
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
-        ],
-        seller: {
-            seller_name: 'avd seller',
-            seller_address: 'Thành phố Hồ Chí Minh',
-            seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-        }
-    });
-
-    const [shippingPrice, setShippingPrice] = useState('120,000');
 
     // Auth Context
     const authContext = useContext(AuthContext);
@@ -58,7 +37,18 @@ function AuctionDetail(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Modal const
+    //// DATA
+    // Data for auction detail
+    const [auction, setAuction] = useState({
+        seller: {},
+        imageUrls: [],
+        product: {}
+    });
+
+    // Calculate data for shipping price
+    const [shippingPrice, setShippingPrice] = useState('120,000');
+
+    // Modal data
     const [sellerModalVisible, setSellerModalVisible] = useState(false);
     const [shippingModalVisible, setShippingModalVisible] = useState(false);
 
@@ -69,8 +59,44 @@ function AuctionDetail(props) {
     //     setUuid(uuidv4);
     // }, [isFocused])
 
+    // Data for loading and refreshing
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    //// FUNCTION
+    // Get auction detail from current auction id
+    function getAutionDetail() {
+        setIsLoading(true);
+
+        AuctionRepository.getAuctionDetail(auction_id)
+            .then(response => {
+                setAuction(response);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
+
+    useEffect(() => {
+        getAutionDetail();
+        // If authenticated, get default address and shipping price
+    }, []);
+
+    // Price format function
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        getAutionDetail();
+        setRefreshing(false);
+    };
+
     return <View style={styles.container}>
-        {/* Fixed screen title: Product detail */}
+        {/* Fixed screen title: Auction detail */}
         <View style={styles.titleContainer}>
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity style={styles.backButton}
@@ -103,48 +129,56 @@ function AuctionDetail(props) {
             </View>
         </View>
 
-        <ScrollView>
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
+        }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
             {/* Images slider */}
-            <SliderBox images={product.images}
+            <SliderBox images={auction.imageUrls}
                 sliderBoxHeight={480}
                 dotColor={colors.primary}
                 inactiveDotColor='#90A4AE' />
 
-            {/* Product name */}
-            <Text style={styles.productName}>{product.name}</Text>
+            {/* Auction name */}
+            <Text style={styles.productName}>{auction.title}</Text>
 
             {/* Top Seller section */}
             <TouchableOpacity style={styles.topSellerContainer}
                 onPress={() => setSellerModalVisible(!sellerModalVisible)}>
-                <Image source={{ uri: product.seller.seller_avatar }}
+                <Image source={{ uri: auction.seller.profilePicture }}
                     style={styles.topSellerImage} />
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.topSellerName}>{product.seller.seller_name}</Text>
-                    <Text style={styles.topSellerInformation}>{product.seller.seller_address}</Text>
+                    <Text style={styles.topSellerName}>{auction.seller.name}</Text>
+                    <Text style={styles.topSellerInformation}>{auction.seller.province}</Text>
                 </View>
                 <IconFeather name='chevron-right' size={30} color='black' />
             </TouchableOpacity>
 
             {/* Pricing section */}
             <View style={styles.priceContainer}>
-                <Text style={styles.pricePrimary}>{product.price} VNĐ</Text>
+                <Text style={styles.pricePrimary}>{numberWithCommas(auction.currentPrice)} VNĐ</Text>
                 <Text style={styles.priceSecondary}>+ {shippingPrice} VNĐ vận chuyển</Text>
-                <Text style={{
+                <TimeLeft textStyle={{
                     fontFamily: fonts.OpenSansMedium,
                     color: 'black',
                     fontSize: fontSizes.h3,
                     marginTop: 5
-                }}>Còn 2 ngày 13 giờ</Text>
+                }} closedTime={auction.endedAt}
+                    width={500} />
             </View>
 
-            {/* Buy and add to cart buttons */}
+            {/* Bid */}
             <View style={{
                 paddingHorizontal: 15,
                 gap: 10,
                 marginVertical: 10,
             }}>
                 <TouchableOpacity style={styles.primaryButton}
-                    onPress={() => navigate('AuctionBidding', { auction_id: product.id })}>
+                    onPress={() => navigate('AuctionBidding', { auction_id: auction.id })}>
                     <Text style={styles.primaryButtonText}>Đặt giá</Text>
                 </TouchableOpacity>
             </View>
@@ -157,14 +191,14 @@ function AuctionDetail(props) {
             }}>
                 <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
                 <View style={{ gap: 10, marginTop: 5 }}>
-                    <ListingDetailInfoText label='Bao gồm' text={product.package_content} />
-                    <ListingDetailInfoText label='Tình trạng' text={product.condition} />
-                    <ListingDetailInfoText label='Danh mục' text={product.category} />
-                    <ListingDetailInfoText label='Chất liệu' text={product.material} />
-                    <ListingDetailInfoText label='Xuất xứ' text={product.origin} />
-                    <ListingDetailInfoText label='Kích thước' text={product.dimension} />
-                    <ListingDetailInfoText label='Khối lượng' text={product.weight + ' kg'} />
-                    <ListingDetailInfoText label='Đóng gói' text={product.package_method} />
+                    <ListingDetailInfoText label='Bao gồm' text={auction.product.packageContent} />
+                    <ListingDetailInfoText label='Tình trạng' text={conditionText(auction.product.condition)} />
+                    <ListingDetailInfoText label='Danh mục' text={auction.product.categoryName} />
+                    <ListingDetailInfoText label='Chất liệu' text={auction.product.materialName} />
+                    <ListingDetailInfoText label='Xuất xứ' text={auction.product.origin} />
+                    <ListingDetailInfoText label='Kích thước' text={auction.product.dimension} />
+                    <ListingDetailInfoText label='Khối lượng' text={auction.product.weight + ' g'} />
+                    <ListingDetailInfoText label='Đóng gói' text={auction.product.packageMethod} />
                 </View>
             </View>
 
@@ -180,7 +214,7 @@ function AuctionDetail(props) {
                     flexDirection: 'row',
                     alignItems: 'center'
                 }}
-                    onPress={() => navigate('AuctionDescription', { auction_id: product.id })}>
+                    onPress={() => navigate('AuctionDescription', { description: auction.product.description })}>
                     <View style={{
                         flex: 1,
                         gap: 10
@@ -189,7 +223,7 @@ function AuctionDetail(props) {
                             numberOfLines={3}
                             ellipsizeMode='tail'
                             style={styles.descriptionText}
-                        >{product.description}</Text>
+                        >{auction.product.description}</Text>
                         <Text style={styles.descriptionLink}
                         >Xem đầy đủ thông tin thêm</Text>
                     </View>
@@ -209,10 +243,10 @@ function AuctionDetail(props) {
                     flexDirection: 'row',
                     alignItems: 'center'
                 }}
-                    onPress={() => navigate('BiddingHistory', { auction_id: product.id })}>
+                    onPress={() => navigate('BiddingHistory', { auction_id: auction.id })}>
                     <View style={{ gap: 10, flex: 1 }}>
-                        <ListingDetailInfoText label='Thời gian còn lại' text='2 ngày 13 giờ'
-                            secondText='Chủ nhật, 8 tháng 10 2023, 09:56 PM' />
+                        <ListingDetailInfoText label='Thời gian còn lại' text={moment(auction.endedAt).fromNow()}
+                            secondText={moment(auction.endedAt).format('dddd, Do MMMM YYYY, h:mm a')} />
                         <ListingDetailInfoText label='Số lần đặt' text='3' />
                         <ListingDetailInfoText label='Người tham gia' text='2' />
                     </View>
@@ -235,7 +269,7 @@ function AuctionDetail(props) {
                     onPress={() => setShippingModalVisible(!shippingModalVisible)}>
                     <View style={{ gap: 10, flex: 1 }}>
                         <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023'
-                            secondText={'Từ ' + product.seller.seller_address}
+                            secondText={'Từ ' + `${auction.seller.ward}, ${auction.seller.district}, ${auction.seller.province}`}
                             thirdText='Thông qua Giao hàng nhanh' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
@@ -254,17 +288,17 @@ function AuctionDetail(props) {
             }}>
                 <Text style={styles.sectionTitle}>Về người bán</Text>
                 <View style={{ gap: 10, marginTop: 5 }}>
-                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.seller_name })}>
+                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: auction.seller.id })}>
                         <View style={{
                             flexDirection: 'row',
                             gap: 15
                         }}>
-                            <Image source={{ uri: product.seller.seller_avatar }}
+                            <Image source={{ uri: auction.seller.profilePicture }}
                                 style={styles.bottomSellerImage} />
                             <View style={{ gap: 2 }}>
-                                <Text style={styles.bottomSellerPrimary}>{product.seller.seller_name}</Text>
-                                <Text style={styles.bottomSellerSecondary}>{product.seller.seller_address}</Text>
-                                <Text style={styles.bottomSellerSecondary}>Đánh giá: 5</Text>
+                                <Text style={styles.bottomSellerPrimary}>{auction.seller.name}</Text>
+                                <Text style={styles.bottomSellerSecondary}>{auction.seller.province}</Text>
+                                <Text style={styles.bottomSellerSecondary}>Đánh giá: {auction.seller.ratings}</Text>
                             </View>
                         </View>
                         <View style={{
@@ -278,7 +312,7 @@ function AuctionDetail(props) {
                     </TouchableOpacity>
                 </View>
             </View>
-        </ScrollView>
+        </ScrollView>}
 
         {/* Seller modal */}
         <Modal
@@ -309,18 +343,18 @@ function AuctionDetail(props) {
                     }}>
                         <TouchableOpacity onPress={() => {
                             setSellerModalVisible(!sellerModalVisible);
-                            navigate('Profile', { user_id: product.seller.seller_name })
+                            navigate('Profile', { user_id: auction.seller.id })
                         }}>
                             <View style={{
                                 flexDirection: 'row',
                                 gap: 15
                             }}>
-                                <Image source={{ uri: product.seller.seller_avatar }}
+                                <Image source={{ uri: auction.seller.profilePicture }}
                                     style={styles.bottomSellerImage} />
                                 <View style={{ gap: 2 }}>
-                                    <Text style={styles.bottomSellerPrimary}>{product.seller.seller_name}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>{product.seller.seller_address}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: 5</Text>
+                                    <Text style={styles.bottomSellerPrimary}>{auction.seller.name}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>{auction.seller.province}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {auction.seller.ratings}</Text>
                                 </View>
                             </View>
                             <View style={{
@@ -364,7 +398,7 @@ function AuctionDetail(props) {
                         marginBottom: 30
                     }}>
                         <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023' />
-                        <ListingDetailInfoText label='Giao từ' text={product.seller.seller_address} />
+                        <ListingDetailInfoText label='Giao từ' text={`${auction.seller.ward}, ${auction.seller.district}, ${auction.seller.province}`} />
                         <ListingDetailInfoText label='Giao đến' text='Địa chỉ mặc định hoặc không có' />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />

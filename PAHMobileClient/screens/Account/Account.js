@@ -33,11 +33,7 @@ function Account(props) {
 
     // Test logout function
     function logout() {
-        authContext.setAuthState({
-            accessToken: null,
-            refreshToken: null,
-            authenticated: false,
-        });
+        authContext.logout();
     }
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}

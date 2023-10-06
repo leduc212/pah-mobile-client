@@ -6,4 +6,5 @@ export default {
     cartImage: require('../assets/images/cart.png'),
     searchImage: require('../assets/images/search.png'),
     orderSuccessImage: require('../assets/images/order-success.png'),
+    warningImage: require('../assets/images/warning.png'),
 }

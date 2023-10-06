@@ -5,12 +5,15 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../context/AuthContext';
+import { Auth as AuthRepository } from '../repositories';
+import * as Keychain from 'react-native-keychain';
 
 function Login(props) {
   // Auth Context
@@ -23,29 +26,48 @@ function Login(props) {
   const { navigate, goBack } = navigation;
 
   //states to store email/password
-  const [email, setEmail] = useState('kingericvt96@gmail.com');
-  const [password, setPassword] = useState('Lm123456');
+  const [email, setEmail] = useState('leduchien09@gmail.com');
+  const [password, setPassword] = useState('123456789');
 
-  //states for validating
+  // states for validating
   const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const validationOk = () => email.length > 0 && password.length > 0;
-  const authenticationOk = () => email === 'kingericvt96@gmail.com' && password === 'Lm123456';
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
-  // Test login function
-  function login() {
-    authContext.setAuthState({
-      accessToken: null,
-      refreshToken: null,
-      authenticated: true,
-    });
-    navigate('Account');
+  // login function
+  async function login() {
+    setIsLoginLoading(true);
+    setErrorMessage('');
+    await AuthRepository.login({ email: email, password: password })
+      .then(response => {
+        const { accessToken, refreshToken } = response;
+        
+        authContext.setAuthState({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          authenticated: true,
+        });
+
+        Keychain.setGenericPassword(
+          'token',
+          JSON.stringify({
+            accessToken,
+            refreshToken,
+          }),
+        );
+        
+        navigate('Account');
+      })
+      .catch(error => {
+        setIsLoginLoading(false);
+        setErrorMessage(error.response.data.message);
+      });
   }
 
   return (
     <KeyboardAvoidingView style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
-
       {/* Fixed screen title: Login */}
       <View style={styles.titleContainer}>
         <TouchableOpacity style={styles.iconButton}
@@ -75,6 +97,7 @@ function Login(props) {
         )}
         <View style={styles.inputContainer}>
           <TextInput
+            autoCapitalize='none'
             style={styles.inputBox}
             value={email}
             onChangeText={text => {
@@ -85,6 +108,7 @@ function Login(props) {
         </View>
         <View style={styles.inputContainer}>
           <TextInput
+            autoCapitalize='none'
             style={styles.inputBox}
             value={password}
             secureTextEntry={!showPassword}
@@ -120,11 +144,9 @@ function Login(props) {
           )}
         </View>
         <TouchableOpacity
-          disabled={!validationOk()}
+          disabled={!validationOk() && isLoginLoading}
           onPress={() => {
-            authenticationOk()
-              ? login()
-              : setErrorMessage('Kiểm tra lại Email và mật khẩu!');
+            login()
           }}
           style={[{
             backgroundColor: validationOk() ? colors.primary : colors.grey
@@ -136,7 +158,7 @@ function Login(props) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.googleButton}
-          onPress={() => login()} >
+          onPress={() => navigate('Account')} >
           <Icon style={{
             position: 'absolute',
             left: 15,
@@ -162,6 +184,18 @@ function Login(props) {
           </Text>
         </TouchableOpacity>
       </View>
+      {isLoginLoading && <View style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.inactive
+      }}>
+        <ActivityIndicator size='large' />
+      </View>}
     </KeyboardAvoidingView>
   );
 }

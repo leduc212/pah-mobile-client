@@ -5,11 +5,12 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { fontSizes, fonts } from '../../constants';
+import {  fontSizes, fonts } from '../../constants';
+import TimeLeft from '../TimeLeft';
 
-function HomeItemCard(props) {
+function HomeAuctionCard(props) {
     const { item, onPress } = props;
-    const { name, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', price } = item;
+    const { title, endedAt, entryFee, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg' } = item;
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -22,10 +23,11 @@ function HomeItemCard(props) {
             style={styles.itemImage} />
         <Text numberOfLines={2}
             ellipsizeMode='tail'
-            style={styles.itemTitle}>{name}</Text>
+            style={styles.itemTitle}>{title}</Text>
         <Text numberOfLines={2}
             ellipsizeMode='tail'
-            style={styles.itemPrice}>{numberWithCommas(price)} VND</Text>
+            style={styles.itemPrice}>{numberWithCommas(entryFee)} VND</Text>
+        {endedAt != undefined && <TimeLeft width={150} closedTime={endedAt} />}
     </TouchableOpacity>
 }
 
@@ -52,4 +54,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default HomeItemCard;
+export default HomeAuctionCard;
