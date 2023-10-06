@@ -1,11 +1,8 @@
-import axios from "axios";
-import config from "../config";
-
-async function getCategories() {
-    const urlGetCategories = `${config.BASE_API_URL}/category`;
+async function getCategories(axiosContext) {
+    const categoryPath = `/category`;
     try {
         let result = [];
-        let responseData = await axios.get(urlGetCategories);
+        let responseData = await axiosContext.publicAxios.get(categoryPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
@@ -18,11 +15,11 @@ async function getCategories() {
     }
 }
 
-async function getCategoriesHome() {
-    const urlGetCategories = `${config.BASE_API_URL}/category`;
+async function getCategoriesHome(axiosContext) {
+    const categoryPath = `/category`;
     try {
         let result = [];
-        let responseData = await axios.get(urlGetCategories);
+        let responseData = await axiosContext.publicAxios.get(categoryPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;

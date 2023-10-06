@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
+import { AxiosContext } from '../context/AxiosContext';
 import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -26,6 +27,7 @@ function AuctionListing(props) {
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -95,7 +97,7 @@ function AuctionListing(props) {
         setIsLoading(true);
 
         // Get Categories
-        const promiseCategory = CategoryRepository.getCategories()
+        const promiseCategory = CategoryRepository.getCategories(axiosContext)
             .then(response => {
                 const categoriesArray = [{
                     id: 0,
@@ -105,7 +107,7 @@ function AuctionListing(props) {
             });
 
         // Get Materials
-        const promiseMaterial = MaterialRepository.getMaterials()
+        const promiseMaterial = MaterialRepository.getMaterials(axiosContext)
             .then(response => {
                 const materialsArray = [{
                     id: 0,
@@ -115,9 +117,10 @@ function AuctionListing(props) {
             });
 
         // Get Auctions
-        const promiseAuction = AuctionRepository.getAuctions({
-            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        const promiseAuction = AuctionRepository.getAuctions(axiosContext,
+            {
+                materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setAuctions(response);
             });
@@ -151,9 +154,10 @@ function AuctionListing(props) {
 
         // Get auctions
         setIsLoading(true);
-        AuctionRepository.getAuctions({
-            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        AuctionRepository.getAuctions(axiosContext,
+            {
+                materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setAuctions(response);
                 setIsLoading(false);
@@ -170,9 +174,10 @@ function AuctionListing(props) {
 
         // Get Auctions
         setIsLoading(true);
-        AuctionRepository.getAuctions({
-            materialId: 0, categoryId: 0, orderBy: 0
-        })
+        AuctionRepository.getAuctions(axiosContext,
+            {
+                materialId: 0, categoryId: 0, orderBy: 0
+            })
             .then(response => {
                 setAuctions(response);
                 setIsLoading(false);
@@ -186,9 +191,10 @@ function AuctionListing(props) {
     // Get filtered auctions function
     function filteredAuctions() {
         setIsLoading(true);
-        AuctionRepository.getAuctions({
-            materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        AuctionRepository.getAuctions(axiosContext,
+            {
+                materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setAuctions(response);
                 setIsLoading(false);

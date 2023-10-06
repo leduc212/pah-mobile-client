@@ -1,10 +1,7 @@
-import axios from "axios";
-import config from "../config";
-
-async function login(userInfo) {
-    const urlLogin = `${config.BASE_API_URL}/login`;
+async function login(axiosContext, userInfo) {
+    const loginPath = `/login`;
     try {
-        let responseData = await axios.post(urlLogin, userInfo);
+        let responseData = await axiosContext.publicAxios.post(loginPath, userInfo);
         if (responseData.status != 200) {
             throw responseData.message;
         }

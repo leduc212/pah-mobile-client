@@ -12,12 +12,14 @@ import { colors, fontSizes, fonts } from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../context/AuthContext';
+import { AxiosContext } from '../context/AxiosContext';
 import { Auth as AuthRepository } from '../repositories';
 import * as Keychain from 'react-native-keychain';
 
 function Login(props) {
   // Auth Context
   const authContext = useContext(AuthContext);
+  const axiosContext = useContext(AxiosContext);
 
   // Navigation
   const { navigation, route } = props;
@@ -39,7 +41,7 @@ function Login(props) {
   async function login() {
     setIsLoginLoading(true);
     setErrorMessage('');
-    await AuthRepository.login({ email: email, password: password })
+    await AuthRepository.login(axiosContext, { email: email, password: password })
       .then(response => {
         const { accessToken, refreshToken } = response;
         

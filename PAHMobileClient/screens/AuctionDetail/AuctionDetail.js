@@ -10,6 +10,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
@@ -30,6 +31,7 @@ function AuctionDetail(props) {
 
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -68,7 +70,7 @@ function AuctionDetail(props) {
     function getAutionDetail() {
         setIsLoading(true);
 
-        AuctionRepository.getAuctionDetail(auction_id)
+        AuctionRepository.getAuctionDetail(axiosContext, auction_id)
             .then(response => {
                 setAuction(response);
                 setIsLoading(false);

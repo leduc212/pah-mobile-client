@@ -1,11 +1,8 @@
-import axios from "axios";
-import config from "../config";
-
-async function getMaterials() {
-    const urlGetMaterials = `${config.BASE_API_URL}/material`;
+async function getMaterials(axiosContext) {
+    const materialPath = `/material`;
     try {
         let result = [];
-        let responseData = await axios.get(urlGetMaterials);
+        let responseData = await axiosContext.publicAxios.get(materialPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;

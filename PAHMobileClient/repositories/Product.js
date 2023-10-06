@@ -1,11 +1,8 @@
-import axios from "axios";
-import config from "../config";
-
-async function getProductsHome() {
-    const urlGetProducts = `${config.BASE_API_URL}/product?type=1`;
+async function getProductsHome(axiosContext) {
+    const productPath = `/product?type=1`;
     try {
         let result = [];
-        let responseData = await axios.get(urlGetProducts);
+        let responseData = await axiosContext.publicAxios.get(productPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
@@ -20,14 +17,14 @@ async function getProductsHome() {
     }
 }
 
-async function getProducts(query) {
+async function getProducts(axiosContext, query) {
     const { nameSearch = '', materialId = 0, categoryId = 0,
         type = 1, priceMin = 0, priceMax = 0, orderBy = 0 } = query
-    const urlGetProducts = `${config.BASE_API_URL}/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&orderBy=${orderBy}`;
-    console.log(urlGetProducts);
+    const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&orderBy=${orderBy}`;
+    
     try {
         let result = [];
-        let responseData = await axios.get(urlGetProducts);
+        let responseData = await axiosContext.publicAxios.get(productPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
@@ -42,10 +39,10 @@ async function getProducts(query) {
     }
 }
 
-async function getProductDetail(product_id) {
-    const urlProductDetail = `${config.BASE_API_URL}/product/${product_id}`;
+async function getProductDetail(axiosContext, product_id) {
+    const productPath = `/product/${product_id}`;
     try {
-        let responseData = await axios.get(urlProductDetail);
+        let responseData = await axiosContext.publicAxios.get(productPath);
         if (responseData.status != 200) {
             throw responseData.message;
         }

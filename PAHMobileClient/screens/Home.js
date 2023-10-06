@@ -14,6 +14,7 @@ import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
 import { AuthContext } from '../context/AuthContext';
+import { AxiosContext } from '../context/AxiosContext';
 import {
     HomeItemCard,
     HomeCategoryCard,
@@ -29,6 +30,7 @@ function Home(props) {
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -55,19 +57,19 @@ function Home(props) {
         setIsLoading(true);
 
         // Get Categories
-        const promiseCategory = CategoryRepository.getCategoriesHome()
+        const promiseCategory = CategoryRepository.getCategoriesHome(axiosContext)
             .then(response => {
                 setCategories(response);
             });
 
         // Get Products
-        const promiseProduct = ProductRepository.getProductsHome()
+        const promiseProduct = ProductRepository.getProductsHome(axiosContext)
             .then(response => {
                 setPopularProducts(response);
             });
 
         // Get Auctions
-        const promiseAuction = AuctionRepository.getAuctionsHome()
+        const promiseAuction = AuctionRepository.getAuctionsHome(axiosContext)
             .then(response => {
                 setOngoingAuctions(response);
             });

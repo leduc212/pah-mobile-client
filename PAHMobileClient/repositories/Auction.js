@@ -1,11 +1,8 @@
-import axios from "axios";
-import config from "../config";
-
-async function getAuctionsHome() {
-    const urlGetAuctions = `${config.BASE_API_URL}/auction`;
+async function getAuctionsHome(axiosContext) {
+    const auctionPath = `/auction`;
     try {
         let result = [];
-        let responseData = await axios.get(urlGetAuctions);
+        let responseData = await axiosContext.publicAxios.get(auctionPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
@@ -21,13 +18,13 @@ async function getAuctionsHome() {
     }
 }
 
-async function getAuctions(query) {
+async function getAuctions(axiosContext, query) {
     const { materialId = 0, categoryId = 0, orderBy = 0 } = query
-    const urlGetAuctions = `${config.BASE_API_URL}/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}`;
-    console.log(urlGetAuctions);
+    const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}`;
+
     try {
         let result = [];
-        let responseData = await axios.get(urlGetAuctions);
+        let responseData = await axiosContext.publicAxios.get(auctionPath);
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
@@ -41,26 +38,26 @@ async function getAuctions(query) {
             myObject.imageUrl = item.imageUrl;
             result.push(myObject);
         })
-        
+
         return result;
     } catch (error) {
         throw error;
     }
 }
 
-async function getAuctionDetail(auction_id) {
-    const urlAuctionDetail = `${config.BASE_API_URL}/auction/${auction_id}`;
+async function getAuctionDetail(axiosContext, auction_id) {
+    const auctionPath = `/auction/${auction_id}`;
     try {
-        let responseData = await axios.get(urlAuctionDetail);
+        let responseData = await axiosContext.publicAxios.get(auctionPath);
         if (responseData.status != 200) {
             throw responseData.message;
         }
         let responseAuction = responseData.data.data;
         let auction = {};
-        
-        auction.id = responseAuction.id  ?? 0;
-        auction.productId = responseAuction.productId  ?? 0;
-        auction.staffName = responseAuction.staffName  ?? '';
+
+        auction.id = responseAuction.id ?? 0;
+        auction.productId = responseAuction.productId ?? 0;
+        auction.staffName = responseAuction.staffName ?? '';
         auction.title = responseAuction.title ?? '';
         auction.entryFee = responseAuction.entryFee ?? 0;
         auction.startingPrice = responseAuction.startingPrice ?? 0;
@@ -68,7 +65,7 @@ async function getAuctionDetail(auction_id) {
         auction.step = responseAuction.step ?? 0;
         auction.startedAt = responseAuction.startedAt ?? '';
         auction.endedAt = responseAuction.endedAt ?? '';
-        auction.product = responseAuction.product  ?? {};
+        auction.product = responseAuction.product ?? {};
         auction.imageUrls = responseAuction.imageUrls ?? [];
         auction.seller = responseAuction.seller ?? {};
 

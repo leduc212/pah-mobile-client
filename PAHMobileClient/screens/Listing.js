@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
+import { AxiosContext } from '../context/AxiosContext';
 import { colors, fontSizes, images, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -27,6 +28,7 @@ function Listing(props) {
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -107,10 +109,11 @@ function Listing(props) {
 
                 // Get Products
                 setIsLoading(true);
-                ProductRepository.getProducts({
-                    nameSearch: searchText, materialId: 0,
-                    categoryId: 0, orderBy: 0
-                })
+                ProductRepository.getProducts(axiosContext,
+                    {
+                        nameSearch: searchText, materialId: 0,
+                        categoryId: 0, orderBy: 0
+                    })
                     .then(response => {
                         setProducts(response);
                         setIsLoading(false);
@@ -127,7 +130,7 @@ function Listing(props) {
         setIsLoading(true);
 
         // Get Categories
-        const promiseCategory = CategoryRepository.getCategories()
+        const promiseCategory = CategoryRepository.getCategories(axiosContext)
             .then(response => {
                 const categoriesArray = [{
                     id: 0,
@@ -137,7 +140,7 @@ function Listing(props) {
             });
 
         // Get Materials
-        const promiseMaterial = MaterialRepository.getMaterials()
+        const promiseMaterial = MaterialRepository.getMaterials(axiosContext)
             .then(response => {
                 const materialsArray = [{
                     id: 0,
@@ -147,10 +150,11 @@ function Listing(props) {
             });
 
         // Get Products
-        const promiseProduct = ProductRepository.getProducts({
-            nameSearch: searchTextFilter, materialId: selectedMaterial,
-            categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        const promiseProduct = ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: selectedMaterial,
+                categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setProducts(response);
             });
@@ -172,10 +176,11 @@ function Listing(props) {
         setFilterDefault();
         // Get Products
         setIsLoading(true);
-        ProductRepository.getProducts({
-            nameSearch: searchTextFilter, materialId: 0,
-            categoryId: 0, orderBy: 0
-        })
+        ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: 0,
+                categoryId: 0, orderBy: 0
+            })
             .then(response => {
                 setProducts(response);
                 setIsLoading(false);
@@ -200,10 +205,11 @@ function Listing(props) {
 
         // Get Products
         setIsLoading(true);
-        ProductRepository.getProducts({
-            nameSearch: searchTextFilter, materialId: selectedMaterial,
-            categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: selectedMaterial,
+                categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setProducts(response);
                 setIsLoading(false);
@@ -220,10 +226,11 @@ function Listing(props) {
 
         // Get Products
         setIsLoading(true);
-        ProductRepository.getProducts({
-            nameSearch: searchTextFilter, materialId: 0,
-            categoryId: 0, orderBy: 0
-        })
+        ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: 0,
+                categoryId: 0, orderBy: 0
+            })
             .then(response => {
                 setProducts(response);
                 setIsLoading(false);
@@ -237,10 +244,11 @@ function Listing(props) {
     // Get filtered products function
     function filteredProducts() {
         setIsLoading(true);
-        ProductRepository.getProducts({
-            nameSearch: searchTextFilter, materialId: selectedMaterial,
-            categoryId: selectedCategory, orderBy: selectedSortOrder
-        })
+        ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: selectedMaterial,
+                categoryId: selectedCategory, orderBy: selectedSortOrder
+            })
             .then(response => {
                 setProducts(response);
                 setIsLoading(false);

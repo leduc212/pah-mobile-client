@@ -10,6 +10,7 @@ import {
     RefreshControl
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
@@ -18,13 +19,18 @@ import {
     ListingDetailInfoText,
     ListingDetailFeedback
 } from '../../components';
-import { Product as ProductRepository } from '../../repositories';
+import {
+    Product as ProductRepository,
+    Address as AddressRepository,
+    Shipping as ShippingRepository
+} from '../../repositories';
 import { conditionText } from '../../utilities/Condition';
 
 function ListingDetail(props) {
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -44,7 +50,8 @@ function ListingDetail(props) {
     });
 
     // Calculate data for shipping price
-    const [shippingPrice, setShippingPrice] = useState('120,000');
+    const [userAddress, setUserAddress] = useState({});
+    const [shippingPrice, setShippingPrice] = useState(0);
 
     // Modal data
     const [sellerModalVisible, setSellerModalVisible] = useState(false);
@@ -58,8 +65,8 @@ function ListingDetail(props) {
     // Get product detail from current product id
     function getProductDetail() {
         setIsLoading(true);
-        
-        ProductRepository.getProductDetail(product_id)
+
+        ProductRepository.getProductDetail(axiosContext, product_id)
             .then(response => {
                 setProduct(response)
                 setIsLoading(false);
@@ -73,6 +80,30 @@ function ListingDetail(props) {
         getProductDetail();
 
         // If authenticated, get default address and shipping price
+        if (authContext?.authState?.authenticated) {
+            AddressRepository.getAdrressCurrentUser(axiosContext)
+                .then(response => {
+                    setUserAddress(response);
+                    // tinh gia ship o day
+                    ShippingRepository.calculateShippingCost({
+                        service_type_id: 2,
+                        from_district_id: product.seller.districtId,
+                        from_ward_code: product.seller.wardCode,
+                        to_district_id: response.districtId,
+                        to_ward_code: response.wardCode,
+                        weight: 300
+                    })
+                        .then(responseShip => {
+                            setShippingPrice(responseShip.total)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     }, []);
 
     // Price format function
@@ -153,7 +184,18 @@ function ListingDetail(props) {
             {/* Pricing section */}
             <View style={styles.priceContainer}>
                 <Text style={styles.pricePrimary}>{numberWithCommas(product.price)} VNĐ</Text>
-                <Text style={styles.priceSecondary}>+ {shippingPrice} VNĐ vận chuyển</Text>
+
+                {!authContext?.authState?.authenticated && <Text
+                    style={styles.priceSecondary}
+                >Đăng nhập để xem cước phí vận chuyển</Text>}
+
+                {shippingPrice != 0 && userAddress != '' ? <View>
+                    <Text style={styles.priceSecondary}
+                    >{numberWithCommas(shippingPrice)} VNĐ cước vận chuyển</Text>
+                    <Text style={styles.priceSecondary}
+                    >Đến {`${userAddress.ward}, ${userAddress.district}, ${userAddress.province}`}</Text>
+                </View> : <Text style={styles.priceSecondary}
+                >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
             </View>
 
             {/* Buy and add to cart buttons */}
