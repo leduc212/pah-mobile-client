@@ -9,15 +9,15 @@ import TimeLeft from '../TimeLeft';
 
 function ListingDetailFeedback(props) {
     const { feedback, index, length } = props;
-    const { id, ratings, buyerFeedback, timestamp } = feedback;
+    const { id, ratings, buyerFeedback, timestamp, buyerName } = feedback;
 
-    return <View key={feedback.id} style={{
+    return <View key={id} style={{
         marginBottom: 15
     }}>
         <View style={{
             flexDirection: 'row'
         }}>
-            <Text style={styles.feedbackLabel}>Ẩn danh -</Text>
+            <Text style={styles.feedbackLabel}>{buyerName} -</Text>
             <TimeLeft closedTime={ timestamp} textStyle={styles.feedbackLabel} showText={false}/>
         </View>
         <Text style={styles.feedbackLabel}>Đánh giá: {ratings} sao</Text>

@@ -9,8 +9,12 @@ import TimeLeft from '../TimeLeft';
 
 function BidHistoryItem(props) {
     const { bid } = props;
-
-    return <View key={bid.id}>
+    const { id, bidderName, bidAmount, bidDate } = bid
+    // Price format function
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return <View key={id}>
         <View style={{
             flexDirection: 'row',
             marginVertical: 5
@@ -20,12 +24,12 @@ function BidHistoryItem(props) {
                     color: 'black',
                     fontFamily: fonts.OpenSansMedium,
                     fontSize: fontSizes.h4
-                }}>{bid.bid_amount} VNĐ</Text>
+                }}>{numberWithCommas(bidAmount)} VNĐ</Text>
                 <Text style={{
                     color: colors.darkGreyText,
                     fontFamily: fonts.OpenSansMedium,
                     fontSize: fontSizes.h4
-                }}>{bid.user.name}</Text>
+                }}>{bidderName}</Text>
             </View>
             <View style={{ flex: 4, flexDirection: 'row' }}>
                 <Text style={{
@@ -33,7 +37,7 @@ function BidHistoryItem(props) {
                     fontFamily: fonts.OpenSansMedium,
                     fontSize: fontSizes.h4
                 }}>Đặt</Text>
-                <TimeLeft showText={false} closedTime={bid.bid_date}
+                <TimeLeft showText={false} closedTime={bidDate}
                     textStyle={{
                         color: 'black',
                         fontFamily: fonts.OpenSansMedium,

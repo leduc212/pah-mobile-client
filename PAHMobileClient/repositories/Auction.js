@@ -8,7 +8,7 @@ async function getAuctionsHome(axiosContext) {
             myObject.id = item.id;
             myObject.title = item.title;
             myObject.endedAt = item.endedAt;
-            myObject.entryFee = item.entryFee;
+            myObject.currentPrice = item.currentPrice;
             myObject.imageUrl = item.imageUrl;
             result.push(myObject);
         })
@@ -28,7 +28,7 @@ async function getAuctions(axiosContext, query) {
         responseData.data.data.forEach(function (item) {
             let myObject = {};
             myObject.id = item.id;
-            myObject.auctionId = item.auctionId;
+            myObject.productId = item.productId;
             myObject.title = item.title;
             myObject.entryFee = item.entryFee;
             myObject.startingPrice = item.startingPrice;
@@ -68,6 +68,8 @@ async function getAuctionDetail(axiosContext, auction_id) {
         auction.product = responseAuction.product ?? {};
         auction.imageUrls = responseAuction.imageUrls ?? [];
         auction.seller = responseAuction.seller ?? {};
+        auction.numberOfBids = responseAuction.numberOfBids ?? 0;
+        auction.numberOfBidders = responseAuction.numberOfBidders ?? 0;
 
         return auction;
     } catch (error) {

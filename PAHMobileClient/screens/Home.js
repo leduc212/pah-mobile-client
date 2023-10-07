@@ -169,140 +169,142 @@ function Home(props) {
                 justifyContent: 'center'
             }}>
                 <ActivityIndicator size="large" color={colors.primary} />
-            </View> : isAllEmpty() ? <View style={{
-                flex: 1,
-                alignItems: 'center',
-                paddingTop: 150
-            }}>
-                <Image source={images.warningImage} style={{
-                    resizeMode: 'cover',
-                    width: 140,
-                    height: 140
-                }} />
-                <Text style={{
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
-                    color: 'black',
-                    textAlign: 'center',
-                    marginHorizontal: 35,
-                    marginTop: 10
-                }}>Không thể tìm thấy sản phẩm nào.</Text>
-                <TouchableOpacity onPress={() => initializeDataHome()}>
+            </View> : <View>
+                {isAllEmpty() ? <View style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    paddingTop: 150
+                }}>
+                    <Image source={images.warningImage} style={{
+                        resizeMode: 'cover',
+                        width: 140,
+                        height: 140
+                    }} />
                     <Text style={{
-                        fontSize: fontSizes.h5,
+                        fontSize: fontSizes.h4,
                         fontFamily: fonts.OpenSansMedium,
-                        color: colors.primary,
+                        color: 'black',
                         textAlign: 'center',
                         marginHorizontal: 35,
-                        marginTop: 20
-                    }}>Tải lại</Text>
-                </TouchableOpacity>
-            </View> : <View>
-                {/*  Optional section: sign in or register */}
-                {!authContext?.authState?.authenticated ? <View style={{
-                    height: 150,
-                    paddingTop: 10,
-                    paddingHorizontal: 25
-                }}>
-                    <Text style={{
-                        color: 'black',
-                        fontSize: fontSizes.h3,
-                        textAlign: 'center',
-                        fontFamily: fonts.OpenSansMedium
-                    }}>Hãy đăng nhập để trải nghiệm tối đa nền tảng của chúng tôi</Text>
-                    <View style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginTop: 10,
-                        gap: 10
+                        marginTop: 10
+                    }}>Không thể tìm thấy sản phẩm nào.</Text>
+                    <TouchableOpacity onPress={() => initializeDataHome()}>
+                        <Text style={{
+                            fontSize: fontSizes.h5,
+                            fontFamily: fonts.OpenSansMedium,
+                            color: colors.primary,
+                            textAlign: 'center',
+                            marginHorizontal: 35,
+                            marginTop: 20
+                        }}>Tải lại</Text>
+                    </TouchableOpacity>
+                </View> : <View>
+                    {/*  Optional section: sign in or register */}
+                    {!authContext?.authState?.authenticated ? <View style={{
+                        height: 150,
+                        paddingTop: 10,
+                        paddingHorizontal: 25
                     }}>
-                        <TouchableOpacity style={styles.loginButton}
-                            onPress={() => {
-                                navigate('Register')
-                            }}>
-                            <Text style={styles.loginText}>Đăng ký</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.loginButton}
-                            onPress={() => {
-                                navigate('Login')
-                            }}>
-                            <Text style={styles.loginText}>Đăng nhập</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View> : <View></View>}
-
-                <View>
-                    {/*  Popular products section */}
-                    <View style={{
-                        marginBottom: 20
-                    }}>
-                        <View style={styles.headerLayout}>
-                            <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
-                            <TouchableOpacity onPress={() => navigate('Listing')}>
-                                <Text style={styles.headerSubText}>Xem tất cả</Text>
+                        <Text style={{
+                            color: 'black',
+                            fontSize: fontSizes.h3,
+                            textAlign: 'center',
+                            fontFamily: fonts.OpenSansMedium
+                        }}>Hãy đăng nhập để trải nghiệm tối đa nền tảng của chúng tôi</Text>
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 10,
+                            gap: 10
+                        }}>
+                            <TouchableOpacity style={styles.loginButton}
+                                onPress={() => {
+                                    navigate('Register')
+                                }}>
+                                <Text style={styles.loginText}>Đăng ký</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.loginButton}
+                                onPress={() => {
+                                    navigate('Login')
+                                }}>
+                                <Text style={styles.loginText}>Đăng nhập</Text>
                             </TouchableOpacity>
                         </View>
-                        {(Array.isArray(popularProducts) && popularProducts.length) ? <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={popularProducts}
-                            renderItem={({ item }) => {
-                                return <HomeItemCard item={item}
-                                    onPress={() => navigate('ListingDetail', { product_id: item.id })} />
-                            }}
-                            keyExtractor={eachProduct => eachProduct.id}
-                        /> : <View>
-                            <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
-                        </View>}
-                    </View>
+                    </View> : <View></View>}
 
-                    {/*  Ongoing auctions section */}
-                    <View style={{
-                        marginBottom: 20
-                    }}>
-                        <View style={styles.headerLayout}>
-                            <Text style={styles.headerText}>Cuộc đấu giá đang diễn ra</Text>
-                            <TouchableOpacity onPress={() => navigate('AuctionListing')}>
-                                <Text style={styles.headerSubText}>Xem tất cả</Text>
-                            </TouchableOpacity>
+                    <View>
+                        {/*  Popular products section */}
+                        <View style={{
+                            marginBottom: 20
+                        }}>
+                            <View style={styles.headerLayout}>
+                                <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
+                                <TouchableOpacity onPress={() => navigate('Listing')}>
+                                    <Text style={styles.headerSubText}>Xem tất cả</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {(Array.isArray(popularProducts) && popularProducts.length) ? <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={popularProducts}
+                                renderItem={({ item }) => {
+                                    return <HomeItemCard item={item}
+                                        onPress={() => navigate('ListingDetail', { product_id: item.id })} />
+                                }}
+                                keyExtractor={eachProduct => eachProduct.id}
+                            /> : <View>
+                                <Text style={styles.emptyText}>Không có sản phẩm để hiển thị</Text>
+                            </View>}
                         </View>
-                        {(Array.isArray(ongoingAuctions) && ongoingAuctions.length) ? <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={ongoingAuctions}
-                            renderItem={({ item }) => {
-                                return <HomeAuctionCard item={item}
-                                    onPress={() => navigate('AuctionDetail', { auction_id: item.id })} />
-                            }}
-                            keyExtractor={eachAuction => eachAuction.id}
-                        /> : <View>
-                            <Text style={styles.emptyText}>Không có cuộc đấu giá để hiển thị</Text>
-                        </View>}
-                    </View>
 
-                    {/*  Categories section */}
-                    <View style={{
-                        flex: 1,
-                        marginBottom: 20
-                    }}>
-                        <View style={styles.headerLayout}>
-                            <Text style={styles.headerText}>Khám phá các danh mục</Text>
+                        {/*  Ongoing auctions section */}
+                        <View style={{
+                            marginBottom: 20
+                        }}>
+                            <View style={styles.headerLayout}>
+                                <Text style={styles.headerText}>Cuộc đấu giá đang diễn ra</Text>
+                                <TouchableOpacity onPress={() => navigate('AuctionListing')}>
+                                    <Text style={styles.headerSubText}>Xem tất cả</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {(Array.isArray(ongoingAuctions) && ongoingAuctions.length) ? <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={ongoingAuctions}
+                                renderItem={({ item }) => {
+                                    return <HomeAuctionCard item={item}
+                                        onPress={() => navigate('AuctionDetail', { auction_id: item.id })} />
+                                }}
+                                keyExtractor={eachAuction => eachAuction.id}
+                            /> : <View>
+                                <Text style={styles.emptyText}>Không có cuộc đấu giá để hiển thị</Text>
+                            </View>}
                         </View>
-                        {(Array.isArray(categories) && categories.length) ? <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={categories}
-                            renderItem={({ item }) => {
-                                return <HomeCategoryCard item={item}
-                                    onPress={() => alert(`Press item name ${item.name}`)} />
-                            }}
-                            keyExtractor={eachCategory => eachCategory.id}
-                        /> : <View>
-                            <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
-                        </View>}
+
+                        {/*  Categories section */}
+                        <View style={{
+                            flex: 1,
+                            marginBottom: 20
+                        }}>
+                            <View style={styles.headerLayout}>
+                                <Text style={styles.headerText}>Khám phá các danh mục</Text>
+                            </View>
+                            {(Array.isArray(categories) && categories.length) ? <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={categories}
+                                renderItem={({ item }) => {
+                                    return <HomeCategoryCard item={item}
+                                        onPress={() => alert(`Press item name ${item.name}`)} />
+                                }}
+                                keyExtractor={eachCategory => eachCategory.id}
+                            /> : <View>
+                                <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
+                            </View>}
+                        </View>
                     </View>
-                </View>
+                </View>}
             </View>}
         </ScrollView>
     </View>

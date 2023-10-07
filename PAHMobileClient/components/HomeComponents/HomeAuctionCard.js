@@ -10,7 +10,7 @@ import TimeLeft from '../TimeLeft';
 
 function HomeAuctionCard(props) {
     const { item, onPress } = props;
-    const { title, endedAt, entryFee, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg' } = item;
+    const { title, endedAt, currentPrice, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg' } = item;
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -26,7 +26,7 @@ function HomeAuctionCard(props) {
             style={styles.itemTitle}>{title}</Text>
         <Text numberOfLines={2}
             ellipsizeMode='tail'
-            style={styles.itemPrice}>{numberWithCommas(entryFee)} VND</Text>
+            style={styles.itemPrice}>{numberWithCommas(currentPrice)} VND</Text>
         {endedAt != undefined && <TimeLeft width={150} closedTime={endedAt} />}
     </TouchableOpacity>
 }

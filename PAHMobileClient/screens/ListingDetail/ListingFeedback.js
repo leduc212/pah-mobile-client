@@ -1,22 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { ListingDetailFeedback } from '../../components';
+import { Feedback as FeedbackRepository } from '../../repositories';
 
 function ListingFeedback(props) {
-    // Get product_id from routes
-    const { product_id } = props.route.params;
 
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -24,57 +28,41 @@ function ListingFeedback(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
-    const [feedbacks, setFeedbacks] = useState([
-        {
-            id: 12,
-            star: 4,
-            user_name: 'Lê Đức Hiền',
-            content: 'Sản phẩm tốt, đẹp'
-        },
-        {
-            id: 15,
-            star: 3,
-            user_name: 'Trần Ngọc Châu',
-            content: 'Nhìn có vẻ tạm'
-        },
-        {
-            id: 26,
-            star: 5,
-            user_name: 'Nguyễn Huỳnh Tuấn',
-            content: 'Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời Sản phẩm rất tuyệt vời'
-        },
-        {
-            id: 29,
-            star: 4,
-            user_name: 'Hoàng Lê Gia Bảo',
-            content: 'Sản phẩm rất phù hợp với nhu cầu của tôi'
-        },
-        {
-            id: 65,
-            star: 2,
-            user_name: 'Vũ Triều Dương',
-            content: 'Khi tôi nhận được sản phẩm thì phát hiện ra 1 vết nứt nhẹ'
-        },
-        {
-            id: 81,
-            star: 3,
-            user_name: 'Trần Dương Phúc Đạt',
-            content: 'Nhìn khác so với hình ảnh'
-        },
-        {
-            id: 92,
-            star: 4,
-            user_name: 'Mike Tyson',
-            content: 'Good'
-        },
-        {
-            id: 95,
-            star: 3,
-            user_name: 'Donald Trump',
-            content: 'A nice piece of art'
-        }
-    ])
+    //// Data
+    // Get product_id from routes
+    const { product_id } = props.route.params;
+
+    // Data for loading and refreshing
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Feedback list
+    const [feedbacks, setFeedbacks] = useState([])
+
+    //// FUNCTION
+    function getFeedbacks() {
+        setIsLoading(true);
+        FeedbackRepository.getFeedbacksByProductId(axiosContext, product_id)
+            .then(response => {
+                setFeedbacks(response);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.log(error);
+                setIsLoading(false);
+            })
+    }
+
+    useEffect(() => {
+        getFeedbacks()
+    }, []);
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        getFeedbacks();
+        setRefreshing(false);
+    };
 
     return <View style={styles.container}>
         {/* Fixed screen title: Cart */}
@@ -87,11 +75,16 @@ function ListingFeedback(props) {
             </TouchableOpacity>
             <Text style={styles.titleText}>Tất cả phản hồi</Text>
         </View>
-
-        {/* Description */}
-        <ScrollView style={{
-            paddingHorizontal: 15
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
         }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView style={{
+            paddingHorizontal: 15
+        }} refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
             <View style={{ marginTop: 5 }}>
                 {(Array.isArray(feedbacks) && feedbacks.length) ? <View>
                     {feedbacks.map((feedback, index) =>
@@ -103,7 +96,7 @@ function ListingFeedback(props) {
                     <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
                 </View>}
             </View>
-        </ScrollView>
+        </ScrollView>}
     </View>
 }
 

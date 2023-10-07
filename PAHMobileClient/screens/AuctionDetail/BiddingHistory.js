@@ -1,13 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  RefreshControl,
+  ActivityIndicator
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -15,13 +18,18 @@ import {
   TimeLeft,
   BidHistoryItem
 } from '../../components';
+import {
+  Auction as AuctionRepository,
+  Bid as BidRepository
+} from '../../repositories';
+import moment from 'moment';
 
 function BiddingHistory(props) {
-  // Get auction_id from routes
-  const { auction_id } = props.route.params;
 
+  //// AUTH AND NAVIGATION
   // Auth Context
   const authContext = useContext(AuthContext);
+  const axiosContext = useContext(AxiosContext);
 
   // Navigation
   const { navigation, route } = props;
@@ -29,61 +37,55 @@ function BiddingHistory(props) {
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
 
-  // Data
-  const [product, setProduct] = useState({
-    name: 'Đá thạch anh hồng phong thuỷ',
-    price: '1,220,000',
-    package_content: 'Đá cảnh + đế gỗ + túi giấy sang trọng + dầu dưỡng đá + giấy kiểm định chất lượng đá',
-    package_method: 'Hộp kèm đế',
-    condition: 'Tốt',
-    category: 'Đá Phong Thủy',
-    material: 'Đá quý',
-    origin: 'Việt Nam',
-    dimension: '14.8x12x6.3 cm',
-    weight: '1,5',
-    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    images: [
-      'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg',
-      'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg',
-      'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg',
-      'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
-    ],
-    seller: {
-      seller_name: 'avd seller',
-      seller_address: 'Thành phố Hồ Chí Minh',
-      seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-    }
+  //// Data
+  // Get auction_id from routes
+  const { auction_id } = props.route.params;
+
+  // Data for loading and refreshing
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Auction data
+  const [auction, setAuction] = useState({
+    product: {},
+    seller: {},
+    imageUrls: []
   });
 
-  const [bidHistory, setBidHistory] = useState([
-    {
-      id: 13,
-      user: {
-        id: 101,
-        name: 'Trần Dương Phúc Đạt'
-      },
-      bid_amount: '8,550,000',
-      bid_date: '2023-10-02'
-    },
-    {
-      id: 12,
-      user: {
-        id: 105,
-        name: 'Lê Minh Đức'
-      },
-      bid_amount: '8,400,000',
-      bid_date: '2023-10-01'
-    },
-    {
-      id: 11,
-      user: {
-        id: 101,
-        name: 'Trần Dương Phúc Đạt'
-      },
-      bid_amount: '8,200,000',
-      bid_date: '2023-09-30'
-    },
-  ]);
+  const [bidHistory, setBidHistory] = useState([]);
+
+  //// FUNCTION
+  // Get auction detail from current auction id
+  function getAutionDetail() {
+    setIsLoading(true);
+
+    const promiseAuctionDetail = AuctionRepository.getAuctionDetail(axiosContext, auction_id)
+      .then(response => {
+        setAuction(response)
+      })
+
+    const promiseBidHistory = BidRepository.getBidsByAuctionId(axiosContext, auction_id)
+      .then(response => {
+        setBidHistory(response);
+      })
+
+    Promise.all([promiseAuctionDetail, promiseBidHistory])
+      .then((values) => {
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    getAutionDetail();
+  }, []);
+
+  // Price format function
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 
   return <View style={styles.container}>
     {/* Fixed screen title: Cart */}
@@ -97,8 +99,13 @@ function BiddingHistory(props) {
       <Text style={styles.titleText}>Lịch sử đặt giá</Text>
     </View>
 
-    <ScrollView>
-      {/* Product basic info section */}
+    {isLoading ? <View style={{
+      flex: 1,
+      justifyContent: 'center'
+    }}>
+      <ActivityIndicator size="large" color={colors.primary} />
+    </View> : <ScrollView>
+      {/* Auction basic info section */}
       <View style={{
         paddingHorizontal: 15,
         marginBottom: 15
@@ -107,7 +114,7 @@ function BiddingHistory(props) {
           flexDirection: 'row',
           gap: 10
         }}>
-          <Image source={{ uri: product.images.at(0) }}
+          <Image source={{ uri: auction.imageUrls.at(0) }}
             style={{
               resizeMode: 'cover',
               width: 100,
@@ -121,12 +128,12 @@ function BiddingHistory(props) {
               color: 'black',
               fontFamily: fonts.OpenSansMedium,
               fontSize: fontSizes.h3
-            }}>{product.name}</Text>
+            }}>{auction.product.name}</Text>
             <Text style={{
               color: 'black',
               fontFamily: fonts.OpenSansBold,
               fontSize: fontSizes.h2
-            }}>{product.price} VNĐ</Text>
+            }}>{numberWithCommas(auction.currentPrice)} VNĐ</Text>
           </View>
         </View>
       </View>
@@ -141,12 +148,12 @@ function BiddingHistory(props) {
           color: 'black',
           fontFamily: fonts.OpenSansBold,
           fontSize: fontSizes.h2
-        }}>Thông tin sản phẩm</Text>
+        }}>Thông tin cuộc đấu giá</Text>
         <View style={{ gap: 10, marginTop: 5 }}>
-          <ListingDetailInfoText label='Thời gian còn lại' text='2 ngày 13 giờ'
-            secondText='Chủ nhật, 8 tháng 10 2023, 09:56 PM' />
-          <ListingDetailInfoText label='Số lần đặt' text='3' />
-          <ListingDetailInfoText label='Người tham gia' text='2' />
+          <ListingDetailInfoText label='Thời gian còn lại' text={moment(auction.endedAt).fromNow()}
+            secondText={moment(auction.endedAt).format('dd, Do MMMM YYYY, h:mm A')} />
+          <ListingDetailInfoText label='Số lần đặt' text={auction.numberOfBids} />
+          <ListingDetailInfoText label='Người tham gia' text={auction.numberOfBidders} />
         </View>
       </View>
 
@@ -175,12 +182,12 @@ function BiddingHistory(props) {
                     color: 'black',
                     fontFamily: fonts.OpenSansMedium,
                     fontSize: fontSizes.h4
-                  }}>8,000,000 VNĐ</Text>
+                  }}>{numberWithCommas(auction.startingPrice)} VNĐ</Text>
                   <Text style={{
                     color: colors.darkGreyText,
                     fontFamily: fonts.OpenSansMedium,
                     fontSize: fontSizes.h4
-                  }}>{product.seller.seller_name}</Text>
+                  }}>{auction.seller.name}</Text>
                 </View>
                 <View style={{ flex: 4, flexDirection: 'row' }}>
                   <Text style={{
@@ -202,7 +209,8 @@ function BiddingHistory(props) {
           </View>}
         </View>
       </View>
-    </ScrollView>
+    </ScrollView>}
+
   </View>
 }
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import config from "../config";
 
 async function calculateShippingCost(addressInput) {
-    const categoryPath = `${config.GHN_API_URL}/fee`;
+    const shippingPath = `${config.GHN_API_URL}/fee`;
     let configAxios = {
         headers: {
             Token: config.GHN_TOKEN,
@@ -10,7 +10,7 @@ async function calculateShippingCost(addressInput) {
         }
     }
     try {
-        let responseData = await axios.post(categoryPath, addressInput, configAxios);
+        let responseData = await axios.post(shippingPath, addressInput, configAxios);
         if (responseData.status != 200) {
             throw responseData.message;
         }
@@ -26,6 +26,31 @@ async function calculateShippingCost(addressInput) {
     }
 }
 
+async function calculateShippingDate(addressInput) {
+    const shippingPath = `${config.GHN_API_URL}/leadtime`;
+    let configAxios = {
+        headers: {
+            Token: config.GHN_TOKEN,
+            ShopId: config.GHN_SHOPID
+        }
+    }
+    try {
+        let responseData = await axios.post(shippingPath, addressInput, configAxios);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseShipping = responseData.data.data;
+        let shipping = {};
+        
+        shipping.leadtime = responseShipping.leadtime  ?? 0;
+
+        return shipping;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
-    calculateShippingCost
+    calculateShippingCost,
+    calculateShippingDate
 }

@@ -5,6 +5,9 @@ import Auth from "./Auth";
 import Material from "./Material";
 import Address from "./Address";
 import Shipping from "./Shipping";
+import Feedback from "./Feedback";
+import Bid from "./Bid";
+
 export {
     Category,
     Product,
@@ -12,5 +15,7 @@ export {
     Auth,
     Material,
     Address,
-    Shipping
+    Shipping,
+    Feedback,
+    Bid
 }

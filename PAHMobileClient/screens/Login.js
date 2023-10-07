@@ -59,7 +59,7 @@ function Login(props) {
           }),
         );
         
-        navigate('Account');
+        goBack();
       })
       .catch(error => {
         setIsLoginLoading(false);

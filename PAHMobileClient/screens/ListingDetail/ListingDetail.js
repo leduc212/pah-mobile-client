@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
-import { colors, fontSizes, fonts } from '../../constants';
+import { colors, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
 import Modal from 'react-native-modal';
@@ -66,44 +66,58 @@ function ListingDetail(props) {
     function getProductDetail() {
         setIsLoading(true);
 
-        ProductRepository.getProductDetail(axiosContext, product_id)
-            .then(response => {
-                setProduct(response)
+        // If authenticated, get default address and shipping price
+        if (authContext?.authState?.authenticated) {
+            ProductRepository.getProductDetail(axiosContext, product_id)
+                .then(responseProduct => {
+                    setProduct(responseProduct)
+                    AddressRepository.getAdrressCurrentUser(axiosContext)
+                        .then(responseAddress => {
+                            setUserAddress(responseAddress);
+                            // Shipping cost calculate
+                            getShippingCost(responseAddress, responseProduct);
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            setIsLoading(false);
+                        });
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                });
+        } else {
+            ProductRepository.getProductDetail(axiosContext, product_id)
+                .then(response => {
+                    setProduct(response)
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                });
+        }
+    }
+
+    function getShippingCost(responseAddress, responseProduct) {
+        ShippingRepository.calculateShippingCost({
+            service_type_id: 2,
+            from_district_id: product.seller.districtId,
+            from_ward_code: product.seller.wardCode,
+            to_district_id: responseAddress.districtId,
+            to_ward_code: responseAddress.wardCode,
+            weight: responseProduct.weight
+        })
+            .then(responseShip => {
+                setShippingPrice(responseShip.total);
                 setIsLoading(false);
             })
             .catch(error => {
+                console.log(error);
                 setIsLoading(false);
-            });
+            })
     }
 
     useEffect(() => {
         getProductDetail();
-
-        // If authenticated, get default address and shipping price
-        if (authContext?.authState?.authenticated) {
-            AddressRepository.getAdrressCurrentUser(axiosContext)
-                .then(response => {
-                    setUserAddress(response);
-                    // tinh gia ship o day
-                    ShippingRepository.calculateShippingCost({
-                        service_type_id: 2,
-                        from_district_id: product.seller.districtId,
-                        from_ward_code: product.seller.wardCode,
-                        to_district_id: response.districtId,
-                        to_ward_code: response.wardCode,
-                        weight: 300
-                    })
-                        .then(responseShip => {
-                            setShippingPrice(responseShip.total)
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        })
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        }
     }, []);
 
     // Price format function
@@ -157,193 +171,229 @@ function ListingDetail(props) {
             justifyContent: 'center'
         }}>
             <ActivityIndicator size="large" color={colors.primary} />
-        </View> : <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
-            {/* Images slider */}
-            <SliderBox images={product.imageUrls}
-                sliderBoxHeight={480}
-                dotColor={colors.primary}
-                inactiveDotColor='#90A4AE' />
+        </View> : <View>
+            {product.name ? <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+                {/* Images slider */}
+                <SliderBox images={product.imageUrls}
+                    sliderBoxHeight={480}
+                    dotColor={colors.primary}
+                    inactiveDotColor='#90A4AE' />
 
-            {/* Product name */}
-            <Text style={styles.productName}>{product.name}</Text>
+                {/* Product name */}
+                <Text style={styles.productName}>{product.name}</Text>
 
-            {/* Top Seller section */}
-            <TouchableOpacity style={styles.topSellerContainer}
-                onPress={() => setSellerModalVisible(!sellerModalVisible)}>
-                <Image source={{ uri: product.seller.profilePicture }}
-                    style={styles.topSellerImage} />
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.topSellerName}>{product.seller.name}</Text>
-                    <Text style={styles.topSellerInformation}>{product.seller.province}</Text>
-                </View>
-                <IconFeather name='chevron-right' size={30} color='black' />
-            </TouchableOpacity>
-
-            {/* Pricing section */}
-            <View style={styles.priceContainer}>
-                <Text style={styles.pricePrimary}>{numberWithCommas(product.price)} VNĐ</Text>
-
-                {!authContext?.authState?.authenticated && <Text
-                    style={styles.priceSecondary}
-                >Đăng nhập để xem cước phí vận chuyển</Text>}
-
-                {shippingPrice != 0 && userAddress != '' ? <View>
-                    <Text style={styles.priceSecondary}
-                    >{numberWithCommas(shippingPrice)} VNĐ cước vận chuyển</Text>
-                    <Text style={styles.priceSecondary}
-                    >Đến {`${userAddress.ward}, ${userAddress.district}, ${userAddress.province}`}</Text>
-                </View> : <Text style={styles.priceSecondary}
-                >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
-            </View>
-
-            {/* Buy and add to cart buttons */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginVertical: 10,
-            }}>
-                <TouchableOpacity style={styles.primaryButton}
-                    onPress={() => navigate('CheckoutNow', { product_id: product.id })}>
-                    <Text style={styles.primaryButtonText}>Mua ngay</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.secondaryButton}>
-                    <Text style={styles.secondaryButtonText}>Thêm vào giỏ hàng</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Item information section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginVertical: 10
-            }}>
-                <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
-                <View style={{ gap: 10, marginTop: 5 }}>
-                    <ListingDetailInfoText label='Bao gồm' text={product.packageContent} />
-                    <ListingDetailInfoText label='Tình trạng' text={conditionText(product.condition)} />
-                    <ListingDetailInfoText label='Danh mục' text={product.categoryName} />
-                    <ListingDetailInfoText label='Chất liệu' text={product.materialName} />
-                    <ListingDetailInfoText label='Xuất xứ' text={product.origin} />
-                    <ListingDetailInfoText label='Kích thước' text={product.dimension} />
-                    <ListingDetailInfoText label='Khối lượng' text={product.weight + ' g'} />
-                    <ListingDetailInfoText label='Đóng gói' text={product.packageMethod} />
-                </View>
-            </View>
-
-            {/* Item description section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginVertical: 10
-            }}>
-                <Text style={styles.sectionTitle}>Thông tin thêm từ người bán</Text>
-                <TouchableOpacity style={{
-                    marginTop: 5,
-                    flexDirection: 'row',
-                    alignItems: 'center'
-                }}
-                    onPress={() => navigate('ListingDescription', { description: product.description })}>
-                    <View style={{
-                        flex: 1,
-                        gap: 10
-                    }}>
-                        <Text
-                            numberOfLines={3}
-                            ellipsizeMode='tail'
-                            style={styles.descriptionText}
-                        >{product.description}</Text>
-                        <Text style={styles.descriptionLink}
-                        >Xem đầy đủ thông tin thêm</Text>
+                {/* Top Seller section */}
+                <TouchableOpacity style={styles.topSellerContainer}
+                    onPress={() => setSellerModalVisible(!sellerModalVisible)}>
+                    <Image source={{ uri: product.seller.profilePicture }}
+                        style={styles.topSellerImage} />
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.topSellerName}>{product.seller.name}</Text>
+                        <Text style={styles.topSellerInformation}>{product.seller.province}</Text>
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
-            </View>
 
-            {/* Shipping information section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginVertical: 10
-            }}>
-                <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
-                <TouchableOpacity style={{
-                    marginTop: 5,
-                    flexDirection: 'row',
-                    alignItems: 'center'
-                }}
-                    onPress={() => setShippingModalVisible(!shippingModalVisible)}>
-                    <View style={{ gap: 10, flex: 1 }}>
-                        <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023'
-                            secondText={'Từ ' + `${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`}
-                            thirdText='Thông qua Giao hàng nhanh' />
-                        <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                            secondText='Người mua trả phí vận chuyển' />
-                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
-                    </View>
-                    <IconFeather name='chevron-right' size={30} color='black' />
-                </TouchableOpacity>
-            </View>
+                {/* Pricing section */}
+                <View style={styles.priceContainer}>
+                    <Text style={styles.pricePrimary}>{numberWithCommas(product.price)} VNĐ</Text>
 
-            {/* Bottom seller section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginVertical: 10
-            }}>
-                <Text style={styles.sectionTitle}>Về người bán</Text>
-                <View style={{ gap: 10, marginTop: 5 }}>
-                    <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.id })}>
-                        <View style={{
-                            flexDirection: 'row',
-                            gap: 15
-                        }}>
-                            <Image source={{ uri: product.seller.profilePicture }}
-                                style={styles.bottomSellerImage} />
-                            <View style={{ gap: 2 }}>
-                                <Text style={styles.bottomSellerPrimary}>{product.seller.name}</Text>
-                                <Text style={styles.bottomSellerSecondary}>{product.seller.province}</Text>
-                                <Text style={styles.bottomSellerSecondary}>Đánh giá: {product.seller.ratings}</Text>
-                            </View>
-                        </View>
-                        <View style={{
-                            flexDirection: 'row',
-                            marginVertical: 15,
-                            gap: 10
-                        }}>
-                            <IconFeather name='calendar' size={20} color='black' />
-                            <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Product feedback section */}
-            <View style={{
-                paddingHorizontal: 15,
-                gap: 10,
-                marginTop: 10,
-                marginBottom: 20
-            }}>
-                <Text style={styles.sectionTitle}>Phản hồi về sản phẩm</Text>
-                <View style={{ marginTop: 5 }}>
-                    {(Array.isArray(product.feedbacks) && product.feedbacks.length) ? <View>
-                        {product.feedbacks.map((feedback, index) =>
-                            <ListingDetailFeedback feedback={feedback}
-                                key={feedback.id}
-                                index={index}
-                                length={product.feedbacks.length - 1} />)}
-                        <TouchableOpacity style={styles.secondaryButton}
-                            onPress={() => navigate('ListingFeedback', { product_id: product.id })}>
-                            <Text style={styles.secondaryButtonText}>Xem tất cả phản hồi</Text>
-                        </TouchableOpacity>
-                    </View> : <View>
-                        <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
+                    {!authContext?.authState?.authenticated ? <Text
+                        style={styles.priceSecondary}
+                    >Đăng nhập để xem cước phí vận chuyển</Text> : <View>
+                        {shippingPrice != 0 && userAddress != '' ? <View>
+                            <Text style={styles.priceSecondary}
+                            >{numberWithCommas(shippingPrice)} VNĐ cước vận chuyển</Text>
+                            <Text style={styles.priceSecondary}
+                            >Đến {`${userAddress.ward}, ${userAddress.district}, ${userAddress.province}`}</Text>
+                        </View> : <Text style={styles.priceSecondary}
+                        >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
                     </View>}
                 </View>
-            </View>
-        </ScrollView>}
+
+                {/* Buy and add to cart buttons */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginVertical: 10,
+                }}>
+                    <TouchableOpacity style={styles.primaryButton}
+                        onPress={() => {
+                            if (authContext?.authState?.authenticated) {
+                                navigate('CheckoutNow', { product_id: product.id })
+                            }
+                            else {
+                                navigate('Login')
+                            }
+                        }}>
+                        <Text style={styles.primaryButtonText}>Mua ngay</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.secondaryButton}>
+                        <Text style={styles.secondaryButtonText}>Thêm vào giỏ hàng</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Item information section */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginVertical: 10
+                }}>
+                    <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
+                    <View style={{ gap: 10, marginTop: 5 }}>
+                        <ListingDetailInfoText label='Bao gồm' text={product.packageContent} />
+                        <ListingDetailInfoText label='Tình trạng' text={conditionText(product.condition)} />
+                        <ListingDetailInfoText label='Danh mục' text={product.categoryName} />
+                        <ListingDetailInfoText label='Chất liệu' text={product.materialName} />
+                        <ListingDetailInfoText label='Xuất xứ' text={product.origin} />
+                        <ListingDetailInfoText label='Kích thước' text={product.dimension} />
+                        <ListingDetailInfoText label='Khối lượng' text={product.weight + ' g'} />
+                        <ListingDetailInfoText label='Đóng gói' text={product.packageMethod} />
+                    </View>
+                </View>
+
+                {/* Item description section */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginVertical: 10
+                }}>
+                    <Text style={styles.sectionTitle}>Thông tin thêm từ người bán</Text>
+                    <TouchableOpacity style={{
+                        marginTop: 5,
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }}
+                        onPress={() => navigate('ListingDescription', { description: product.description })}>
+                        <View style={{
+                            flex: 1,
+                            gap: 10
+                        }}>
+                            <Text
+                                numberOfLines={3}
+                                ellipsizeMode='tail'
+                                style={styles.descriptionText}
+                            >{product.description}</Text>
+                            <Text style={styles.descriptionLink}
+                            >Xem đầy đủ thông tin thêm</Text>
+                        </View>
+                        <IconFeather name='chevron-right' size={30} color='black' />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Shipping information section */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginVertical: 10
+                }}>
+                    <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
+                    <TouchableOpacity style={{
+                        marginTop: 5,
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }}
+                        onPress={() => setShippingModalVisible(!shippingModalVisible)}>
+                        <View style={{ gap: 10, flex: 1 }}>
+                            <ListingDetailInfoText label='Giao hàng'
+                                text={'Từ ' + `${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`}
+                                secondText='Thông qua Giao hàng nhanh' />
+                            <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
+                                secondText='Người mua trả phí vận chuyển' />
+                            <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
+                        </View>
+                        <IconFeather name='chevron-right' size={30} color='black' />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Bottom seller section */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginVertical: 10
+                }}>
+                    <Text style={styles.sectionTitle}>Về người bán</Text>
+                    <View style={{ gap: 10, marginTop: 5 }}>
+                        <TouchableOpacity onPress={() => navigate('Profile', { user_id: product.seller.id })}>
+                            <View style={{
+                                flexDirection: 'row',
+                                gap: 15
+                            }}>
+                                <Image source={{ uri: product.seller.profilePicture }}
+                                    style={styles.bottomSellerImage} />
+                                <View style={{ gap: 2 }}>
+                                    <Text style={styles.bottomSellerPrimary}>{product.seller.name}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>{product.seller.province}</Text>
+                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {product.seller.ratings}</Text>
+                                </View>
+                            </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                marginVertical: 15,
+                                gap: 10
+                            }}>
+                                <IconFeather name='calendar' size={20} color='black' />
+                                <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Product feedback section */}
+                <View style={{
+                    paddingHorizontal: 15,
+                    gap: 10,
+                    marginTop: 10,
+                    marginBottom: 100
+                }}>
+                    <Text style={styles.sectionTitle}>Phản hồi về sản phẩm</Text>
+                    <View style={{ marginTop: 5 }}>
+                        {(Array.isArray(product.feedbacks) && product.feedbacks.length) ? <View>
+                            {product.feedbacks.map((feedback, index) =>
+                                <ListingDetailFeedback feedback={feedback}
+                                    key={feedback.id}
+                                    index={index}
+                                    length={product.feedbacks.length - 1} />)}
+                            <TouchableOpacity style={styles.secondaryButton}
+                                onPress={() => navigate('ListingFeedback', { product_id: product.id })}>
+                                <Text style={styles.secondaryButtonText}>Xem tất cả phản hồi</Text>
+                            </TouchableOpacity>
+                        </View> : <View>
+                            <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
+                        </View>}
+                    </View>
+                </View>
+            </ScrollView> : <View style={{
+                alignItems: 'center',
+                paddingTop: 150
+            }}>
+                <Image source={images.warningImage} style={{
+                    resizeMode: 'cover',
+                    width: 140,
+                    height: 140
+                }} />
+                <Text style={{
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.OpenSansMedium,
+                    color: 'black',
+                    textAlign: 'center',
+                    marginHorizontal: 35,
+                    marginTop: 10
+                }}>Không thể tìm thấy thông tin sản phẩm này.</Text>
+                <TouchableOpacity onPress={() => getProductDetail()}>
+                    <Text style={{
+                        fontSize: fontSizes.h5,
+                        fontFamily: fonts.OpenSansMedium,
+                        color: colors.primary,
+                        textAlign: 'center',
+                        marginHorizontal: 35,
+                        marginTop: 20
+                    }}>Tải lại</Text>
+                </TouchableOpacity>
+            </View>}
+        </View>}
 
         {/* Seller modal */}
         <Modal
@@ -428,9 +478,10 @@ function ListingDetail(props) {
                         marginHorizontal: 20,
                         marginBottom: 30
                     }}>
-                        <ListingDetailInfoText label='Giao dự kiến' text='Thứ 2, 2 tháng 10 2023' />
                         <ListingDetailInfoText label='Giao từ' text={`${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`} />
-                        <ListingDetailInfoText label='Giao đến' text='Địa chỉ mặc định hoặc không có' />
+                        <ListingDetailInfoText label='Giao đến' text={userAddress.province ?
+                            `${userAddress.ward}, ${userAddress.district}, ${userAddress.province}` :
+                            'Cài đặt địa chỉ mặc định để thấy cước vận chuyển'} />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
                         <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
