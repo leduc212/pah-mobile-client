@@ -22,6 +22,7 @@ import CheckoutNow from "./Checkout/CheckoutNow";
 import CheckoutCart from "./Checkout/CheckoutCart";
 import CheckoutComplete from "./Checkout/CheckoutComplete";
 import Wallet from "./Wallet/Wallet";
+import PaymentResult from "./Wallet/PaymentResult";
 
 export {
     Account,
@@ -47,5 +48,6 @@ export {
     EditAccount,
     Address,
     AddAddress,
-    Wallet
+    Wallet,
+    PaymentResult
 }

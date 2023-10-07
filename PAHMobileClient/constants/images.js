@@ -7,4 +7,6 @@ export default {
     searchImage: require('../assets/images/search.png'),
     orderSuccessImage: require('../assets/images/order-success.png'),
     warningImage: require('../assets/images/warning.png'),
+    successImage: require('../assets/images/success.png'),
+    failedImage: require('../assets/images/failed.png'),
 }

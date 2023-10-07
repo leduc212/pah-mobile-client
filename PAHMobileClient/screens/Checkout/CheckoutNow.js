@@ -1,23 +1,38 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
-    Image
+    Image,
+    ActivityIndicator,
+    NativeModules,
+    NativeEventEmitter,
+    RefreshControl
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
+import {
+    Product as ProductRepository,
+    Address as AddressRepository,
+    Shipping as ShippingRepository
+} from '../../repositories';
+import moment from 'moment';
+import CryptoJS from 'crypto-js';
+
+const { PayZaloBridge } = NativeModules;
+
+const payZaloBridgeEmitter = new NativeEventEmitter(PayZaloBridge);
 
 function CheckoutNow(props) {
-    // Get product_id from routes
-    const { product_id } = props.route.params;
-
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -25,30 +40,16 @@ function CheckoutNow(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
+    //// Data
+    // Get product_id from routes
+    const { product_id } = props.route.params;
+
+    // Data for product, payment methods and shipping address
     const [product, setProduct] = useState({
-        name: 'Đá thạch anh hồng phong thuỷ',
-        price: '1,220,000',
-        package_content: 'Đá cảnh + đế gỗ + túi giấy sang trọng + dầu dưỡng đá + giấy kiểm định chất lượng đá',
-        package_method: 'Hộp kèm đế',
-        condition: 'Tốt',
-        category: 'Đá Phong Thủy',
-        material: 'Đá quý',
-        origin: 'Việt Nam',
-        dimension: '14.8x12x6.3 cm',
-        weight: '1,5',
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-        images: [
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-trang-m150083-1.jpg',
-            'https://media.loveitopcdn.com/25808/thumb/tru-da-fluorite-xanh-m0752059-3.jpg'
-        ],
-        seller: {
-            seller_name: 'avd seller',
-            seller_address: 'Thành phố Hồ Chí Minh',
-            seller_avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-        }
+        seller: {},
+        feedbacks: [],
+        imageUrls: [],
+        price: 0
     });
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
@@ -69,25 +70,202 @@ function CheckoutNow(props) {
             text: 'Thanh toán COD'
         },
     ]);
-    const [paymentModal, setPaymentModal] = useState(false);
-    const [shippingAddress, setShippingAddress] = useState([
-        {
-            id: 1,
-            name: 'Lê Minh Đức',
-            phone: '0931856541',
-            address: '2, đường D4, khu phố 6, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
-        },
-        {
-            id: 2,
-            name: 'Lê Đức Hiền',
-            phone: '0918031377',
-            address: '16 đường D3, kdc Kiến Á, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
-        },
-    ]);
-    const [currentShippingAddress, setCurrentShippingAddress] = useState(shippingAddress.at(0));
+
+    const [shippingAddress, setShippingAddress] = useState([]);
+    const [currentShippingAddress, setCurrentShippingAddress] = useState({});
+
+    // Calculate data for shipping price
+    const [shippingPrice, setShippingPrice] = useState(0);
+    const [shippingDate, setShippingDate] = useState(0);
+    const totalPrice = () => product.price + shippingPrice;
+
+    // Data modal
     const [addressModal, setAddressModal] = useState(false);
-    // validating
-    const validationPaymentMethod = () => selectedPaymentMethod.id !== '';
+    const [paymentModal, setPaymentModal] = useState(false);
+
+    // Data for loading and refreshing
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Validating
+    const validation = () => selectedPaymentMethod.id !== '' && shippingAddress.length > 0;
+
+    //// FUNCTION
+    // Get product detail from current product id
+    function getProductDetail() {
+        setIsLoading(true);
+        ProductRepository.getProductDetail(axiosContext, product_id)
+            .then(responseProduct => {
+                setProduct(responseProduct);
+
+                AddressRepository.getAllAdrressCurrentUser(axiosContext)
+                    .then(responseAddress => {
+                        setShippingAddress(responseAddress);
+                        if (responseAddress.length > 0) {
+                            // Set default shipping address
+                            const defaultAddress = responseAddress.filter(address => {
+                                return address.isDefault;
+                            }).at(0)
+                            setCurrentShippingAddress(defaultAddress);
+                            getShippingCost(defaultAddress, responseProduct);
+                            getShippingDate(defaultAddress, responseProduct);
+                        }
+                        setIsLoading(false);
+                    })
+                    .catch(error => {
+                        setIsLoading(false);
+                    })
+            })
+            .catch(error => {
+                setIsLoading(false);
+            })
+
+
+    }
+
+    function getShippingCost(responseAddress, responseProduct) {
+        ShippingRepository.calculateShippingCost({
+            service_type_id: 2,
+            from_district_id: responseProduct.seller.districtId,
+            from_ward_code: responseProduct.seller.wardCode,
+            to_district_id: responseAddress.districtId,
+            to_ward_code: responseAddress.wardCode,
+            weight: responseProduct.weight
+        })
+            .then(responseShip => {
+                setShippingPrice(responseShip.total);
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            })
+    }
+
+    function getShippingDate(responseAddress, responseProduct) {
+        ShippingRepository.calculateShippingDate({
+            service_id: 53320,
+            from_district_id: responseProduct.seller.districtId,
+            from_ward_code: responseProduct.seller.wardCode,
+            to_district_id: responseAddress.districtId,
+            to_ward_code: responseAddress.wardCode
+        })
+            .then(responseShip => {
+                console.log(responseShip.leadtime)
+                setShippingDate(responseShip.leadtime);
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            })
+    }
+
+    useEffect(() => {
+        getProductDetail();
+
+        const subscription = payZaloBridgeEmitter.addListener(
+            'EventPayZalo',
+            (data) => {
+                // 1: SUCCESS, -1: FAILED, 4: CANCELLED
+                // If returncode = 1, create order with zalopay method
+                navigation.pop();
+                navigate('CheckoutComplete', { returnCode: data.returnCode });
+            }
+        );
+    }, []);
+
+    // Price format function
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        getProductDetail();
+        setRefreshing(false);
+    };
+
+    // Zalopayment
+    const [token, setToken] = useState('')
+    const [returncode, setReturnCode] = React.useState('')
+
+
+    function getCurrentDateYYMMDD() {
+        const todayDate = new Date().toISOString().slice(2, 10);
+        return todayDate.split('-').join('');
+    }
+
+    async function payOrder() {
+        setIsLoadingPayment(true);
+        let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime()
+
+        let appid = 2553
+        let amount = parseInt(totalPrice())
+        let appuser = "ZaloPayDemo"
+        let apptime = (new Date).getTime()
+        let embeddata = "{}"
+        let item = "[]"
+        let description = `Thanh toán đơn hàng ${apptransid}`
+        let hmacInput = appid + "|" + apptransid + "|" + appuser + "|" + amount + "|" + apptime + "|" + embeddata + "|" + item
+        let mac = CryptoJS.HmacSHA256(hmacInput, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+        console.log('====================================');
+        console.log("hmacInput: " + hmacInput);
+        console.log("mac: " + mac)
+        console.log('====================================');
+        var order = {
+            'app_id': appid,
+            'app_user': appuser,
+            'app_time': apptime,
+            'amount': amount,
+            'app_trans_id': apptransid,
+            'embed_data': embeddata,
+            'item': item,
+            'description': description,
+            'mac': mac
+        }
+
+        console.log(order)
+
+        let formBody = []
+        for (let i in order) {
+            var encodedKey = encodeURIComponent(i);
+            var encodedValue = encodeURIComponent(order[i]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+
+        await fetch('https://sb-openapi.zalopay.vn/v2/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
+        })
+            .then(response => response.json())
+            .then(resJson => {
+                setToken(resJson.zp_trans_token);
+                setReturnCode(resJson.return_code);
+                var payZP = NativeModules.PayZaloBridge;
+                payZP.payOrder(resJson.zp_trans_token);
+            })
+            .catch((error) => {
+                console.log("error ", error)
+            });
+
+        setIsLoadingPayment(false);
+    }
+
+    // Checkout function
+    function checkout() {
+        if (selectedPaymentMethod.id === 'ZALOPAY') {
+            // If method == ZALOPAY, create order
+            payOrder();
+        } else {
+            // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
+            setIsLoadingPayment(true);
+            navigation.pop();
+            navigate('CheckoutComplete');
+        }
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: Checkout */}
@@ -101,7 +279,14 @@ function CheckoutNow(props) {
             <Text style={styles.titleText}>Thanh toán</Text>
         </View>
 
-        <ScrollView>
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
+        }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
             {/* Product basic info section */}
             <View style={{
                 paddingHorizontal: 15,
@@ -112,12 +297,12 @@ function CheckoutNow(props) {
                     fontFamily: fonts.OpenSansBold,
                     fontSize: fontSizes.h4,
                     marginVertical: 15
-                }}>Người bán: Trần Ngọc Châu</Text>
+                }}>Người bán: {product.seller.name}</Text>
                 <View style={{
                     flexDirection: 'row',
                     gap: 10
                 }}>
-                    <Image source={{ uri: product.images.at(0) }}
+                    <Image source={{ uri: product.imageUrls.at(0) }}
                         style={{
                             resizeMode: 'cover',
                             width: 100,
@@ -140,7 +325,7 @@ function CheckoutNow(props) {
                             color: 'black',
                             fontFamily: fonts.OpenSansBold,
                             fontSize: fontSizes.h2
-                        }}>{product.price} VNĐ</Text>
+                        }}>{numberWithCommas(product.price)} VNĐ</Text>
                         <Text style={{
                             color: colors.darkGreyText,
                             fontFamily: fonts.OpenSansMedium,
@@ -161,17 +346,19 @@ function CheckoutNow(props) {
                         color: colors.darkGreyText,
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>Giao dự kiến: 6/10 - 8/10</Text>
-                    <Text style={{
-                        color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
-                        fontSize: fontSizes.h4
                     }}>Thông qua Giao hàng nhanh</Text>
-                    <Text style={{
-                        color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
-                        fontSize: fontSizes.h4
-                    }}>Phí vận chuyển: 80,000 VNĐ </Text>
+                    <View style={{ gap: 5 }}>
+                        {shippingDate != 0 && <Text style={{
+                            color: colors.darkGreyText,
+                            fontFamily: fonts.OpenSansMedium,
+                            fontSize: fontSizes.h4
+                        }}>Giao dự kiến: {moment(shippingDate * 1000).format('dd, Do MMMM YYYY')}</Text>}
+                        {shippingPrice != 0 && <Text style={{
+                            color: 'black',
+                            fontFamily: fonts.OpenSansMedium,
+                            fontSize: fontSizes.h4
+                        }}>Phí vận chuyển: {numberWithCommas(shippingPrice)} VNĐ </Text>}
+                    </View>
                 </View>
             </View>
             <View style={styles.separator}></View>
@@ -199,26 +386,33 @@ function CheckoutNow(props) {
                             fontSize: fontSizes.h4,
                             flex: 1
                         }}>Vận chuyển tới</Text>
-                        <View style={{ flex: 2, gap: 5 }}>
+                        {shippingAddress.length > 0 ? <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.name}</Text>
+                            >{currentShippingAddress.recipientName}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.address}</Text>
+                            >{`${currentShippingAddress.street}, ${currentShippingAddress.ward}, ${currentShippingAddress.district}, ${currentShippingAddress.province}`}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.phone}</Text>
-                        </View>
+                            >{currentShippingAddress.recipientPhone}</Text>
+                        </View> : <View style={{ flex: 2, gap: 5 }}>
+                            <Text style={{
+                                color: 'red',
+                                fontFamily: fonts.OpenSansMedium,
+                                fontSize: fontSizes.h4
+                            }}
+                            >Xin hãy thêm địa chỉ nhận hàng</Text>
+                        </View>}
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
@@ -270,7 +464,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>{product.price} VNĐ</Text>
+                    }}>{numberWithCommas(product.price)} VNĐ</Text>
                 </View>
                 <View style={{
                     flexDirection: 'row',
@@ -285,7 +479,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>80,000 VNĐ</Text>
+                    }}>{numberWithCommas(shippingPrice)} VNĐ</Text>
                 </View>
                 <View style={styles.separator}></View>
                 <View style={{
@@ -301,7 +495,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h3
-                    }}>1,300,000 VNĐ</Text>
+                    }}>{numberWithCommas(totalPrice())} VNĐ</Text>
                 </View>
             </View>
             <Text style={{
@@ -313,24 +507,23 @@ function CheckoutNow(props) {
             }}>
                 Bằng cách xác nhận đơn đặt hàng của bạn, bạn đồng ý với các điều khoản và điều kiện Vận chuyển của PAH.
             </Text>
-        </ScrollView>
+        </ScrollView>}
+
+
         {/* Checkout button */}
         <TouchableOpacity style={{
             borderRadius: 35,
-            backgroundColor: validationPaymentMethod() ? colors.primary : colors.grey,
+            backgroundColor: validation() ? colors.primary : colors.grey,
             paddingVertical: 10,
             marginVertical: 5,
             marginHorizontal: 15
         }}
-            disabled={!validationPaymentMethod()}
-            onPress={() => {
-                navigation.pop();
-                navigate('CheckoutComplete');
-            }}>
+            disabled={!validation()}
+            onPress={() => checkout()}>
             <Text style={{
                 fontSize: fontSizes.h3,
                 fontFamily: fonts.OpenSansBold,
-                color: validationPaymentMethod() ? 'white' : colors.greyText,
+                color: validation() ? 'white' : colors.greyText,
                 textAlign: 'center'
             }}>Xác nhận thanh toán</Text>
         </TouchableOpacity>
@@ -375,19 +568,21 @@ function CheckoutNow(props) {
                                 <TouchableOpacity style={[styles.sortModalOptionContainer, { flex: 1 }]}
                                     onPress={() => {
                                         setCurrentShippingAddress(item);
+                                        getShippingCost(item, product);
+                                        getShippingDate(item, product);
                                         setAddressModal(!addressModal);
                                     }}>
                                     <View style={[{
-                                        borderColor: item === currentShippingAddress ? colors.primary : 'black',
+                                        borderColor: item.id === currentShippingAddress.id ? colors.primary : 'black',
                                     }, styles.radioButtonOuter]}>
                                         <View style={[{
-                                            backgroundColor: item === currentShippingAddress ? colors.primary : 'white',
+                                            backgroundColor: item.id === currentShippingAddress.id ? colors.primary : 'white',
                                         }, styles.radioButtonInner]}></View>
                                     </View>
                                     <View style={{ flexShrink: 1 }}>
-                                        <Text style={styles.radioTextSecondary}>{item.name}</Text>
-                                        <Text style={styles.radioTextSecondary}>{item.phone}</Text>
-                                        <Text style={styles.radioTextSecondary}>{item.address}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.recipientName}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.recipientPhone}</Text>
+                                        <Text style={styles.radioTextSecondary}>{`${item.street}, ${item.ward}, ${item.district}, ${item.province}`}</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity>
@@ -462,6 +657,20 @@ function CheckoutNow(props) {
                 </View>
             </View>
         </Modal>
+
+        {/* Loading overlay for payment */}
+        {isLoadingPayment && <View style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.inactive
+        }}>
+            <ActivityIndicator size='large' color={colors.primary} />
+        </View>}
     </View>
 }
 

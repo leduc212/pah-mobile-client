@@ -22,7 +22,8 @@ import {
     EditAccount,
     Address,
     AddAddress,
-    Wallet
+    Wallet,
+    PaymentResult
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -85,6 +86,7 @@ function App(props) {
             <Stack.Screen name={"AddAddress"} component={AddAddress} />
             <Stack.Screen name={"EditAccount"} component={EditAccount} />
             <Stack.Screen name={"Wallet"} component={Wallet} />
+            <Stack.Screen name={"PaymentResult"} component={PaymentResult} />
         </Stack.Navigator>
     </NavigationContainer>
 }

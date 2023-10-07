@@ -32,7 +32,37 @@ async function getAdrressCurrentUser(axiosContext) {
     }
 }
 
+async function getAllAdrressCurrentUser(axiosContext) {
+    const addressPath = `/address`;
+    try {
+        let result = [];
+        let responseData = await axiosContext.authAxios.get(addressPath);
+        responseData.data.data.forEach(function (item) {
+            let myObject = {};
+            myObject.id = item.id;
+            myObject.customerId = item.customerId;
+            myObject.recipientName = item.recipientName;
+            myObject.recipientPhone = item.recipientPhone;
+            myObject.province = item.province;
+            myObject.district = item.district;
+            myObject.districtId = item.districtId;
+            myObject.ward = item.ward;
+            myObject.wardCode = item.wardCode;
+            myObject.street = item.street;
+            myObject.type = item.type;
+            myObject.isDefault = item.isDefault;
+            myObject.createdAt = item.createdAt;
+            myObject.updatedAt = item.updatedAt;
+            result.push(myObject);
+        })
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
 
 export default {
-    getAdrressCurrentUser
+    getAdrressCurrentUser,
+    getAllAdrressCurrentUser
 }

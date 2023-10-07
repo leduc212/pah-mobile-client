@@ -2,13 +2,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
-    ScrollView,
     TouchableOpacity,
     StyleSheet,
     Image,
     TextInput,
     NativeModules,
-    NativeEventEmitter
+    NativeEventEmitter,
+    ActivityIndicator
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { colors, fontSizes, fonts } from '../../constants';
@@ -47,6 +47,9 @@ function Wallet(props) {
         }
     ]);
 
+    // Loading data
+    const [isLoading, setIsLoading] = useState(false);
+
     // modal data
     const [topupModal, setTopupModal] = useState(false);
 
@@ -62,6 +65,7 @@ function Wallet(props) {
     }
 
     async function payOrder() {
+        setIsLoading(true);
         let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime()
 
         let appid = 2553
@@ -116,6 +120,8 @@ function Wallet(props) {
             .catch((error) => {
                 console.log("error ", error)
             });
+
+        setIsLoading(false);
     }
 
     // validating
@@ -126,11 +132,9 @@ function Wallet(props) {
         const subscription = payZaloBridgeEmitter.addListener(
             'EventPayZalo',
             (data) => {
-                if (data.returnCode == 1) {
-                    alert('Pay success!');
-                } else {
-                    alert('Pay errror! ' + data.returnCode);
-                }
+                // 1: SUCCESS, -1: FAILED, 4: CANCELLED
+                // If returncode = 1, add money to wallet
+                navigate('PaymentResult', { returnCode: data.returnCode })
             }
         );
     }, [])
@@ -359,6 +363,19 @@ function Wallet(props) {
                         </TouchableOpacity>
                     </View>
                 </View>
+
+                {isLoading && <View style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: colors.inactive
+                }}>
+                    <ActivityIndicator size='large' color={colors.primary} />
+                </View>}
             </View>
         </Modal>
     </View>
