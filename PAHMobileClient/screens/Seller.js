@@ -11,8 +11,7 @@ import {
 import {AuthContext} from '../context/AuthContext';
 import {colors, fontSizes, fonts, roles} from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import IconFoundation from 'react-native-vector-icons/Foundation';
-import {UnauthorizedAccountScreen} from '../components';
+import {UnauthorizedAccountScreen,SellerHomeView,SellerRegisterView} from '../components';
 
 function Seller(props) {
   // Auth Context
@@ -48,7 +47,7 @@ function Seller(props) {
       </View>
 
       {/* Check if logined? If guest, show login/register navigation page. If logined, show account page  */}
-      {!authContext?.authState?.authenticated ? (
+      {authContext?.authState?.authenticated ? (
         <UnauthorizedAccountScreen navigation={navigation} route={route} />
       ) : (
         <ScrollView
@@ -56,226 +55,10 @@ function Seller(props) {
             flex: 1,
             paddingHorizontal: 5,
           }}>
-          {authContext?.authState?.role == roles.seller ? (
-            <Text>Dang ky lam Seller</Text>
+          {authContext?.authState?.role != roles.seller ? (
+            <SellerRegisterView/>
           ) : (
-            <View>
-              {/* list item button */}
-              <TouchableOpacity 
-              onPress={()=>{
-                navigate('ProductListing')
-              }}
-              style={styles.listItemButtonStyle}>
-                <Text
-                  style={{
-                    fontSize: fontSizes.h4,
-                    color: 'white',
-                    fontFamily: fonts.OpenSansMedium,
-                  }}>
-                  Đăng bán sản phẩm
-                </Text>
-              </TouchableOpacity>
-              {/* total money */}
-              <View style={styles.totalMoneyStyle}>
-                <Text style={styles.totalTextStyle}>$6,000</Text>
-                <Text style={styles.subtotalTextStyle}>Tổng 90 ngày</Text>
-              </View>
-              {/* selling status */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  marginTop: 20,
-                }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                  }}>
-                  <Text style={styles.statStyle}>801</Text>
-                  <Text style={styles.statTitleStyle}>Đang bán</Text>
-                </View>
-                <View
-                  style={{
-                    alignItems: 'center',
-                  }}>
-                  <Text style={styles.statStyle}>251</Text>
-                  <Text style={styles.statTitleStyle}>Đã bán</Text>
-                </View>
-                <View
-                  style={{
-                    alignItems: 'center',
-                  }}>
-                  <Text style={styles.statStyle}>250</Text>
-                  <Text style={styles.statTitleStyle}>Bán thất bại</Text>
-                </View>
-              </View>
-              {/* summary section */}
-              <TouchableOpacity
-                style={{
-                  backgroundColor: colors.darkGrey,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 15,
-                  gap: 15,
-                  marginTop: 20,
-                  marginHorizontal: 10,
-                }}>
-                <IconFoundation name="info" size={30} color={colors.primary} />
-                <View>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h5,
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansBold,
-                    }}>
-                    Payment summary
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h5,
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    current total funds $145
-                  </Text>
-                </View>
-                <IconFeather
-                  position="absolute"
-                  right={5}
-                  name="chevron-right"
-                  size={40}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 15,
-                  gap: 15,
-                  marginTop: 5,
-                }}>
-                <View
-                  style={{
-                    backgroundColor: colors.darkGrey,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 50,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h1,
-                      color: colors.primary,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    144
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h5,
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    Add recommended item specifics
-                  </Text>
-                </View>
-                <IconFeather
-                  position="absolute"
-                  right={5}
-                  name="chevron-right"
-                  size={40}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 15,
-                  gap: 15,
-                  marginTop: 5,
-                }}>
-                <View
-                  style={{
-                    backgroundColor: colors.darkGrey,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 50,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h1,
-                      color: colors.primary,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    2
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h5,
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    Gửi đề nghị tới người mua
-                  </Text>
-                </View>
-                <IconFeather
-                  position="absolute"
-                  right={5}
-                  name="chevron-right"
-                  size={40}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 15,
-                  gap: 15,
-                  marginTop: 5,
-                }}>
-                <View
-                  style={{
-                    backgroundColor: colors.darkGrey,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 50,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h1,
-                      color: colors.primary,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    598
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h5,
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansMedium,
-                    }}>
-                    Đẩy bài của bạn
-                  </Text>
-                </View>
-                <IconFeather
-                  position="absolute"
-                  right={5}
-                  name="chevron-right"
-                  size={40}
-                />
-              </TouchableOpacity>
-            </View>
+            <SellerHomeView navigation={navigation} route={route}/>
           )}
         </ScrollView>
       )}

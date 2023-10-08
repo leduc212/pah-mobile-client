@@ -12,6 +12,9 @@ import ListingDetailInfoText from "./ListingDetailComponents/ListingDetailInfoTe
 import ListingDetailFeedback from "./ListingDetailComponents/ListingDetailFeedBack";
 import BidHistoryItem from "./ListingDetailComponents/BidHistoryItem";
 import EditAddress from "./AddressComponent/EditAddress";
+import ProductPricing from "./ProductListingComponents/ProductPricing";
+import SellerRegisterView from "./SellerComponent/SellerRegisterView";
+import SellerHomeView from "./SellerComponent/SellerHomeView";
 
 export {
     HomeItemCard,
@@ -27,5 +30,8 @@ export {
     ListingDetailInfoText,
     ListingDetailFeedback,
     BidHistoryItem,
-    EditAddress
+    EditAddress,
+    ProductPricing,
+    SellerHomeView,
+    SellerRegisterView
 }
