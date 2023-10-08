@@ -23,7 +23,8 @@ import {
     Address,
     AddAddress,
     Wallet,
-    PaymentResult
+    PaymentResult,
+    EditAddress
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -66,8 +67,6 @@ function App(props) {
                 headerShown: false
             }}>
             <Stack.Screen name={"UITabs"} component={UITabs} />
-            <Stack.Screen name={"Login"} component={Login} />
-            <Stack.Screen name={"Register"} component={Register} />
             <Stack.Screen name={"Search"} component={Search} />
             <Stack.Screen name={"ListingDetail"} component={ListingDetail}
                 getId={() => uuidv4()} />
@@ -79,14 +78,24 @@ function App(props) {
             <Stack.Screen name={"AuctionDescription"} component={AuctionDescription} />
             <Stack.Screen name={"AuctionBidding"} component={AuctionBidding} />
             <Stack.Screen name={"BiddingHistory"} component={BiddingHistory} />
-            <Stack.Screen name={"CheckoutNow"} component={CheckoutNow} />
-            <Stack.Screen name={"CheckoutCart"} component={CheckoutCart} />
-            <Stack.Screen name={"CheckoutComplete"} component={CheckoutComplete} />
-            <Stack.Screen name={"Address"} component={Address} />
-            <Stack.Screen name={"AddAddress"} component={AddAddress} />
-            <Stack.Screen name={"EditAccount"} component={EditAccount} />
-            <Stack.Screen name={"Wallet"} component={Wallet} />
-            <Stack.Screen name={"PaymentResult"} component={PaymentResult} />
+            {authContext?.authState?.authenticated ? (
+                <>
+                    <Stack.Screen name={"Address"} component={Address} />
+                    <Stack.Screen name={"AddAddress"} component={AddAddress} />
+                    <Stack.Screen name={"EditAddress"} component={EditAddress} />
+                    <Stack.Screen name={"CheckoutNow"} component={CheckoutNow} />
+                    <Stack.Screen name={"CheckoutCart"} component={CheckoutCart} />
+                    <Stack.Screen name={"CheckoutComplete"} component={CheckoutComplete} />
+                    <Stack.Screen name={"EditAccount"} component={EditAccount} />
+                    <Stack.Screen name={"Wallet"} component={Wallet} />
+                    <Stack.Screen name={"PaymentResult"} component={PaymentResult} />
+                </>
+            ) : (
+                <>
+                    <Stack.Screen name={"Login"} component={Login} />
+                    <Stack.Screen name={"Register"} component={Register} />
+                </>
+            )}
         </Stack.Navigator>
     </NavigationContainer>
 }

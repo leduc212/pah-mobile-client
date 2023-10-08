@@ -236,7 +236,7 @@ function AuctionDetail(props) {
                                 navigate('Login')
                             }
                         }}>
-                        <Text style={styles.primaryButtonText}>Đặt giá</Text>
+                        <Text style={styles.primaryButtonText}>Tham gia đấu giá</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -331,7 +331,7 @@ function AuctionDetail(props) {
                             <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                                 secondText='Người mua trả phí vận chuyển' />
                             <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
-                                secondText='Người đặt giá cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
+                                secondText='Người tham gia cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                         </View>
                         <IconFeather name='chevron-right' size={30} color='black' />
                     </TouchableOpacity>
@@ -365,7 +365,7 @@ function AuctionDetail(props) {
                                 gap: 10
                             }}>
                                 <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
+                                <Text style={styles.descriptionText}>Tham gia ngày {moment(auction.seller.registeredAt).format('DD/MM/YYYY')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -449,7 +449,7 @@ function AuctionDetail(props) {
                                 gap: 10
                             }}>
                                 <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
+                                <Text style={styles.descriptionText}>Tham gia ngày {moment(auction.seller.registeredAt).format('DD/MM/YYYY')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -490,7 +490,7 @@ function AuctionDetail(props) {
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
                         <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
-                            secondText='Người đặt giá cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
+                            secondText='Người tham gia cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                     </View>
                 </View>
             </View>

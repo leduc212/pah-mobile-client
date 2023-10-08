@@ -7,6 +7,8 @@ import Address from "./Address";
 import Shipping from "./Shipping";
 import Feedback from "./Feedback";
 import Bid from "./Bid";
+import Account from "./Account";
+import Wallet from "./Wallet";
 
 export {
     Category,
@@ -17,5 +19,7 @@ export {
     Address,
     Shipping,
     Feedback,
-    Bid
+    Bid,
+    Account,
+    Wallet
 }

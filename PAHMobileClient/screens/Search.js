@@ -22,12 +22,13 @@ function Search(props) {
     // Data
     const [searchText, setSearchText] = useState('');
     const [autocompleteSearch, setAutocompleteSearch] = useState([
+        'đá',
+        'dây chuyền',
+        'bạc',
+        'đồng',
+        'hạt',
         'đồ gốm',
-        'đồ gỗ',
-        'đá phong thủy',
-        'tràng hạt',
-        'bút bi kim cổ',
-        'đồng hồ gỗ óc chó'
+        'đồ gỗ'
     ]);
 
     useEffect(()=>{

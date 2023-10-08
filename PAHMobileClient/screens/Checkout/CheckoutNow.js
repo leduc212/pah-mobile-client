@@ -23,6 +23,7 @@ import {
 } from '../../repositories';
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
+import { useIsFocused } from '@react-navigation/native';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -41,6 +42,9 @@ function CheckoutNow(props) {
     const { navigate, goBack } = navigation;
 
     //// Data
+    // On focus
+    const isFocused = useIsFocused();
+
     // Get product_id from routes
     const { product_id } = props.route.params;
 
@@ -120,9 +124,16 @@ function CheckoutNow(props) {
             .catch(error => {
                 setIsLoading(false);
             })
-
-
     }
+
+    useEffect(() => {
+        AddressRepository.getAllAdrressCurrentUser(axiosContext)
+            .then(responseAddress => {
+                setShippingAddress(responseAddress);
+            })
+            .catch(error => {
+            })
+    }, [isFocused]);
 
     function getShippingCost(responseAddress, responseProduct) {
         ShippingRepository.calculateShippingCost({
@@ -553,11 +564,13 @@ function CheckoutNow(props) {
                 </View>
 
                 {/* All address information */}
-                <View style={{
-                    gap: 10,
-                    marginHorizontal: 20,
-                    marginBottom: 30
-                }}>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    style={{
+                        gap: 10,
+                        marginHorizontal: 20,
+                        marginBottom: 30
+                    }}>
                     {/* Address options */}
                     <View>
                         {shippingAddress.map(item =>
@@ -585,13 +598,12 @@ function CheckoutNow(props) {
                                         <Text style={styles.radioTextSecondary}>{`${item.street}, ${item.ward}, ${item.district}, ${item.province}`}</Text>
                                     </View>
                                 </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <IconFeather name='more-vertical' size={25} color={'black'} />
-                                </TouchableOpacity>
                             </View>
                         )}
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigate('AddAddress');
+                    }}>
                         <Text style={{
                             color: colors.primary,
                             fontSize: fontSizes.h4,
@@ -599,7 +611,7 @@ function CheckoutNow(props) {
                             alignSelf: 'flex-end'
                         }}>Thêm địa chỉ mới</Text>
                     </TouchableOpacity>
-                </View>
+                </ScrollView>
             </View>
         </Modal>
 
