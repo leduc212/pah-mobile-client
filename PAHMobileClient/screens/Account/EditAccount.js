@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Text,
   View,
@@ -8,24 +8,33 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   TextInput,
-  Button,
+  ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import {colors, fonts, fontSizes} from '../../constants';
+import { colors, fonts, fontSizes } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import DatePicker from 'react-native-date-picker';
+import { AxiosContext } from '../../context/AxiosContext';
+import { Account as AccountRepository } from '../../repositories';
 
 function EditAccount(props) {
+  //// AUTH AND NAVIGATION
+  const axiosContext = useContext(AxiosContext);
+
+  // Navigation
+  const { navigation, route } = props;
+
+  // Function of navigate to/back
+  const { navigate, goBack } = navigation;
+
+  //// DATA
   //Date picker
   const [openDatePicker, setOpenDatePicker] = useState(false);
   //Enable save
   const [isEnabledSave, setEnabledSave] = useState(false);
-  // Navigation
-  const {navigation, route} = props;
-  // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+
   // User data
   const [user, setUser] = useState({
     email: 'kingericvt96@gmail.com',
@@ -36,14 +45,35 @@ function EditAccount(props) {
     avatar_url:
       'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg',
   });
-  //Description
-  const [description, setDescription] = useState('');
+
+  // Data for loading and refreshing
+  const [isLoading, setIsLoading] = useState(true);
+
+  //// FUNCTION
+  // Function for getting currentuser info
+  function getCurrentUserInfo() {
+    AccountRepository.getInfoCurrentUser(axiosContext)
+      .then(response => {
+        setUser(response);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        setIsLoading(false);
+      })
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
+    getCurrentUserInfo();
+  }, [])
+
   return (
     <TouchableWithoutFeedback
       style={styles.container}
       onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ backgroundColor: 'white', flex: 1 }}>
         {/* Fixed screen title: Edit account */}
         <View style={styles.titleContainer}>
           <TouchableOpacity
@@ -55,244 +85,252 @@ function EditAccount(props) {
           </TouchableOpacity>
           <Text style={styles.titleText}>Chỉnh sửa tài khoản</Text>
         </View>
-        {/* Avatar and username container */}
-        <View style={styles.infoContainer}>
-          {/* Avavatar section */}
+        {isLoading ? <View style={{
+          flex: 1,
+          justifyContent: 'center'
+        }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <View>
+          {/* Avatar and username container */}
+          <View style={styles.infoContainer}>
+            {/* Avatar section */}
+            <View
+              style={{
+                justifyContent: 'center',
+              }}>
+              <Image
+                source={{ uri: user.profilePicture }}
+                style={{
+                  resizeMode: 'cover',
+                  width: 80,
+                  height: 80,
+                  borderRadius: 50,
+                }}
+              />
+              <TouchableOpacity
+                style={styles.penIconButton}
+                onPress={() => {
+                  alert('edit avatar');
+                }}>
+                <Icon
+                  style={{
+                    alignSelf: 'center',
+                  }}
+                  name="pen"
+                  size={15}
+                  color={'black'}
+                />
+              </TouchableOpacity>
+            </View>
+            {/* Username section */}
+            <View style={styles.usernameSectionStyle}>
+              <Text
+                style={{
+                  color: colors.black,
+                  fontFamily: fonts.OpenSansBold,
+                  fontSize: fontSizes.h5,
+                }}>
+                {user.email}
+              </Text>
+              <Text
+                style={{
+                  color: colors.black,
+                  fontFamily: fonts.OpenSansMedium,
+                  fontSize: fontSizes.h6,
+                  flexShrink: 1,
+                }}>
+                Hãy chỉnh sửa lại thông tin của bạn để đảm bảo cho vấn đề bảo mật
+              </Text>
+            </View>
+          </View>
+          {/* Info title*/}
           <View
             style={{
-              justifyContent: 'center',
+              paddingHorizontal: 15,
             }}>
-            <Image
-              source={{uri: user.avatar_url}}
-              style={{
-                resizeMode: 'cover',
-                width: 80,
-                height: 80,
-                borderRadius: 50,
-              }}
-            />
-            <TouchableOpacity
-              style={styles.penIconButton}
-              onPress={() => {
-                alert('edit avatar');
-              }}>
-              <Icon
+            <View>
+              <Text
                 style={{
-                  alignSelf: 'center',
-                }}
-                name="pen"
-                size={15}
-                color={'black'}
-              />
-            </TouchableOpacity>
+                  color: colors.black,
+                  fontFamily: fonts.OpenSansBold,
+                  fontSize: fontSizes.h3,
+                  paddingVertical: 15,
+                }}>
+                Thông tin cá nhân
+              </Text>
+            </View>
           </View>
-          {/* Username section */}
-          <View style={styles.usernameSectionStyle}>
-            <Text
-              style={{
-                color: colors.black,
-                fontFamily: fonts.OpenSansBold,
-                fontSize: fontSizes.h5,
-              }}>
-              {user.email}
-            </Text>
-            <Text
-              style={{
-                color: colors.black,
-                fontFamily: fonts.OpenSansMedium,
-                fontSize: fontSizes.h6,
-                flexShrink: 1,
-              }}>
-              Hãy chỉnh sửa lại thông tin của bạn để đảm bảo cho vấn đề bảo mật
-            </Text>
-          </View>
-        </View>
-        {/* Info title*/}
-        <View
-          style={{
-            paddingHorizontal: 15,
-          }}>
-          <View>
-            <Text
-              style={{
-                color: colors.black,
-                fontFamily: fonts.OpenSansBold,
-                fontSize: fontSizes.h3,
-                paddingVertical: 15,
-              }}>
-              Thông tin cá nhân
-            </Text>
-          </View>
-        </View>
-        {/* Info detail */}
+          {/* Info detail */}
 
-        <ScrollView
-          style={{
-            paddingHorizontal: 15,
-          }}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Tên</Text>
-            <TextInput
-              value={user.name}
-              onChange={(text)=>{
-                setUser(newUser=>{
-                  return{
-                    ...newUser,
-                    name: text
-                  }
-                })
-              }}
-              style={styles.inputBox}
-              placeholder="Nhập tên của bạn"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Điện thoại</Text>
-            <TextInput
-              value={user.phone}
-              onChange={(text)=>{
-                setUser(newUser=>{
-                  return{
-                    ...newUser,
-                    phone: text
-                  }
-                })
-              }}
-              style={styles.inputBox}
-              placeholder="Nhập số điện thoại"
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Ngày sinh</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDatePicker(true);
-              }}>
+          <ScrollView
+            style={{
+              paddingHorizontal: 15,
+            }}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputTitle}>Tên</Text>
+              <TextInput
+                value={user.name}
+                onChange={(text) => {
+                  setUser(newUser => {
+                    return {
+                      ...newUser,
+                      name: text
+                    }
+                  })
+                }}
+                style={styles.inputBox}
+                placeholder="Nhập tên của bạn"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputTitle}>Điện thoại</Text>
+              <TextInput
+                value={user.phone}
+                onChange={(text) => {
+                  setUser(newUser => {
+                    return {
+                      ...newUser,
+                      phone: text
+                    }
+                  })
+                }}
+                style={styles.inputBox}
+                placeholder="Nhập số điện thoại"
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputTitle}>Ngày sinh</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDatePicker(true);
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <Text style={styles.labelDateStyle}>Ngày</Text>
+                  <Text style={styles.dateStyle}>{new Date(user.dob).getDate()}</Text>
+                  <Text style={styles.labelDateStyle}>Tháng</Text>
+                  <Text style={styles.dateStyle}>{new Date(user.dob).getMonth() + 1}</Text>
+                  <Text style={styles.labelDateStyle}>Năm</Text>
+                  <Text style={styles.dateStyle}>{new Date(user.dob).getFullYear()}</Text>
+                </View>
+              </TouchableOpacity>
+              <DatePicker
+                modal
+                mode={'date'}
+                open={openDatePicker}
+                date={new Date(user.dob)}
+                maximumDate={new Date()}
+                onConfirm={newDate => {
+                  setUser(user => {
+                    return {
+                      ...user,
+                      dob: newDate,
+                    };
+                  });
+                  setEnabledSave(true);
+                  setOpenDatePicker(false);
+                }}
+                onCancel={() => {
+                  setOpenDatePicker(false);
+                }}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputTitle}>Giới tính</Text>
               <View
                 style={{
                   flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginTop: 5
                 }}>
-                <Text style={styles.labelDateStyle}>Ngày</Text>
-                <Text style={styles.dateStyle}>{user.dob.getDate()}</Text>
-                <Text style={styles.labelDateStyle}>Tháng</Text>
-                <Text style={styles.dateStyle}>{user.dob.getMonth() + 1}</Text>
-                <Text style={styles.labelDateStyle}>Năm</Text>
-                <Text style={styles.dateStyle}>{user.dob.getFullYear()}</Text>
+                <TouchableOpacity
+                  disabled={user.gender == 1}
+                  onPress={() => {
+                    setUser(user => {
+                      return {
+                        ...user,
+                        gender: 1,
+                      };
+                    });
+                    setEnabledSave(true);
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    gap: 10,
+                  }}>
+                  <Text style={styles.labelGendersStyle}>Nam</Text>
+                  {user.gender == 1 ? (
+                    <Icon name="circle-dot" size={30} color={colors.black} />
+                  ) : (
+                    <Icon name="circle" size={30} />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={user.gender == 0}
+                  onPress={() => {
+                    setUser(user => {
+                      return {
+                        ...user,
+                        gender: 0,
+                      };
+                    });
+                    setEnabledSave(true);
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    gap: 10,
+                  }}>
+                  <Text style={styles.labelGendersStyle}>Nữ</Text>
+                  {user.gender == 0 ? (
+                    <Icon name="circle-dot" size={30} color={colors.black} />
+                  ) : (
+                    <Icon name="circle" size={30} />
+                  )}
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              mode={'date'}
-              open={openDatePicker}
-              date={user.dob}
-              maximumDate={new Date()}
-              onConfirm={newDate => {
-                setUser(user => {
-                  return {
-                    ...user,
-                    dob: newDate,
-                  };
-                });
-                setEnabledSave(true);
-                setOpenDatePicker(false);
-              }}
-              onCancel={() => {
-                setOpenDatePicker(false);
-              }}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Giới tính</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-              }}>
-              <TouchableOpacity
-                disabled={user.gender == 0}
-                onPress={() => {
-                  setUser(user => {
-                    return {
-                      ...user,
-                      gender: 0,
-                    };
-                  });
-                  setEnabledSave(true);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  gap: 10,
-                }}>
-                <Text style={styles.labelGendersStyle}>Nam</Text>
-                {user.gender == 0 ? (
-                  <Icon name="circle-dot" size={30} color={colors.black} />
-                ) : (
-                  <Icon name="circle" size={30} />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={user.gender == 1}
-                onPress={() => {
-                  setUser(user => {
-                    return {
-                      ...user,
-                      gender: 1,
-                    };
-                  });
-                  setEnabledSave(true);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  gap: 10,
-                }}>
-                <Text style={styles.labelGendersStyle}>Nữ</Text>
-                {user.gender == 1 ? (
-                  <Icon name="circle-dot" size={30} color={colors.black} />
-                ) : (
-                  <Icon name="circle" size={30} />
-                )}
-              </TouchableOpacity>
             </View>
-          </View>
-          <TouchableOpacity
-            disabled={!isEnabledSave}
-            onPress={() => {
-              setEnabledSave(false);
-            }}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor:
-                  isEnabledSave == true ? colors.primary : colors.darkGreyText,
-              },
-            ]}>
-            <Text
+            <TouchableOpacity
+              disabled={!isEnabledSave}
+              onPress={() => {
+                setEnabledSave(false);
+              }}
               style={[
+                styles.saveButton,
                 {
-                  color: colors.greyText,
+                  backgroundColor:
+                    isEnabledSave == true ? colors.primary : colors.darkGreyText,
                 },
-                styles.saveText,
               ]}>
-              Lưu
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              goBack();
-            }}
-            style={styles.cancelButton}>
-            <Text
-              style={[
-                {
-                  color: colors.greyText,
-                },
-                styles.cancelText,
-              ]}>
-              Hủy
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+              <Text
+                style={[
+                  {
+                    color: colors.greyText,
+                  },
+                  styles.saveText,
+                ]}>
+                Lưu
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                goBack();
+              }}
+              style={styles.cancelButton}>
+              <Text
+                style={[
+                  {
+                    color: colors.greyText,
+                  },
+                  styles.cancelText,
+                ]}>
+                Hủy
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -335,8 +373,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    borderRadius: 20,
-    padding: 10,
+    borderRadius: 35,
+    paddingVertical: 10,
   },
   saveText: {
     fontSize: fontSizes.h3,
@@ -350,8 +388,8 @@ const styles = StyleSheet.create({
     borderColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
-    padding: 10,
+    borderRadius: 35,
+    paddingVertical: 10,
     marginTop: 20,
   },
   cancelText: {
@@ -367,6 +405,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     alignItems: 'center',
     gap: 20,
+    backgroundColor: 'white'
   },
   titleText: {
     color: 'black',
@@ -392,6 +431,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h3,
     color: colors.black,
     fontFamily: fonts.OpenSansBold,
+    marginBottom: 5
   },
   dateStyle: {
     borderRadius: 8,

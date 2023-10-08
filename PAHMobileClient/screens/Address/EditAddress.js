@@ -14,8 +14,9 @@ import { AxiosContext } from '../../context/AxiosContext';
 import {
   Address as AddressRepository
 } from '../../repositories';
+import Modal from 'react-native-modal';
 
-function AddAddress(props) {
+function EditAddress(props) {
   //// AXIOS AND NAVIGATION
   const axiosContext = useContext(AxiosContext);
   // Navigation
@@ -24,25 +25,30 @@ function AddAddress(props) {
   const { navigate, goBack } = navigation;
 
   //// DATA
+  // Get addressID from routes
+  const { id, recipientName, recipientPhone, streetParam, provinceParam,
+    provinceIdParam, districtParam, districtIdParam, wardParam, wardCodeParam,
+    typeParam, isDefaultParam } = props.route.params;
+
   //Input state
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [street, setStreet] = useState('');
+  const [name, setName] = useState(recipientName);
+  const [phone, setPhone] = useState(recipientPhone);
+  const [street, setStreet] = useState(streetParam);
 
   //Dropdown input state
-  const [province, setProvince] = useState(null);
-  const [provinceId, setProvinceId] = useState(null);
-  const [district, setDistrict] = useState(null);
-  const [districtId, setDistrictId] = useState(null);
-  const [ward, setWard] = useState(null);
-  const [wardCode, setWardCode] = useState(null);
+  const [province, setProvince] = useState(provinceParam);
+  const [provinceId, setProvinceId] = useState(provinceIdParam);
+  const [district, setDistrict] = useState(districtParam);
+  const [districtId, setDistrictId] = useState(districtIdParam);
+  const [ward, setWard] = useState(wardParam);
+  const [wardCode, setWardCode] = useState(wardCodeParam);
 
   const [isProvinceFocus, setProvinceFocus] = useState(false);
   const [isDistrictFocus, setDistrictFocus] = useState(false);
   const [isWardFocus, setWardFocus] = useState(false);
 
   // Default address validate
-  const [isDefault, setDefault] = useState(false);
+  const [isDefault, setDefault] = useState(isDefaultParam);
 
   //Province data
   const [provinceList, setProvinceList] = useState([]);
@@ -53,22 +59,22 @@ function AddAddress(props) {
   // Data for loading and refreshing
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingCreate, setIsLoadingCreate] = useState(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+
   // Validating
   const validate = () => name.length > 0 && phone.length > 0 && street.length > 0
-    && province != null && provinceId != null && district != null && districtId != null
+    && province != null && district != null && districtId != null
     && ward != null && wardCode != null;
+
+  // Delete confirm modal
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   //// FUNCTION
   // Get Province list
   function getProvinceList() {
-    setIsLoading(true);
     AddressRepository.getProvinceList()
       .then(response => {
         setProvinceList(response);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        setIsLoading(false);
       })
   }
 
@@ -78,7 +84,6 @@ function AddAddress(props) {
       .then(response => {
         setDistrictList(response);
       })
-      .catch(error => { })
   }
 
   // Get ward list by district id
@@ -87,13 +92,13 @@ function AddAddress(props) {
       .then(response => {
         setWardList(response);
       })
-      .catch(error => { })
   }
 
   // Create address
-  function createAddress() {
+  function updateAddress() {
     setIsLoadingCreate(true);
-    AddressRepository.createAddress(axiosContext, {
+    AddressRepository.updateAddress(axiosContext, {
+      id: id,
       recipientName: name,
       recipientPhone: phone,
       province: province,
@@ -103,7 +108,7 @@ function AddAddress(props) {
       ward: ward,
       wardCode: wardCode,
       street: street,
-      type: 1,
+      type: typeParam,
       isDefault: isDefault
     })
       .then(response => {
@@ -116,9 +121,47 @@ function AddAddress(props) {
       })
   }
 
+  // Delete Address
+  function deleteAddress() {
+    setIsLoadingDelete(true);
+    AddressRepository.deleteAddress(axiosContext, id)
+      .then(response => {
+        setIsLoadingDelete(false);
+        goBack();
+      })
+      .catch(err => {
+        setIsLoadingDelete(false)
+      })
+  }
+
   // On init screen, get province list
   useEffect(() => {
-    getProvinceList();
+    setIsLoading(true);
+    // Get Provinces
+    const promiseProvince = AddressRepository.getProvinceList()
+      .then(response => {
+        setProvinceList(response);
+      });
+
+    // Get Districts
+    const promiseDistrict = AddressRepository.getDistrictListByProvinceId(provinceId)
+      .then(response => {
+        setDistrictList(response);
+      });
+
+    // Get Wards
+    const promiseWard = AddressRepository.getWardListByDistrictId(districtId)
+      .then(response => {
+        setWardList(response);
+      });
+
+    Promise.all([promiseProvince, promiseDistrict, promiseWard])
+      .then((values) => {
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+      });
   }, [])
 
   return (
@@ -132,12 +175,12 @@ function AddAddress(props) {
           }}>
           <IconFeather name="chevron-left" size={25} color={'black'} />
         </TouchableOpacity>
-        <Text style={styles.titleText}>Thêm địa chỉ</Text>
+        <Text style={styles.titleText}>Sửa địa chỉ</Text>
         <TouchableOpacity
           disabled={!validate()}
           style={styles.doneButton}
           onPress={() => {
-            createAddress()
+            updateAddress()
           }}>
           <Text
             style={{
@@ -197,6 +240,7 @@ function AddAddress(props) {
           data={provinceList}
           labelField="provinceName"
           valueField="provinceId"
+          value={provinceId}
           onFocus={() => setProvinceFocus(true)}
           onBlur={() => setProvinceFocus(false)}
           onChange={item => {
@@ -225,6 +269,7 @@ function AddAddress(props) {
           placeholder={!isDistrictFocus ? 'Chọn quận, huyện' : '...'}
           search
           data={districtList}
+          value={districtId}
           labelField="districtName"
           valueField="districtId"
           onFocus={() => setDistrictFocus(true)}
@@ -254,6 +299,7 @@ function AddAddress(props) {
           placeholder={!isWardFocus ? 'Chọn phường, xã' : '...'}
           search
           data={wardList}
+          value={wardCode}
           labelField="wardName"
           valueField="wardCode"
           onFocus={() => setWardFocus(true)}
@@ -265,28 +311,49 @@ function AddAddress(props) {
             setWardFocus(false);
           }}
         />
-        <TouchableOpacity
-          onPress={() => {
-            setDefault(!isDefault);
-          }}
-          style={{
-            flexDirection: 'row',
-            gap: 10,
-          }}>
-          {isDefault === true ? (
-            <IconFeather name="check-square" size={20} color={colors.black} />
-          ) : (
-            <IconFeather name="square" size={20} color={colors.black} />
-          )}
-          <Text
+        {!isDefaultParam ? <View>
+          <TouchableOpacity
+            onPress={() => {
+              setDefault(!isDefault);
+            }}
             style={{
-              color: colors.black,
-              fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              flexDirection: 'row',
+              gap: 10,
             }}>
-            Đặt làm địa chỉ giao hàng mặc định
-          </Text>
-        </TouchableOpacity>
+            {isDefault === true ? (
+              <IconFeather name="check-square" size={20} color={colors.black} />
+            ) : (
+              <IconFeather name="square" size={20} color={colors.black} />
+            )}
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: fontSizes.h4,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Đặt làm địa chỉ giao hàng mặc định
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ marginTop: 30 }}
+            onPress={() => { setDeleteModalVisible(!deleteModalVisible) }}>
+            <Text
+              style={{
+                color: 'red',
+                fontSize: fontSizes.h4,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Xóa địa chỉ này
+            </Text>
+          </TouchableOpacity>
+        </View> : <Text
+          style={{
+            color: colors.black,
+            fontSize: fontSizes.h4,
+            fontFamily: fonts.OpenSansMedium,
+            marginLeft: 5
+          }}>
+          Địa chỉ hiện tại đang là địa chỉ mặc định
+        </Text>}
       </View>}
       {isLoadingCreate && <View style={{
         position: 'absolute',
@@ -300,6 +367,69 @@ function AddAddress(props) {
       }}>
         <ActivityIndicator size='large' color={colors.primary} />
       </View>}
+
+      {/* Delete confirm Modal */}
+      <Modal
+        animationIn='fadeIn'
+        animationOut='fadeOut'
+        isVisible={deleteModalVisible}
+        onRequestClose={() => {
+          setDeleteModalVisible(!deleteModalVisible)
+        }}
+        style={{ margin: 0 }}>
+        <View style={{
+          flex: 1,
+          flexDirection: 'row'
+        }}>
+          <TouchableOpacity style={{ flex: 1 }}
+            onPress={() => {
+              setDeleteModalVisible(!deleteModalVisible)
+            }}></TouchableOpacity>
+          <View style={{
+            position: 'absolute',
+            top: '40%',
+            left: '10%',
+            width: '80%',
+            height: '15%',
+            backgroundColor: 'white',
+            justifyContent: 'center'
+          }}>
+            <Text style={{
+              color: 'black',
+              fontFamily: fonts.OpenSansMedium,
+              fontSize: fontSizes.h4,
+              marginHorizontal: 15
+            }}>Bạn có chắc chắn muốn xóa địa chỉ này không?</Text>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              gap: 30,
+              marginTop: 15,
+              marginHorizontal: 15,
+              alignItems: 'center'
+            }}>
+              <TouchableOpacity onPress={() => {
+                setDeleteModalVisible(!deleteModalVisible)
+              }}>
+                <Text style={{
+                  color: 'black',
+                  fontFamily: fonts.OpenSansMedium,
+                  fontSize: fontSizes.h4
+                }}>Không</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={isLoadingDelete}
+                onPress={() => { deleteAddress() }}>
+                <Text style={{
+                  color: 'red',
+                  fontFamily: fonts.OpenSansMedium,
+                  fontSize: fontSizes.h4,
+                }}>Xóa</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -375,4 +505,4 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h4,
   },
 });
-export default AddAddress;
+export default EditAddress;

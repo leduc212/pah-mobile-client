@@ -1,146 +1,198 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
-  Image,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  TextInput,
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
-import {colors, fonts, fontSizes} from '../../constants';
+import { colors, fonts, fontSizes } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {EditAddress} from '../../components';
+import { AxiosContext } from '../../context/AxiosContext';
+import { Address as AddressRepository } from '../../repositories';
+import { useIsFocused } from '@react-navigation/native';
 
 function Address(props) {
-  //Edit mode
-  const [isEditMode, setEditMode] = useState(false);
-  const [isEditAddress,setEditAddress]=useState(null);
+  //// Axios AND NAVIGATION
+  // Axios Context
+  const axiosContext = useContext(AxiosContext);
+
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
+
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
-  //Address
-  const [addresses, setAddresses] = useState([
-    {
-      name: 'Nguyễn Huỳnh Tuấn',
-      phone: '0966948473',
-      province: 'Thành Phố Hồ Chí Minh',
-      district: 'Quận 9',
-      ward: 'phường Phú Hữu',
-      street: 'Safira Khang Điền, Võ Chí Công',
-      isDefault: true,
-    },
-    {
-      name: 'Trần Ngọc Châu',
-      phone: '0966938273',
-      province: 'Thành Phố Vũng Tàu',
-      district: 'Quận 2',
-      ward: 'phường Phú Hữu',
-      street: '2,D4',
-      isDefault: false,
-    },
-  ]);
+  const { navigate, goBack } = navigation;
+
+  // On focus
+  const isFocused = useIsFocused();
+
+  //// DATA
+  // Address
+  const [addresses, setAddresses] = useState([]);
+
+  // Data for loading and refreshing
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  //// FUNCTION
+  // Get all address
+  function getAllAddress() {
+    setIsLoading(true);
+    AddressRepository.getAllAdrressCurrentUser(axiosContext)
+      .then(response => {
+        setAddresses(response);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+      })
+  }
+
+  useEffect(() => {
+    getAllAddress();
+  }, []);
+
+  useEffect(() => {
+    getAllAddress();
+  }, [isFocused]);
+
+  // Scroll view refresh
+  const onRefresh = () => {
+    setRefreshing(true);
+    getAllAddress();
+    setRefreshing(false);
+  };
+
   return (
     <View style={styles.container}>
-      {isEditMode == true ? (
-        <EditAddress isEditAddress={isEditAddress} setEditAddress={setEditAddress} setEditMode={setEditMode} />
-      ) : (
-        <View>
-          <View style={styles.titleContainer}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                goBack();
-              }}>
-              <IconFeather name="chevron-left" size={25} color={'black'} />
-            </TouchableOpacity>
-            <Text style={styles.titleText}>Địa chỉ</Text>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => {
-                navigate('AddAddress');
-              }}>
-              <IconFeather name="plus" size={25} color={'black'} />
-            </TouchableOpacity>
-          </View>
-          <ScrollView
+      <View style={{ flex: 1 }}>
+        <View style={styles.titleContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              goBack();
+            }}>
+            <IconFeather name="chevron-left" size={25} color={'black'} />
+          </TouchableOpacity>
+          <Text style={styles.titleText}>Địa chỉ</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              navigate('AddAddress');
+            }}>
+            <IconFeather name="plus" size={25} color={'black'} />
+          </TouchableOpacity>
+        </View>
+        {isLoading ? <View style={{
+          flex: 1,
+          justifyContent: 'center'
+        }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <View>
+          {addresses.length > 0 ? <ScrollView
             style={{
               paddingHorizontal: 15,
-            }}>
-            {addresses.map(address => (
-              <TouchableOpacity
-                onPress={() => {
-                  setEditMode(true);
-                  setEditAddress(address);
-                }}
-                key={address.street}
-                style={{
-                  flexDirection:'row',
-                  alignItems:'center',
-                  borderColor: colors.darkGrey,
-                  paddingVertical:10,
-                  paddingHorizontal:5,
-                  borderBottomWidth: 1,
-                }}>
-                <View>
-                {address.isDefault == true ? (
-                  <Text
-                    style={{
-                      color: colors.black,
-                      fontFamily: fonts.OpenSansBold,
-                      fontSize: fontSizes.h5,
-                      borderWidth: 1,
-                      paddingHorizontal: 10,
-                    }}>
-                    Địa chỉ giao hàng mặc định
-                  </Text>
-                ) : null}
-                <Text
+            }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }><View style={{ marginBottom: 100 }}>
+              {addresses.map(address => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigate('EditAddress', {
+                      id: address.id,
+                      recipientName: address.recipientName,
+                      recipientPhone: address.recipientPhone,
+                      streetParam: address.street,
+                      provinceParam: address.province,
+                      provinceIdParam: address.provinceId,
+                      districtParam: address.district,
+                      districtIdParam: address.districtId,
+                      wardParam: address.ward,
+                      wardCodeParam: address.wardCode,
+                      typeParam: address.type,
+                      isDefaultParam: address.isDefault
+                    })
+                  }}
+                  key={address.street}
                   style={{
-                    color: colors.black,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderColor: colors.darkGrey,
+                    paddingVertical: 10,
+                    paddingHorizontal: 5,
+                    borderBottomWidth: 1,
                   }}>
-                  {address.name}
-                </Text>
-                <Text
-                  style={{
-                    color: colors.black,
+                  <View style={{ alignItems: 'baseline' }}>
+                    {address.isDefault ? (
+                      <Text
+                        style={{
+                          color: colors.black,
+                          fontFamily: fonts.OpenSansBold,
+                          fontSize: fontSizes.h6,
+                          borderWidth: 1,
+                          paddingHorizontal: 10,
+                          marginBottom: 5
+                        }}>
+                        Địa chỉ giao hàng mặc định
+                      </Text>
+                    ) : null}
+                    <Text
+                      style={{
+                        color: colors.black,
+                      }}>
+                      {address.recipientName}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.black,
+                      }}>
+                      {address.street}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.black,
+                      }}>
+                      {address.ward}, {address.district}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.black,
+                      }}>
+                      {address.province}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.black,
+                      }}>
+                      {address.recipientPhone}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.black,
+                        marginTop: 5
+                      }}>
+                      {address.type == 1 ? "Địa chỉ nhận hàng" : "Địa chỉ lấy hàng"}
+                    </Text>
+                  </View>
+                  <View style={{
+                    marginLeft: 'auto'
                   }}>
-                  {address.street}
-                </Text>
-                <Text
-                  style={{
-                    color: colors.black,
-                  }}>
-                  {address.ward}, {address.district}
-                </Text>
-                <Text
-                  style={{
-                    color: colors.black,
-                  }}>
-                  {address.province}
-                </Text>
-                <Text
-                  style={{
-                    color: colors.black,
-                  }}>
-                  {address.phone}
-                </Text>
-                </View>
-                <View style={{
-                  marginLeft:'auto'
-                }}>
-                <IconFeather
-                  name="chevron-right"
-                  size={20}
-                  color={'black'}
-                />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
+                    <IconFeather
+                      name="chevron-right"
+                      size={20}
+                      color={'black'}
+                    />
+                  </View>
+                </TouchableOpacity>
+              ))}</View>
+          </ScrollView> : <View>
+            <Text style={styles.emptyText}>Không có địa chỉ nào để hiển thị</Text>
+          </View>}
+        </View>}
+      </View>
     </View>
   );
 }
@@ -173,5 +225,12 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
+  emptyText: {
+    color: colors.greyText,
+    fontSize: fontSizes.h4,
+    textAlign: 'center',
+    fontFamily: fonts.OpenSansMedium,
+    marginVertical: 30
+  }
 });
 export default Address;

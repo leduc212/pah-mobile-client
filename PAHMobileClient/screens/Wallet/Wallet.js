@@ -8,21 +8,30 @@ import {
     TextInput,
     NativeModules,
     NativeEventEmitter,
-    ActivityIndicator
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
 import CryptoJS from 'crypto-js';
+import {
+    Account as AccountRepository,
+    Wallet as WalletRepository
+} from '../../repositories';
 
 const { PayZaloBridge } = NativeModules;
 
 const payZaloBridgeEmitter = new NativeEventEmitter(PayZaloBridge);
 
 function Wallet(props) {
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -30,12 +39,14 @@ function Wallet(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
-    const [userProfile, setUserProfile] = useState({
-        name: 'avd seller',
-        address: 'Thành phố Hồ Chí Minh',
-        avatar: 'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg'
-    });
+    //// DATA
+    // User
+    const [userProfile, setUserProfile] = useState({});
+
+    // Wallet
+    const [wallet, setWallet] = useState({});
+
+    // Payment methods
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
         id: '',
         text: ''
@@ -47,8 +58,10 @@ function Wallet(props) {
         }
     ]);
 
-    // Loading data
-    const [isLoading, setIsLoading] = useState(false);
+    // Data for loading and refreshing
+    const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
     // modal data
     const [topupModal, setTopupModal] = useState(false);
@@ -59,13 +72,22 @@ function Wallet(props) {
     const [returncode, setReturnCode] = React.useState('')
 
 
+    //// FUNCTION
+
+    // Price format function
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Get current time for transaction id
     function getCurrentDateYYMMDD() {
         const todayDate = new Date().toISOString().slice(2, 10);
         return todayDate.split('-').join('');
     }
 
+    // topup function
     async function payOrder() {
-        setIsLoading(true);
+        setIsLoadingPayment(true);
         let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime()
 
         let appid = 2553
@@ -121,12 +143,37 @@ function Wallet(props) {
                 console.log("error ", error)
             });
 
-        setIsLoading(false);
+        setIsLoadingPayment(false);
     }
 
     // validating
     const validationTopupAmount = () => parseInt(topupAmount) >= 20000;
     const validationAll = () => (validationTopupAmount() && selectedPaymentMethod.id !== '');
+
+    // Fetch user data and wallet data
+    function initData() {
+        setIsLoading(true);
+
+        // Get User
+        const promiseUser = AccountRepository.getInfoCurrentUser(axiosContext)
+            .then(response => {
+                setUserProfile(response);
+            })
+
+        // Get Wallet
+        const promiseWallet = WalletRepository.getWalletCurrentUser(axiosContext)
+            .then(response => {
+                setWallet(response);
+            });
+
+        Promise.all([promiseUser, promiseWallet])
+            .then((values) => {
+                setIsLoading(false);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
 
     useEffect(() => {
         const subscription = payZaloBridgeEmitter.addListener(
@@ -137,10 +184,20 @@ function Wallet(props) {
                 navigate('PaymentResult', { returnCode: data.returnCode })
             }
         );
+
+        // Init data
+        initData()
     }, [])
 
+    // Scroll view refresh
+    const onRefresh = () => {
+        setRefreshing(true);
+        initData();
+        setRefreshing(false);
+    };
+
     return <View style={styles.container}>
-        {/* Fixed screen title: Checkout */}
+        {/* Fixed screen title: Wallet */}
         <View style={styles.titleContainer}>
             <TouchableOpacity style={styles.iconButton}
                 onPress={() => {
@@ -151,93 +208,106 @@ function Wallet(props) {
             <Text style={styles.titleText}>Ví PAH</Text>
         </View>
 
-        {/* User profile */}
-        <View style={{
-            flexDirection: 'row',
-            gap: 15,
-            paddingHorizontal: 15,
-            paddingVertical: 15,
-            backgroundColor: colors.grey
-        }}>
-            <Image source={{ uri: userProfile.avatar }}
-                style={{
-                    resizeMode: 'cover',
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50
-                }} />
-            <View style={{ gap: 2 }}>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.OpenSansBold,
-                    fontSize: fontSizes.h3
-                }}>{userProfile.name}</Text>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h5
-                }}>{userProfile.address}</Text>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h5
-                }}>Đánh giá: 5</Text>
-            </View>
-        </View>
-
-        {/* Wallet information complete */}
-        <View style={{
-            marginHorizontal: 15,
-            marginTop: 15
-        }}>
-            <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginVertical: 10
-            }}>
-                <Text style={{
-                    color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h3,
-                }}>Số dư khả dụng</Text>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h3,
-                }}>2,000,000 VNĐ</Text>
-            </View>
-            <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between'
-            }}>
-                <Text style={{
-                    color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h3,
-                }}>Số dư đang bị khóa</Text>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
-                    fontSize: fontSizes.h3,
-                }}>3,000,000 VNĐ</Text>
-            </View>
-        </View>
-
-        <View style={{
+        {isLoading ? <View style={{
             flex: 1,
-            justifyContent: 'flex-end',
-            marginBottom: 15
+            justifyContent: 'center'
         }}>
-            <TouchableOpacity style={styles.primaryButton}
-                onPress={() => setTopupModal(!topupModal)}>
-                <Text style={styles.primaryButtonText}>Nạp tiền vào ví</Text>
-            </TouchableOpacity>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView style={{ flex: 1 }}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+            {/* User profile */}
+            <View style={{
+                flexDirection: 'row',
+                gap: 15,
+                paddingHorizontal: 25,
+                paddingVertical: 15,
+                backgroundColor: colors.grey
+            }}>
+                <Image source={{ uri: userProfile.profilePicture }}
+                    style={{
+                        resizeMode: 'cover',
+                        width: 75,
+                        height: 75,
+                        borderRadius: 50
+                    }} />
+                <View style={{ gap: 2 }}>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansBold,
+                        fontSize: fontSizes.h3
+                    }}>{userProfile.name}</Text>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h4
+                    }}>{userProfile.email}</Text>
+                </View>
+            </View>
 
-            <TouchableOpacity style={styles.secondaryButton}
-                onPress={() => { }}>
-                <Text style={styles.secondaryButtonText}>Rút tiền khỏi ví</Text>
-            </TouchableOpacity>
-        </View>
+            {/* Wallet information complete */}
+            <View style={{
+                marginHorizontal: 25,
+                marginTop: 15
+            }}>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginVertical: 10
+                }}>
+                    <Text style={{
+                        color: colors.darkGreyText,
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h3,
+                    }}>Số dư khả dụng</Text>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h3,
+                    }}>{numberWithCommas(wallet.availableBalance)} VNĐ</Text>
+                </View>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }}>
+                    <Text style={{
+                        color: colors.darkGreyText,
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h3,
+                    }}>Số dư đang bị khóa</Text>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.OpenSansMedium,
+                        fontSize: fontSizes.h3,
+                    }}>{numberWithCommas(wallet.lockedBalance)} VNĐ</Text>
+                </View>
+            </View>
+
+            <View style={{
+                flex: 1,
+                marginTop: 50,
+                marginBottom: 15
+            }}>
+                <Text style={{
+                    fontFamily: fonts.OpenSansMedium,
+                    fontSize: fontSizes.h5,
+                    color: colors.darkGreyText,
+                    marginHorizontal: 25
+                }}>* Số dư bị khóa là lượng tiền bạn đã sử dụng để tham gia vào các cuộc đấu giá.
+                 Lượng tiền này sẽ bị khóa cho đến khi cuộc đấu giá đó kết thúc hoặc bạn rút khỏi cuộc đấu giá.</Text>
+
+                <TouchableOpacity style={styles.primaryButton}
+                    onPress={() => setTopupModal(!topupModal)}>
+                    <Text style={styles.primaryButtonText}>Nạp tiền vào ví</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.secondaryButton}
+                    onPress={() => { }}>
+                    <Text style={styles.secondaryButtonText}>Rút tiền khỏi ví</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>}
 
         {/* Top up modal */}
         <Modal
@@ -364,7 +434,7 @@ function Wallet(props) {
                     </View>
                 </View>
 
-                {isLoading && <View style={{
+                {isLoadingPayment && <View style={{
                     position: 'absolute',
                     left: 0,
                     right: 0,

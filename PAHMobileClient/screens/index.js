@@ -23,6 +23,7 @@ import CheckoutCart from "./Checkout/CheckoutCart";
 import CheckoutComplete from "./Checkout/CheckoutComplete";
 import Wallet from "./Wallet/Wallet";
 import PaymentResult from "./Wallet/PaymentResult";
+import EditAddress from "./Address/EditAddress";
 import ProductListing from "./ProductListing";
 
 export {
@@ -49,6 +50,7 @@ export {
     EditAccount,
     Address,
     AddAddress,
+    EditAddress,
     Wallet,
     PaymentResult,
     ProductListing

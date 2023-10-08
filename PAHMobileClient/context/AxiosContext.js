@@ -24,7 +24,7 @@ const AxiosProvider = ({ children }) => {
             if (!authConfig.headers.Authorization) {
                 authConfig.headers.Authorization = `Bearer ${authContext.getAccessToken()}`;
             }
-            
+
             return authConfig;
         },
         error => {
@@ -33,12 +33,11 @@ const AxiosProvider = ({ children }) => {
     );
 
     const refreshAuthLogic = async failedRequest => {
-        
+        console.log('refresh auth logic');
         const data = {
             accessToken: authContext.authState.accessToken,
             refreshToken: authContext.authState.refreshToken,
         };
-
         const options = {
             method: 'POST',
             data,
@@ -46,28 +45,27 @@ const AxiosProvider = ({ children }) => {
         };
 
         try {
-            console.log('refresh token');
             const tokenRefreshResponse = await axios(options);
+            console.log(tokenRefreshResponse.data.data);
             failedRequest.response.config.headers.Authorization =
                 'Bearer ' + tokenRefreshResponse.data.data.accessToken;
 
             authContext.setAuthState({
-                ...authContext.authState,
+                refreshToken: tokenRefreshResponse.data.data.refreshToken,
                 accessToken: tokenRefreshResponse.data.data.accessToken,
+                authenticated: true
             });
 
             await Keychain.setGenericPassword(
                 'token',
                 JSON.stringify({
                     accessToken: tokenRefreshResponse.data.data.accessToken,
-                    refreshToken: authContext.authState.refreshToken,
+                    refreshToken: tokenRefreshResponse.data.data.refreshToken,
                 }));
+
             return await Promise.resolve();
         } catch (e) {
-            authContext.setAuthState({
-                accessToken: null,
-                refreshToken: null,
-            });
+            authContext.logout();
         }
     };
 

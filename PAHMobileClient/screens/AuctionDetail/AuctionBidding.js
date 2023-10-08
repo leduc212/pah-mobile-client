@@ -41,7 +41,7 @@ function AuctionBidding(props) {
         }}>
         <IconFeather name='x' size={30} color={'black'} />
       </TouchableOpacity>
-      <Text style={styles.titleText}>Đặt giá</Text>
+      <Text style={styles.titleText}>Đấu giá</Text>
     </View>
 
     {/* Information section */}
@@ -138,7 +138,7 @@ function AuctionBidding(props) {
           fontFamily: fonts.OpenSansBold,
           color: validationBidAmount() ? 'white' : colors.greyText,
           textAlign: 'center'
-        }}>Đặt giá</Text>
+        }}>Đấu giá</Text>
       </TouchableOpacity>
     </View>
 
@@ -163,7 +163,7 @@ function AuctionBidding(props) {
             }}>
             <IconFeather name='x' size={30} color={'black'} />
           </TouchableOpacity>
-          <Text style={styles.titleText}>Xác nhận đặt giá</Text>
+          <Text style={styles.titleText}>Xác nhận đấu giá</Text>
         </View>
 
         {/* Bidding information */}
@@ -175,9 +175,7 @@ function AuctionBidding(props) {
           <ListingDetailInfoText label='Giá đặt mới' text='8,600,000 VNĐ' />
           <ListingDetailInfoText label='Thời gian còn lại' text='2 ngày 13 giờ' />
           <ListingDetailInfoText label='Số dư khả dụng bị trừ' text='200,000 VNĐ'
-            secondText='Người đặt giá cần có đủ số dư khả dụng trong ví PAH' />
-          <ListingDetailInfoText label='Phí vận chuyển' text='180,000 VNĐ'
-            secondText='Thông qua Giao hàng nhanh' />
+            secondText='Người tham gia cần có đủ số dư khả dụng trong ví PAH' />
         </View>
 
         {/* Confirm buttons */}
@@ -206,7 +204,7 @@ function AuctionBidding(props) {
               fontFamily: fonts.OpenSansBold,
               color: 'white',
               textAlign: 'center'
-            }}>Xác nhận đặt giá</Text>
+            }}>Xác nhận đấu giá</Text>
           </TouchableOpacity>
         </View>
       </View>

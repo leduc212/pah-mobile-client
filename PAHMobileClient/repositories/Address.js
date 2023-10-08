@@ -44,6 +44,7 @@ async function getAllAdrressCurrentUser(axiosContext) {
             myObject.recipientName = item.recipientName;
             myObject.recipientPhone = item.recipientPhone;
             myObject.province = item.province;
+            myObject.provinceId = item.provinceId;
             myObject.district = item.district;
             myObject.districtId = item.districtId;
             myObject.ward = item.ward;
@@ -62,7 +63,126 @@ async function getAllAdrressCurrentUser(axiosContext) {
     }
 }
 
+async function getProvinceList() {
+    const shippingPath = `${config.ADDRESS_API_URL}/province`;
+    let configAxios = {
+        headers: {
+            Token: config.GHN_TOKEN
+        }
+    }
+    try {
+        let result = [];
+        let responseData = await axios.get(shippingPath, configAxios);
+        responseData.data.data.forEach(function (item) {
+            let myObject = {};
+            myObject.provinceId = item.ProvinceID;
+            myObject.provinceName = item.ProvinceName;
+            result.push(myObject);
+        })
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getDistrictListByProvinceId(provinceId) {
+    const shippingPath = `${config.ADDRESS_API_URL}/district?province_id=${provinceId}`;
+    
+    let configAxios = {
+        headers: {
+            Token: config.GHN_TOKEN
+        }
+    }
+    try {
+        let result = [];
+        let responseData = await axios.get(shippingPath, configAxios);
+        responseData.data.data.forEach(function (item) {
+            let myObject = {};
+            myObject.districtId = item.DistrictID;
+            myObject.districtName = item.DistrictName;
+            result.push(myObject);
+        })
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getWardListByDistrictId(districtId) {
+    const shippingPath = `${config.ADDRESS_API_URL}/ward?district_id=${districtId}`;
+
+    let configAxios = {
+        headers: {
+            Token: config.GHN_TOKEN
+        }
+    }
+    try {
+        let result = [];
+        let responseData = await axios.get(shippingPath, configAxios);
+        responseData.data.data.forEach(function (item) {
+            let myObject = {};
+            myObject.wardCode = item.WardCode;
+            myObject.wardName = item.WardName;
+            result.push(myObject);
+        })
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function createAddress(axiosContext, address) {
+    const addressPath = `/address`;
+
+    try {
+        let responseData = await axiosContext.authAxios.post(addressPath, address);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseAddress = responseData.data.data;
+        return responseAddress;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function updateAddress(axiosContext, address) {
+    const addressPath = `/address`;
+
+    try {
+        let responseData = await axiosContext.authAxios.put(addressPath, address);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseAddress = responseData.data.data;
+        return responseAddress;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteAddress(axiosContext, addressId) {
+    const addressPath = `/address/${addressId}`;
+
+    try {
+        let responseData = await axiosContext.authAxios.delete(addressPath);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseAddress = responseData.data.data;
+        return responseAddress;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getAdrressCurrentUser,
-    getAllAdrressCurrentUser
+    getAllAdrressCurrentUser,
+    getProvinceList,
+    getDistrictListByProvinceId,
+    getWardListByDistrictId,
+    createAddress,
+    updateAddress,
+    deleteAddress
 }

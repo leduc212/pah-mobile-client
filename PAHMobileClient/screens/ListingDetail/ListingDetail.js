@@ -25,6 +25,7 @@ import {
     Shipping as ShippingRepository
 } from '../../repositories';
 import { conditionText } from '../../utilities/Condition';
+import moment from 'moment';
 
 function ListingDetail(props) {
     //// AUTH AND NAVIGATION
@@ -335,7 +336,7 @@ function ListingDetail(props) {
                                 gap: 10
                             }}>
                                 <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
+                                <Text style={styles.descriptionText}>Tham gia ngày {moment(product.seller.registeredAt).format('DD/MM/YYYY')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -444,7 +445,7 @@ function ListingDetail(props) {
                                 gap: 10
                             }}>
                                 <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày 12/8/2023</Text>
+                                <Text style={styles.descriptionText}>Tham gia ngày {moment(product.seller.registeredAt).format('DD/MM/YYYY')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

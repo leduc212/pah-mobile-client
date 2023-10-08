@@ -167,7 +167,7 @@ function BiddingHistory(props) {
           color: 'black',
           fontFamily: fonts.OpenSansBold,
           fontSize: fontSizes.h2
-        }}>Lịch sử đặt giá</Text>
+        }}>Lịch sử đấu giá</Text>
         <View style={{ gap: 10, marginTop: 5 }}>
           {(Array.isArray(bidHistory) && bidHistory.length) ? <View>
             {bidHistory.map((bid) =>
