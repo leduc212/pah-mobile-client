@@ -55,7 +55,7 @@ function Seller(props) {
             flex: 1,
             paddingHorizontal: 5,
           }}>
-          {authContext?.authState?.role != roles.seller ? (
+          {authContext?.authState?.role == roles.seller ? (
             <SellerRegisterView/>
           ) : (
             <SellerHomeView navigation={navigation} route={route}/>

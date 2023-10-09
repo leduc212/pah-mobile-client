@@ -19,7 +19,6 @@ import {Dropdown} from 'react-native-element-dropdown';
 function SellerRegisterView(props) {
   //Photos
   let options = {
-    cameraType:'front',
     saveToPhotos: true,
     mediaType: 'photo',
     quality: 1,
@@ -40,19 +39,19 @@ function SellerRegisterView(props) {
     setPhoto(result.assets[0].uri);
   };
   //Seller data
-  const [name,setName] = useState(null);
+  const [name, setName] = useState(null);
   const [Photo, setPhoto] = useState(null);
-  const [pickupAddress,setPickupAddress] = useState({
-    province:null,
-    district:null,
-    ward:null,
-    street:null
+  const [pickupAddress, setPickupAddress] = useState({
+    province: null,
+    district: null,
+    ward: null,
+    street: null,
   });
-   //Dropdown input state
-   const [isProvinceFocus, setProvinceFocus] = useState(false);
-   const [isDistrictFocus, setDistrictFocus] = useState(false);
-   const [isWardFocus, setWardFocus] = useState(false);
-   //Province data
+  //Dropdown input state
+  const [isProvinceFocus, setProvinceFocus] = useState(false);
+  const [isDistrictFocus, setDistrictFocus] = useState(false);
+  const [isWardFocus, setWardFocus] = useState(false);
+  //Province data
   const provinceData = [
     {label: 'Thành phố Hồ Chí Minh', value: '1'},
     {label: 'Thành phố Vũng Tàu', value: '2'},
@@ -70,17 +69,20 @@ function SellerRegisterView(props) {
     {label: 'Phường Hiệp Phú', value: '2'},
     {label: 'Phường Long Phước', value: '3'},
   ];
-   //Ready to register
+  //Ready to register
   const [ready, setReady] = useState(false);
   return (
     <KeyboardAvoidingView style={styles.container}>
-    <View>
-      <Text style={{
-        fontSize:fontSizes.h3,
-        color:colors.primary,
-        fontFamily:fonts.OpenSansBold
-      }}>Đăng ký bán hàng ngay hôm nay !</Text>
-    </View>
+      <View>
+        <Text
+          style={{
+            fontSize: fontSizes.h3,
+            color: colors.primary,
+            fontFamily: fonts.OpenSansBold,
+          }}>
+          Đăng ký bán hàng ngay hôm nay !
+        </Text>
+      </View>
       <View>
         {/* Avatar */}
         <View style={styles.sectionStyle}>
@@ -110,7 +112,7 @@ function SellerRegisterView(props) {
                       fontFamily: fonts.OpenSansMedium,
                       fontSize: fontSizes.h5,
                     }}>
-                    Chụp ảnh đại diện
+                    Chụp ảnh
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -143,8 +145,8 @@ function SellerRegisterView(props) {
               fontSize: fontSizes.h4,
               fontFamily: fonts.OpenSansMedium,
               marginTop: 10,
-              borderBottomWidth: 1, 
-              borderColor:colors.darkGreyText
+              borderBottomWidth: 1,
+              borderColor: colors.darkGreyText,
             }}
           />
         </View>
@@ -152,102 +154,108 @@ function SellerRegisterView(props) {
         <View style={styles.sectionStyle}>
           <Text style={styles.titleSection}>Địa chỉ lấy hàng</Text>
           <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          itemTextStyle={styles.itemTextStyle}
-          searchPlaceholder="Search..."
-          placeholder={!isProvinceFocus ? 'Chọn thành phố' : '...'}
-          search
-          data={provinceData}
-          labelField="label"
-          valueField="value"
-          onFocus={() => setProvinceFocus(true)}
-          onBlur={() => setProvinceFocus(false)}
-          value={pickupAddress.province}
-          onChange={item => {
-            setPickupAddress(a=>{
-              return{
-                ...a,
-                province:item
-              }
-            })
-            setProvinceFocus(false);
-          }}
-        />
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          itemTextStyle={styles.itemTextStyle}
-          searchPlaceholder="Search..."
-          placeholder={!isDistrictFocus ? 'Chọn quận/huyện' : '...'}
-          search
-          data={districtData}
-          labelField="label"
-          valueField="value"
-          onFocus={() => setDistrictFocus(true)}
-          onBlur={() => setDistrictFocus(false)}
-          value={pickupAddress.district}
-          onChange={item => {
-            setPickupAddress(a=>{
-              return{
-                ...a,
-                district:item
-              }
-            })
-            setDistrictFocus(false);
-          }}
-        />
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          itemTextStyle={styles.itemTextStyle}
-          searchPlaceholder="Search..."
-          placeholder={!isWardFocus ? 'Chọn phường/xã' : '...'}
-          search
-          data={wardData}
-          labelField="label"
-          valueField="value"
-          onFocus={() => setWardFocus(true)}
-          onBlur={() => setWardFocus(false)}
-          value={pickupAddress.ward}
-          onChange={item => {
-            setPickupAddress(a=>{
-              return{
-                ...a,
-                ward:item
-              }
-            })
-            setWardFocus(false);
-          }}
-        />
-        <TextInput
-          value={pickupAddress.street}
-          onChangeText={text => {
-            setPickupAddress(a=>{
-              return{
-                ...a,
-                street:text
-              }
-            })
-          }}
-          style={styles.inputBox}
-          placeholder="Địa chỉ"
-          placeholderTextColor={colors.darkGreyText}
-        />
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={styles.itemTextStyle}
+            searchPlaceholder="Search..."
+            placeholder={!isProvinceFocus ? 'Chọn thành phố' : '...'}
+            search
+            data={provinceData}
+            labelField="label"
+            valueField="value"
+            onFocus={() => setProvinceFocus(true)}
+            onBlur={() => setProvinceFocus(false)}
+            value={pickupAddress.province}
+            onChange={item => {
+              setPickupAddress(a => {
+                return {
+                  ...a,
+                  province: item,
+                };
+              });
+              setProvinceFocus(false);
+            }}
+          />
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={styles.itemTextStyle}
+            searchPlaceholder="Search..."
+            placeholder={!isDistrictFocus ? 'Chọn quận/huyện' : '...'}
+            search
+            data={districtData}
+            labelField="label"
+            valueField="value"
+            onFocus={() => setDistrictFocus(true)}
+            onBlur={() => setDistrictFocus(false)}
+            value={pickupAddress.district}
+            onChange={item => {
+              setPickupAddress(a => {
+                return {
+                  ...a,
+                  district: item,
+                };
+              });
+              setDistrictFocus(false);
+            }}
+          />
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={styles.itemTextStyle}
+            searchPlaceholder="Search..."
+            placeholder={!isWardFocus ? 'Chọn phường/xã' : '...'}
+            search
+            data={wardData}
+            labelField="label"
+            valueField="value"
+            onFocus={() => setWardFocus(true)}
+            onBlur={() => setWardFocus(false)}
+            value={pickupAddress.ward}
+            onChange={item => {
+              setPickupAddress(a => {
+                return {
+                  ...a,
+                  ward: item,
+                };
+              });
+              setWardFocus(false);
+            }}
+          />
+          <TextInput
+            value={pickupAddress.street}
+            onChangeText={text => {
+              setPickupAddress(a => {
+                return {
+                  ...a,
+                  street: text,
+                };
+              });
+            }}
+            style={styles.inputBox}
+            placeholder="Địa chỉ"
+            placeholderTextColor={colors.darkGreyText}
+          />
         </View>
       </View>
       {/* Register button */}
-    <TouchableOpacity
-    onPress={()=>{
-      alert('Register')
-    }}
-        style={[styles.registerButtonStyle,{backgroundColor:ready==true ? colors.primary:colors.darkGreyText}]}>
+      <TouchableOpacity
+        onPress={() => {
+          alert('Register');
+        }}
+        style={[
+          styles.registerButtonStyle,
+          {
+            backgroundColor:
+              ready == true ? colors.primary : colors.darkGreyText,
+          },
+        ]}>
         <Text
           style={{
             fontSize: fontSizes.h4,
@@ -257,21 +265,25 @@ function SellerRegisterView(props) {
           Đăng ký
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity 
-          onPress={()=>{
-            setReady(!ready);
-          }}
-          style={{flexDirection:'row',
-          marginVertical:10,
-          gap:10
+      <TouchableOpacity
+        onPress={() => {
+          setReady(!ready);
+        }}
+        style={{flexDirection: 'row', marginVertical: 10, gap: 10}}>
+        {ready == true ? (
+          <IconFeather name="check-square" size={20} />
+        ) : (
+          <IconFeather name="square" size={20} />
+        )}
+        <Text
+          style={{
+            color: colors.darkGreyText,
+            fontFamily: fonts.OpenSansMedium,
+            fontSize: fontSizes.h5,
           }}>
-          {ready == true ? <IconFeather name="check-square" size={20}/>:<IconFeather name="square" size={20}/>}
-          <Text style={{
-                color: colors.darkGreyText,
-                fontFamily: fonts.OpenSansMedium,
-                fontSize: fontSizes.h5,
-              }}>Tôi đồng ý với các điều khoản</Text>
-          </TouchableOpacity>
+          Tôi đồng ý với các điều khoản
+        </Text>
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }
@@ -279,7 +291,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingHorizontal:15
+    paddingHorizontal: 15,
   },
   iconButton: {
     backgroundColor: colors.grey,
@@ -318,11 +330,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderRadius: 100,
-    width:200,
+    width: 200,
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf:'center'
+    alignSelf: 'center',
   },
   imageZoneButton: {
     backgroundColor: colors.primary,
@@ -339,15 +351,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     padding: 15,
-    marginHorizontal:15,
-    marginTop:10
+    marginHorizontal: 15,
+    marginTop: 10,
   },
   dropdown: {
     height: 50,
     borderColor: colors.darkGreyText,
     borderBottomWidth: 1,
     borderRadius: 8,
-    marginTop:10,
+    marginTop: 10,
     paddingHorizontal: 15,
   },
   placeholderStyle: {
@@ -380,7 +392,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15,
-    marginTop:10,
+    marginTop: 10,
   },
 });
 export default SellerRegisterView;

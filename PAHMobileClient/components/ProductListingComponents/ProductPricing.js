@@ -14,13 +14,34 @@ import {
 import {colors, fontSizes, fonts, roles} from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import DatePicker from 'react-native-date-picker';
 import {Dropdown} from 'react-native-element-dropdown';
 
 function ProductPricing(props) {
-  const {product, setProduct, setPricingMode} = props;
-  const [enableAuction, setEnableAuction] = useState(false);
-  const [enableBuy, setEnableBuy] = useState(true);
+  const {
+    product,
+    setProduct,
+    setPricingMode,
+    duration,
+    setDuration,
+    entryFee,
+    setEntryFee,
+    step,
+    setStep,
+    startDate,
+    setStartDate,
+  } = props;
+  const [isDurationFocus, setDurationFocus] = useState(false);
+  //Duration
+  const durationData = [
+    {label: '1', value: 1},
+    {label: '3', value: 3},
+    {label: '5', value: 5},
+    {label: '7', value: 7},
+    {label: '10', value: 10},
+  ];
+  //Date picker
+  const [openDatePicker, setOpenDatePicker] = useState(false);
   return (
     <KeyboardAvoidingView style={styles.container}>
       {/*Fixed screen title */}
@@ -69,16 +90,18 @@ function ProductPricing(props) {
                 marginRight: 20,
               }}>
               <Switch
-                disabled={enableAuction == true}
+                disabled={product.type == 2}
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={
-                  enableAuction ? colors.primary : colors.darkGreyText
-                }
+                thumbColor={product.type == 2 ? colors.primary : colors.darkGreyText}
                 onValueChange={() => {
-                  setEnableAuction(true);
-                  setEnableBuy(false);
+                  setProduct(item=>{
+                    return{
+                      ...item,
+                      type:2
+                    }
+                  })
                 }}
-                value={enableAuction}
+                value={product.type==2}
               />
             </TouchableOpacity>
           </View>
@@ -90,15 +113,222 @@ function ProductPricing(props) {
             }}>
             Hãy đặt giá thầu và để người mua cạnh tranh cho sản phẩm của bạn
           </Text>
-          <View style={{flexDirection: 'row', gap: 100}}>
+          <View
+            style={[
+              styles.auctionSectionsStyle,
+              {backgroundColor: colors.darkGrey, borderRadius: 5},
+            ]}>
             <Text
               style={{
-                color: colors.darkGreyText,
+                color: colors.black,
                 fontSize: fontSizes.h5,
                 fontFamily: fonts.OpenSansMedium,
               }}>
-              Giá
+              Giá khởi điểm
             </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+              }}>
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h5,
+                  fontFamily: fonts.OpenSansMedium,
+                }}>
+                VND
+              </Text>
+              <TextInput
+                value={product.price}
+                onChangeText={text => {
+                  setProduct(item => {
+                    return {
+                      ...item,
+                      price: text,
+                    };
+                  });
+                }}
+                keyboardType="numeric"
+                placeholder="5000000"
+                style={{
+                  height: 40,
+                  borderWidth: 1,
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.auctionSectionsStyle}>
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: fontSizes.h5,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Phí tham gia
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+              }}>
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h5,
+                  fontFamily: fonts.OpenSansMedium,
+                }}>
+                VND
+              </Text>
+              <TextInput
+                value={entryFee}
+                onChangeText={text => {
+                  setEntryFee(text);
+                }}
+                keyboardType="numeric"
+                placeholder="100000"
+                style={{
+                  height: 40,
+                  borderWidth: 1,
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.auctionSectionsStyle}>
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: fontSizes.h5,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Bước giá
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+              }}>
+              <TextInput
+                value={step}
+                onChangeText={text => {
+                  setStep(text);
+                }}
+                keyboardType="numeric"
+                placeholder="5"
+                style={{
+                  height: 40,
+                  borderWidth: 1,
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h5,
+                  fontFamily: fonts.OpenSansMedium,
+                }}>
+                % giá thầu trước
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 10,
+              paddingHorizontal: 10,
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}>
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: fontSizes.h5,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Thời gian đấu giá
+            </Text>
+            <Dropdown
+              style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              itemTextStyle={styles.itemTextStyle}
+              placeholder={!isDurationFocus ? 'ngày' : '...'}
+              data={durationData}
+              labelField="label"
+              valueField="value"
+              onFocus={() => setDurationFocus(true)}
+              onBlur={() => setDurationFocus(false)}
+              value={duration}
+              onChange={item => {
+                setDuration(item.value);
+                setDurationFocus(false);
+              }}
+            />
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: fontSizes.h5,
+                fontFamily: fonts.OpenSansMedium,
+              }}>
+              Ngày
+            </Text>
+          </View>
+          <View
+            style={{
+              padding: 10,
+              marginTop: 10,
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h5,
+                  fontFamily: fonts.OpenSansMedium,
+                }}>
+                Thời điểm bắt đầu
+              </Text>
+              <TouchableOpacity 
+              onPress={()=>{
+                setOpenDatePicker(true);
+              }}
+              style={{marginLeft: 'auto'}}>
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontSize: fontSizes.h5,
+                    fontFamily: fonts.OpenSansMedium,
+                  }}>
+                  Sửa
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{
+              marginTop:10,
+              justifyContent:'center',
+              alignItems: 'center',
+              borderWidth:1}}>
+              <Text style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h3,
+                  fontFamily: fonts.OpenSansBold,
+                }}>{startDate.toLocaleString()}</Text>
+            </View>
+            <DatePicker
+              modal
+              mode={'datetime'}
+              open={openDatePicker}
+              date={startDate}
+              onConfirm={newDate => {
+                setStartDate(newDate);
+                setOpenDatePicker(false);
+              }}
+              onCancel={() => {
+                setOpenDatePicker(false);
+              }}
+            />
           </View>
         </View>
         {/* Buy */}
@@ -115,14 +345,18 @@ function ProductPricing(props) {
                 marginRight: 20,
               }}>
               <Switch
-                disabled={enableBuy == true}
+                disabled={product.type == 1}
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={enableBuy ? colors.primary : colors.darkGreyText}
+                thumbColor={product.type == 1 ? colors.primary : colors.darkGreyText}
                 onValueChange={() => {
-                  setEnableAuction(false);
-                  setEnableBuy(true);
+                  setProduct(item=>{
+                    return{
+                      ...item,
+                      type:1
+                    }
+                  })
                 }}
-                value={enableBuy}
+                value={product.type==1}
               />
             </TouchableOpacity>
           </View>
@@ -139,20 +373,19 @@ function ProductPricing(props) {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
+              paddingTop: 15,
+              paddingHorizontal: 10,
             }}>
             <Text
               style={{
-                marginTop: 20,
                 color: colors.darkGreyText,
                 fontSize: fontSizes.h5,
                 fontFamily: fonts.OpenSansMedium,
               }}>
-              Giá
+              Giá bán
             </Text>
             <View
               style={{
-                marginEnd: 20,
-                marginTop: 20,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 10,
@@ -262,11 +495,15 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h5,
   },
   dropdown: {
-    height: 50,
+    marginLeft: 'auto',
+    marginRight: 5,
+    width: 70,
+    height: 20,
     borderColor: colors.black,
-    borderBottomWidth: 1,
+    borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
   placeholderStyle: {
     color: colors.darkGreyText,
@@ -288,6 +525,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h4,
   },
-
+  auctionSectionsStyle: {
+    marginTop: 10,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 });
 export default ProductPricing;
