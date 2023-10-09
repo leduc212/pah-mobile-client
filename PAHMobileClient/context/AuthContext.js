@@ -9,7 +9,7 @@ const AuthProvider = ({children}) => {
   const [authState, setAuthState] = useState({
     accessToken: null,
     refreshToken: null,
-    authenticated: false,
+    authenticated: true,
     role: roles.buyer
   });
 

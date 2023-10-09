@@ -24,6 +24,8 @@ import CheckoutComplete from "./Checkout/CheckoutComplete";
 import Wallet from "./Wallet/Wallet";
 import PaymentResult from "./Wallet/PaymentResult";
 import EditAddress from "./Address/EditAddress";
+import ProductListing from "./ProductListing";
+
 export {
     Account,
     Cart,
@@ -50,5 +52,6 @@ export {
     AddAddress,
     EditAddress,
     Wallet,
-    PaymentResult
+    PaymentResult,
+    ProductListing
 }
