@@ -11,9 +11,9 @@ import { isValidEmail } from '../../utilities/Validation';
 
 function RegisterView1(props) {
 
-  const validationOk = () => email.length > 0 && name.length > 0;
+  const validationOk = () => email.length > 0 && name.length > 0 && phone.length > 0;
   const emailValidation = () => isValidEmail(email);
-  const { setEmailCheck, email, setEmail, name, setName } = props;
+  const { setEmailCheck, email, setEmail, name, setName, phone, setPhone } = props;
 
   // states for validating
   const [errorEmail, setErrorEmail] = useState('');
@@ -48,6 +48,17 @@ function RegisterView1(props) {
           placeholder="Nhập họ tên"
         />
       </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.inputBox}
+          keyboardType='phone-pad'
+          value={phone}
+          onChangeText={text => {
+            setPhone(text);
+          }}
+          placeholder="Nhập số điện thoại"
+        />
+      </View>
       <TouchableOpacity
         disabled={!validationOk()}
         onPress={() => {
@@ -77,7 +88,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     justifyContent: 'center',
-    marginBottom: 20
+    marginBottom: 10
   },
   inputBox: {
     fontFamily: fonts.OpenSansMedium,
@@ -97,7 +108,8 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     borderRadius: 35,
-    paddingVertical: 15
+    paddingVertical: 10,
+    marginTop: 10
   },
   primaryButtonText: {
     fontSize: fontSizes.h3,

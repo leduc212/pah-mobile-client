@@ -181,6 +181,7 @@ function Wallet(props) {
             (data) => {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, add money to wallet
+                setTopupModal(false);
                 navigate('PaymentResult', { returnCode: data.returnCode })
             }
         );

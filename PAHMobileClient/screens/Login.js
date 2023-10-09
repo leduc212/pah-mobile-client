@@ -15,6 +15,7 @@ import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
 import { Auth as AuthRepository } from '../repositories';
 import * as Keychain from 'react-native-keychain';
+import Toast from 'react-native-toast-message';
 
 function Login(props) {
   // Auth Context
@@ -44,7 +45,7 @@ function Login(props) {
     await AuthRepository.login(axiosContext, { email: email, password: password })
       .then(response => {
         const { accessToken, refreshToken } = response;
-        
+
         authContext.setAuthState({
           accessToken: accessToken,
           refreshToken: refreshToken,
@@ -58,7 +59,15 @@ function Login(props) {
             refreshToken,
           }),
         );
-        
+
+        Toast.show({
+          type: 'success',
+          text1: 'Đăng nhập thành công',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 3000
+        });
+
         goBack();
       })
       .catch(error => {

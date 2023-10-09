@@ -9,4 +9,5 @@ export default {
     warningImage: require('../assets/images/warning.png'),
     successImage: require('../assets/images/success.png'),
     failedImage: require('../assets/images/failed.png'),
+    orderFailImage: require('../assets/images/order-failed.png'),
 }

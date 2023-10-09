@@ -10,13 +10,15 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
-import { colors, fontSizes, fonts } from '../../constants';
+import { colors, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     UnauthorizedAccountScreen,
     AccountMenuItem
 } from '../../components';
 import { Account as AccountRepository } from '../../repositories';
+import Toast from 'react-native-toast-message';
+import { useIsFocused } from '@react-navigation/native';
 
 function Account(props) {
     //// AUTH AND NAVIGATION
@@ -36,11 +38,23 @@ function Account(props) {
     // Data for loading and refreshing
     const [isLoading, setIsLoading] = useState(true);
 
+    // Data for failedFetch
+    const [isEmpty, setIsEmpty] = useState(false);
+
+    // On focus
+    const isFocused = useIsFocused();
 
     //// FUNCTION
     // Test logout function
     function logout() {
-        authContext.logout();
+        authContext?.logout();
+        Toast.show({
+            type: 'success',
+            text1: 'Đăng xuất thành công',
+            position: 'bottom',
+            autoHide: true,
+            visibilityTime: 3000
+        });
     }
 
     // Function for getting currentuser info
@@ -49,9 +63,11 @@ function Account(props) {
             .then(response => {
                 setUser(response);
                 setIsLoading(false);
+                setIsEmpty(false);
             })
             .catch(err => {
                 setIsLoading(false);
+                setIsEmpty(true);
             })
     }
 
@@ -59,9 +75,19 @@ function Account(props) {
         // If user is logined
         if (authContext?.authState?.authenticated) {
             setIsLoading(true);
+            setIsEmpty(true);
             getCurrentUserInfo();
         }
     }, [])
+
+    useEffect(() => {
+        // If user is logined
+        if (authContext?.authState?.authenticated) {
+            setIsLoading(true);
+            setIsEmpty(true);
+            getCurrentUserInfo();
+        }
+    }, [isFocused]);
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -92,113 +118,145 @@ function Account(props) {
                     justifyContent: 'center'
                 }}>
                     <ActivityIndicator size="large" color={colors.primary} />
-                </View> : <ScrollView style={{
-                    flex: 1,
-                    paddingLeft: 15,
-                    paddingRight: 10
+                </View> : <View style={{
+                    flex: 1
                 }}>
-                    <TouchableOpacity
-                        onPress={() => navigate('Profile', { user_id: 1 })}>
-                        <Image source={{ uri: user.profilePicture }}
-                            style={{
-                                resizeMode: 'cover',
-                                width: 80,
-                                height: 80,
-                                borderRadius: 50
-                            }} />
-                        <View style={{
-                            flexDirection: 'row',
-                            marginTop: 10,
-                            alignItems: 'center'
-                        }}>
-                            <Text style={{
-                                color: 'black',
-                                fontFamily: fonts.OpenSansBold,
-                                fontSize: fontSizes.h3
-                            }}>{user.name}</Text>
-                            <View style={{ flex: 1 }}></View>
-                            <IconFeather name='chevron-right'
-                                size={20} color={'black'} />
-                        </View>
-                    </TouchableOpacity>
-                    <View style={{
+                    {isEmpty ? <View style={{
                         flex: 1,
-                        paddingLeft: 10,
-                        marginTop: 20,
-                        gap: 15,
-                        marginBottom: 15
+                        alignItems: 'center',
+                        paddingTop: 150
                     }}>
-                        {/* Home page navigation */}
-                        <AccountMenuItem iconName='home' text='Trang chủ'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Notification navigation */}
-                        <AccountMenuItem iconName='bell' text='Thông báo'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Separator line */}
-                        <View style={styles.separator}></View>
-                        {/* User's profile navigation */}
-                        <AccountMenuItem iconName='user' text='Thông tin cá nhân'
-                            onPress={() => {
-                                navigate('EditAccount')
-                            }} />
-                        {/* User's address navigation */}
-                        <AccountMenuItem iconName='map-pin' text='Địa chỉ'
-                            onPress={() => {
-                                navigate('Address')
-                            }} />
-                        {/* User's orders navigation */}
-                        <AccountMenuItem iconName='box' text='Đơn hàng'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* User's wallet information */}
-                        <AccountMenuItem iconName='credit-card' text='Ví PAH'
-                            onPress={() => {
-                                navigate('Wallet')
-                            }} />
-                        {/* Bids and offers history */}
-                        <AccountMenuItem iconName='book-open' text='Lịch sử đấu giá'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Seller's page */}
-                        <AccountMenuItem iconName='tag' text='Trang người bán'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Transaction history */}
-                        <AccountMenuItem iconName='file-text' text='Lịch sử giao dịch'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Logout button */}
-                        <AccountMenuItem iconName='log-out' text='Đăng xuất'
-                            onPress={() => {
-                                logout()
-                            }} />
-                        {/* Separator line */}
-                        <View style={styles.separator}></View>
-                        {/* All categories navigation */}
-                        <AccountMenuItem iconName='grid' text='Danh mục'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Settings navigation */}
-                        <AccountMenuItem iconName='settings' text='Cài đặt'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                        {/* Help navigation */}
-                        <AccountMenuItem iconName='help-circle' text='Trợ giúp'
-                            onPress={() => {
-                                navigate('Home')
-                            }} />
-                    </View>
-                </ScrollView>}
+                        <Image source={images.warningImage} style={{
+                            resizeMode: 'cover',
+                            width: 140,
+                            height: 140
+                        }} />
+                        <Text style={{
+                            fontSize: fontSizes.h4,
+                            fontFamily: fonts.OpenSansMedium,
+                            color: 'black',
+                            textAlign: 'center',
+                            marginHorizontal: 35,
+                            marginTop: 10
+                        }}>Không thể kết nối tới máy chủ.</Text>
+                        <TouchableOpacity onPress={() => getCurrentUserInfo()}>
+                            <Text style={{
+                                fontSize: fontSizes.h5,
+                                fontFamily: fonts.OpenSansMedium,
+                                color: colors.primary,
+                                textAlign: 'center',
+                                marginHorizontal: 35,
+                                marginTop: 20
+                            }}>Tải lại</Text>
+                        </TouchableOpacity>
+                    </View> : <ScrollView style={{
+                        flex: 1,
+                        paddingLeft: 15,
+                        paddingRight: 10
+                    }}>
+                        <TouchableOpacity
+                            onPress={() => navigate('Profile', { user_id: 1 })}>
+                            <Image source={{ uri: user.profilePicture }}
+                                style={{
+                                    resizeMode: 'cover',
+                                    width: 80,
+                                    height: 80,
+                                    borderRadius: 50
+                                }} />
+                            <View style={{
+                                flexDirection: 'row',
+                                marginTop: 10,
+                                alignItems: 'center'
+                            }}>
+                                <Text style={{
+                                    color: 'black',
+                                    fontFamily: fonts.OpenSansBold,
+                                    fontSize: fontSizes.h3
+                                }}>{user.name}</Text>
+                                <View style={{ flex: 1 }}></View>
+                                <IconFeather name='chevron-right'
+                                    size={20} color={'black'} />
+                            </View>
+                        </TouchableOpacity>
+                        <View style={{
+                            flex: 1,
+                            paddingLeft: 10,
+                            marginTop: 20,
+                            gap: 15,
+                            marginBottom: 15
+                        }}>
+                            {/* Home page navigation */}
+                            <AccountMenuItem iconName='home' text='Trang chủ'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Notification navigation */}
+                            <AccountMenuItem iconName='bell' text='Thông báo'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Separator line */}
+                            <View style={styles.separator}></View>
+                            {/* User's profile navigation */}
+                            <AccountMenuItem iconName='user' text='Thông tin cá nhân'
+                                onPress={() => {
+                                    navigate('EditAccount')
+                                }} />
+                            {/* User's address navigation */}
+                            <AccountMenuItem iconName='map-pin' text='Địa chỉ'
+                                onPress={() => {
+                                    navigate('Address')
+                                }} />
+                            {/* User's orders navigation */}
+                            <AccountMenuItem iconName='box' text='Đơn hàng'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* User's wallet information */}
+                            <AccountMenuItem iconName='credit-card' text='Ví PAH'
+                                onPress={() => {
+                                    navigate('Wallet')
+                                }} />
+                            {/* Bids and offers history */}
+                            <AccountMenuItem iconName='book-open' text='Lịch sử đấu giá'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Seller's page */}
+                            <AccountMenuItem iconName='tag' text='Trang người bán'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Transaction history */}
+                            <AccountMenuItem iconName='file-text' text='Lịch sử giao dịch'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Logout button */}
+                            <AccountMenuItem iconName='log-out' text='Đăng xuất'
+                                onPress={() => {
+                                    logout()
+                                }} />
+                            {/* Separator line */}
+                            <View style={styles.separator}></View>
+                            {/* All categories navigation */}
+                            <AccountMenuItem iconName='grid' text='Danh mục'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Settings navigation */}
+                            <AccountMenuItem iconName='settings' text='Cài đặt'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                            {/* Help navigation */}
+                            <AccountMenuItem iconName='help-circle' text='Trợ giúp'
+                                onPress={() => {
+                                    navigate('Home')
+                                }} />
+                        </View>
+                    </ScrollView>}
+                </View>}
             </View>}
     </View>
 }
