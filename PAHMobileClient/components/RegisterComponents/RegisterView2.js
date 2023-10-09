@@ -13,12 +13,26 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 function RegisterView2(props) {
   //states for validating
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const passwordValidation = () => isValidPassword(password);
+  const passwordConfirmValidation = () => password === passwordConfirm;
 
-  const { password, setPassword, onAccountCreate } = props;
+  const validationOk = () => passwordValidation() && passwordConfirmValidation();
+
+  const [showPasswordConfirmValidation, setShowPasswordConfirmValidation] = useState(false);
+  const { password, setPassword, onAccountCreate, setEmailCheck, errorMessage } = props;
 
   return (
     <View style={{ padding: 15 }}>
+      {errorMessage != '' && <Text
+        style={{
+          color: 'red',
+          fontFamily: fonts.OpenSansMedium,
+          fontSize: fontSizes.h4
+        }}>
+        Lỗi: {errorMessage}
+      </Text>}
       <Text style={styles.welcomeText}>
         Tạo mật khẩu
       </Text>
@@ -54,9 +68,45 @@ function RegisterView2(props) {
             size={20}
           />}
         </View>
+        <View style={styles.inputContainer}>
+          <TextInput style={styles.inputBox}
+            value={passwordConfirm}
+            secureTextEntry={!showPasswordConfirm}
+            onChangeText={text => {
+              setPasswordConfirm(text);
+              setShowPasswordConfirmValidation(true);
+            }}
+            placeholder="Nhập lại mật khẩu"
+          />
+          {!showPasswordConfirm ? <Icon
+            onPress={() => {
+              setShowPasswordConfirm(!showPasswordConfirm);
+            }}
+            style={{
+              position: 'absolute',
+              right: 10,
+            }}
+            name="eye"
+            size={20}
+          /> : <Icon
+            onPress={() => {
+              setShowPasswordConfirm(!showPasswordConfirm);
+            }}
+            style={{
+              position: 'absolute',
+              right: 10,
+            }}
+            name="eye-slash"
+            size={20}
+          />}
+        </View>
+        {(!passwordConfirmValidation() && showPasswordConfirmValidation) && <Text
+          style={styles.errorConfirmText}>
+          Mật khẩu nhập lại không trùng khớp
+        </Text>}
         <Text
           style={styles.errorText}>
-          Ít nhất 8 ký tự, bao gồm ít nhất 1 chữ thường và 1 chữ in hoa, ít nhất 1 số
+          Ít nhất 8 ký tự, bao gồm ít nhất 1 chữ cái thường, 1 chữ cái in hoa và ít nhất 1 số
         </Text>
         <View style={{ marginVertical: 20, }}>
           <Text style={styles.termText}>
@@ -76,15 +126,24 @@ function RegisterView2(props) {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        disabled={!passwordValidation()}
+        disabled={!validationOk()}
         onPress={onAccountCreate}
         style={[{
-          backgroundColor: passwordValidation() ? colors.primary : colors.grey
+          backgroundColor: validationOk() ? colors.primary : colors.grey
         }, styles.primaryButton]}>
         <Text style={[{
-          color: passwordValidation() ? 'white' : colors.greyText
+          color: validationOk() ? 'white' : colors.greyText
         }, styles.primaryButtonText]}>
           Tạo tài khoản
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          setEmailCheck(false);
+        }}
+        style={styles.backButton}>
+        <Text style={styles.backButtonText}>
+          Quay lại
         </Text>
       </TouchableOpacity>
     </View>
@@ -100,7 +159,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     justifyContent: 'center',
-    marginBottom: 20
+    marginBottom: 10
   },
   inputBox: {
     fontFamily: fonts.OpenSansMedium,
@@ -115,17 +174,37 @@ const styles = StyleSheet.create({
     color: colors.darkGreyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h6,
-    marginTop: 2,
+    marginTop: 15,
+    paddingHorizontal: 5
+  },
+  errorConfirmText: {
+    color: 'red',
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h6,
     paddingHorizontal: 5
   },
   primaryButton: {
     borderRadius: 35,
-    paddingVertical: 15
+    paddingVertical: 10
   },
   primaryButtonText: {
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansBold,
     textAlign: 'center'
+  },
+  backButton: {
+    borderRadius: 35,
+    paddingVertical: 10,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    marginTop: 10
+  },
+  backButtonText: {
+    fontSize: fontSizes.h3,
+    fontFamily: fonts.OpenSansMedium,
+    textAlign: 'center',
+    color: colors.primary
   },
   termText: {
     color: colors.black,

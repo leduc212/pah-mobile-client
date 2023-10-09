@@ -1,26 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   KeyboardAvoidingView,
   Text,
   StyleSheet,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../constants';
 import { RegisterView2, RegisterView1 } from '../components';
 import IconFeather from 'react-native-vector-icons/Feather';
+import { AxiosContext } from '../context/AxiosContext';
+import { Auth as AuthRepository } from '../repositories';
+import Toast from 'react-native-toast-message';
 
 function Register(props) {
+  //// AXIOS AND NAVIGATION
+  // Axios Context
+  const axiosContext = useContext(AxiosContext);
   // Navigation
   const { navigation, route } = props;
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
+
+  //// DATA
+  // Data for switching between views
   const [emailCheck, setEmailCheck] = useState(false);
 
-  // Data
+  // Loading states
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
+  // Data for register
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+
+  const [errorMessage, setErrorMessage] = useState('');
+
+  //// FUNCTION
+  // register function
+  async function register() {
+    setIsRegisterLoading(true);
+    setErrorMessage('');
+    await AuthRepository.register(axiosContext, {
+      name: name,
+      email: email,
+      password: password,
+      phone: phone,
+      gender: 1,
+      dob: "1970-01-01T00:00:00.000Z"
+    })
+      .then(response => {
+        Toast.show({
+          type: 'success',
+          text1: 'Đăng ký thành công',
+          text2: 'Hãy đăng nhập vào tài khoản mới của bạn!',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 3000
+        });
+        goBack();
+      })
+      .catch(error => {
+        setIsRegisterLoading(false);
+        if (error.response) {
+          setErrorMessage(error.response.data.message);
+        }
+      });
+  }
 
   return (
     <KeyboardAvoidingView style={styles.container}
@@ -38,13 +86,27 @@ function Register(props) {
       </View>
 
       {emailCheck ? <RegisterView2 password={password} setPassword={setPassword}
-        onAccountCreate={() =>
-          alert(`email: ${email}, name: ${name}, password: ${password}`)}
+        errorMessage={errorMessage}
+        setEmailCheck={setEmailCheck}
+        onAccountCreate={() => register()}
       />
         : <RegisterView1 setEmailCheck={setEmailCheck}
           email={email} setEmail={setEmail}
           name={name} setName={setName}
+          phone={phone} setPhone={setPhone}
         />}
+      {isRegisterLoading && <View style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.inactive
+      }}>
+        <ActivityIndicator size='large' />
+      </View>}
     </KeyboardAvoidingView>
   );
 }

@@ -1,5 +1,4 @@
 import React, { useContext, useCallback, useEffect } from 'react';
-import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import UITabs from './UITabs';
@@ -30,8 +29,24 @@ import {
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
 import * as Keychain from 'react-native-keychain';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { fonts, fontSizes } from '../constants';
 
 const Stack = createNativeStackNavigator();
+
+const toastConfig = {
+    success: (props) => (
+        <BaseToast
+            {...props}
+            style={{ borderLeftColor: 'green' }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{
+                fontSize: fontSizes.h4,
+                fontFamily: fonts.OpenSansMedium
+            }}
+        />
+    ),
+};
 
 function App(props) {
     const authContext = useContext(AuthContext);

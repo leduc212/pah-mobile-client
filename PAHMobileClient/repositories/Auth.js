@@ -16,6 +16,22 @@ async function login(axiosContext, userInfo) {
     }
 }
 
+async function register(axiosContext, userInfo) {
+    const registerPath = `/register`;
+    try {
+        let responseData = await axiosContext.publicAxios.post(registerPath, userInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+        
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     login,
+    register
 }

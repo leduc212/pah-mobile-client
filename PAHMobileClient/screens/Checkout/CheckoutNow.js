@@ -274,7 +274,7 @@ function CheckoutNow(props) {
             // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
             setIsLoadingPayment(true);
             navigation.pop();
-            navigate('CheckoutComplete');
+            navigate('CheckoutComplete', {returnCode: 1});
         }
     }
 
