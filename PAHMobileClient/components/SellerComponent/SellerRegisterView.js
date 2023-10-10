@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Text,
   View,
@@ -10,15 +10,16 @@ import {
   PermissionsAndroid,
   KeyboardAvoidingView,
 } from 'react-native';
-import {colors, fontSizes, fonts, roles} from '../../constants';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { colors, fontSizes, fonts, roles } from '../../constants';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 
 function SellerRegisterView(props) {
   //Photos
   let options = {
+    cameraType: 'front',
     saveToPhotos: true,
     mediaType: 'photo',
     quality: 1,
@@ -45,7 +46,7 @@ function SellerRegisterView(props) {
     province: null,
     district: null,
     ward: null,
-    street: null,
+    street: null
   });
   //Dropdown input state
   const [isProvinceFocus, setProvinceFocus] = useState(false);
@@ -53,43 +54,41 @@ function SellerRegisterView(props) {
   const [isWardFocus, setWardFocus] = useState(false);
   //Province data
   const provinceData = [
-    {label: 'Thành phố Hồ Chí Minh', value: '1'},
-    {label: 'Thành phố Vũng Tàu', value: '2'},
-    {label: 'Thành phố Hà Nội', value: '3'},
+    { label: 'Thành phố Hồ Chí Minh', value: '1' },
+    { label: 'Thành phố Vũng Tàu', value: '2' },
+    { label: 'Thành phố Hà Nội', value: '3' },
   ];
   //District data
   const districtData = [
-    {label: 'Quận 9', value: '1'},
-    {label: 'Quận 2', value: '2'},
-    {label: 'Quận 1', value: '3'},
+    { label: 'Quận 9', value: '1' },
+    { label: 'Quận 2', value: '2' },
+    { label: 'Quận 1', value: '3' },
   ];
   //Ward data
   const wardData = [
-    {label: 'Phường Phú Hữu', value: '1'},
-    {label: 'Phường Hiệp Phú', value: '2'},
-    {label: 'Phường Long Phước', value: '3'},
+    { label: 'Phường Phú Hữu', value: '1' },
+    { label: 'Phường Hiệp Phú', value: '2' },
+    { label: 'Phường Long Phước', value: '3' },
   ];
   //Ready to register
   const [ready, setReady] = useState(false);
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <View style={styles.container}>
       <View>
-        <Text
-          style={{
-            fontSize: fontSizes.h3,
-            color: colors.primary,
-            fontFamily: fonts.OpenSansBold,
-          }}>
-          Đăng ký bán hàng ngay hôm nay !
-        </Text>
+        <Text style={{
+          fontSize: fontSizes.h3,
+          color: colors.primary,
+          fontFamily: fonts.OpenSansBold,
+          marginHorizontal: 10
+        }}>Đăng ký bán hàng ngay hôm nay!</Text>
       </View>
       <View>
         {/* Avatar */}
         <View style={styles.sectionStyle}>
           <Text style={styles.titleSection}>Hình đại diện</Text>
           {Photo != null ? (
-            <View>
-              <Image style={styles.imageStyle} source={{uri: Photo}} />
+            <View style={{marginHorizontal: 15, marginVertical: 10}}>
+              <Image style={styles.imageStyle} source={{ uri: Photo }} />
               <TouchableOpacity
                 onPress={() => {
                   setPhoto(null);
@@ -101,7 +100,7 @@ function SellerRegisterView(props) {
               </TouchableOpacity>
             </View>
           ) : (
-            <View>
+            <View style={{marginHorizontal: 15, marginVertical:10 }}>
               <View style={styles.imageZone}>
                 <TouchableOpacity
                   style={styles.imageZoneButton}
@@ -147,12 +146,28 @@ function SellerRegisterView(props) {
               marginTop: 10,
               borderBottomWidth: 1,
               borderColor: colors.darkGreyText,
+              marginHorizontal: 15,
+              paddingHorizontal: 0
             }}
           />
         </View>
         {/* Address */}
         <View style={styles.sectionStyle}>
           <Text style={styles.titleSection}>Địa chỉ lấy hàng</Text>
+          <TextInput
+            value={pickupAddress.street}
+            onChangeText={text => {
+              setPickupAddress(a => {
+                return {
+                  ...a,
+                  street: text
+                }
+              })
+            }}
+            style={styles.inputBox}
+            placeholder="Địa chỉ"
+            placeholderTextColor={colors.darkGreyText}
+          />
           <Dropdown
             style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
@@ -172,9 +187,9 @@ function SellerRegisterView(props) {
               setPickupAddress(a => {
                 return {
                   ...a,
-                  province: item,
-                };
-              });
+                  province: item
+                }
+              })
               setProvinceFocus(false);
             }}
           />
@@ -197,9 +212,9 @@ function SellerRegisterView(props) {
               setPickupAddress(a => {
                 return {
                   ...a,
-                  district: item,
-                };
-              });
+                  district: item
+                }
+              })
               setDistrictFocus(false);
             }}
           />
@@ -222,45 +237,25 @@ function SellerRegisterView(props) {
               setPickupAddress(a => {
                 return {
                   ...a,
-                  ward: item,
-                };
-              });
+                  ward: item
+                }
+              })
               setWardFocus(false);
             }}
-          />
-          <TextInput
-            value={pickupAddress.street}
-            onChangeText={text => {
-              setPickupAddress(a => {
-                return {
-                  ...a,
-                  street: text,
-                };
-              });
-            }}
-            style={styles.inputBox}
-            placeholder="Địa chỉ"
-            placeholderTextColor={colors.darkGreyText}
           />
         </View>
       </View>
       {/* Register button */}
       <TouchableOpacity
         onPress={() => {
-          alert('Register');
+          alert('Register')
         }}
-        style={[
-          styles.registerButtonStyle,
-          {
-            backgroundColor:
-              ready == true ? colors.primary : colors.darkGreyText,
-          },
-        ]}>
+        style={[styles.registerButtonStyle, { backgroundColor: ready == true ? colors.primary : colors.darkGreyText }]}>
         <Text
           style={{
             fontSize: fontSizes.h4,
             color: 'white',
-            fontFamily: fonts.OpenSansMedium,
+            fontFamily: fonts.OpenSansMedium
           }}>
           Đăng ký
         </Text>
@@ -269,29 +264,27 @@ function SellerRegisterView(props) {
         onPress={() => {
           setReady(!ready);
         }}
-        style={{flexDirection: 'row', marginVertical: 10, gap: 10}}>
-        {ready == true ? (
-          <IconFeather name="check-square" size={20} />
-        ) : (
-          <IconFeather name="square" size={20} />
-        )}
-        <Text
-          style={{
-            color: colors.darkGreyText,
-            fontFamily: fonts.OpenSansMedium,
-            fontSize: fontSizes.h5,
-          }}>
-          Tôi đồng ý với các điều khoản
-        </Text>
+        style={{
+          flexDirection: 'row',
+          marginVertical: 10,
+          gap: 10,
+          marginHorizontal: 10,
+          marginBottom: 15
+        }}>
+        {ready == true ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
+        <Text style={{
+          color: colors.darkGreyText,
+          fontFamily: fonts.OpenSansMedium,
+          fontSize: fontSizes.h5,
+        }}>Tôi đồng ý với các điều khoản</Text>
       </TouchableOpacity>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
+    backgroundColor: 'white'
   },
   iconButton: {
     backgroundColor: colors.grey,
@@ -299,15 +292,16 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   sectionStyle: {
-    borderBottomWidth: 5,
+    borderBottomWidth: 2,
     borderColor: colors.darkGrey,
-    paddingBottom: 15,
+    paddingVertical: 20,
   },
   titleSection: {
     marginTop: 10,
     color: colors.black,
     fontFamily: fonts.OpenSansBold,
     fontSize: fontSizes.h3,
+    marginHorizontal: 10
   },
   detailTextSection: {
     color: colors.black,
@@ -334,7 +328,7 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
+    alignSelf: 'center'
   },
   imageZoneButton: {
     backgroundColor: colors.primary,
@@ -352,7 +346,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 15,
     marginHorizontal: 15,
-    marginTop: 10,
+    marginTop: 20
   },
   dropdown: {
     height: 50,
@@ -360,7 +354,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 8,
     marginTop: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
+    marginHorizontal: 10
   },
   placeholderStyle: {
     color: colors.darkGreyText,
@@ -391,8 +386,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderBottomWidth: 1,
     fontSize: fontSizes.h4,
-    paddingHorizontal: 15,
     marginTop: 10,
+    marginHorizontal: 10
   },
 });
 export default SellerRegisterView;

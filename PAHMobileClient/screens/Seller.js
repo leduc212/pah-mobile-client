@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -6,22 +6,70 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  KeyboardAvoidingView,
+  ActivityIndicator
 } from 'react-native';
-import {AuthContext} from '../context/AuthContext';
-import {colors, fontSizes, fonts, roles} from '../constants';
+import { AuthContext } from '../context/AuthContext';
+import { AxiosContext } from '../context/AxiosContext';
+import { colors, fontSizes, fonts, images } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {UnauthorizedAccountScreen,SellerHomeView,SellerRegisterView} from '../components';
+import { UnauthorizedAccountScreen, SellerHomeView, SellerRegisterView } from '../components';
+import { Account as AccountRepository } from '../repositories';
+import { useIsFocused } from '@react-navigation/native';
 
 function Seller(props) {
-  // Auth Context
+  //// AUTH AND NAVIGATION
   const authContext = useContext(AuthContext);
+  const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
+
+  //// DATA
+  const [user, setUser] = useState({ role: 1 });
+  // Data for loading and refreshing
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Data for failedFetch
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  // On focus
+  const isFocused = useIsFocused();
+
+  //// FUNCTION
+  // Function for getting currentuser info
+  function getCurrentUserInfo() {
+    AccountRepository.getInfoCurrentUser(axiosContext)
+      .then(response => {
+        setUser(response);
+        setIsLoading(false);
+        setIsEmpty(false);
+      })
+      .catch(err => {
+        setIsLoading(false);
+        setIsEmpty(true);
+      })
+  }
+
+  useEffect(() => {
+    // If user is logined
+    if (authContext?.authState?.authenticated) {
+      setIsLoading(true);
+      setIsEmpty(true);
+      getCurrentUserInfo();
+    }
+  }, [])
+
+  useEffect(() => {
+    // If user is logined
+    if (authContext?.authState?.authenticated) {
+      setIsLoading(true);
+      setIsEmpty(true);
+      getCurrentUserInfo();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -46,22 +94,58 @@ function Seller(props) {
         </View>
       </View>
 
-      {/* Check if logined? If guest, show login/register navigation page. If logined, show account page  */}
-      {authContext?.authState?.authenticated ? (
+      {/* Check if logined? If guest, show login/register navigation page. If logined,
+      check for role: buyer: show seller registration page, seller: show seller dashboard  */}
+      {!authContext?.authState?.authenticated ? (
         <UnauthorizedAccountScreen navigation={navigation} route={route} />
-      ) : (
-        <ScrollView
-          style={{
+      ) : <View style={{ flex: 1 }}>
+        {isLoading ? <View style={{
+          flex: 1,
+          justifyContent: 'center'
+        }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <View style={{ flex: 1 }}>
+          {isEmpty ? <View style={{
             flex: 1,
-            paddingHorizontal: 5,
+            alignItems: 'center',
+            paddingTop: 150
           }}>
-          {authContext?.authState?.role == roles.seller ? (
-            <SellerRegisterView/>
-          ) : (
-            <SellerHomeView navigation={navigation} route={route}/>
-          )}
-        </ScrollView>
-      )}
+            <Image source={images.warningImage} style={{
+              resizeMode: 'cover',
+              width: 140,
+              height: 140
+            }} />
+            <Text style={{
+              fontSize: fontSizes.h4,
+              fontFamily: fonts.OpenSansMedium,
+              color: 'black',
+              textAlign: 'center',
+              marginHorizontal: 35,
+              marginTop: 10
+            }}>Không thể kết nối tới máy chủ.</Text>
+            <TouchableOpacity onPress={() => getCurrentUserInfo()}>
+              <Text style={{
+                fontSize: fontSizes.h5,
+                fontFamily: fonts.OpenSansMedium,
+                color: colors.primary,
+                textAlign: 'center',
+                marginHorizontal: 35,
+                marginTop: 20
+              }}>Tải lại</Text>
+            </TouchableOpacity>
+          </View> : <ScrollView
+            style={{
+              flex: 1,
+              paddingHorizontal: 5,
+            }}>
+            {user.role != 2 ? (
+              <SellerRegisterView />
+            ) : (
+              <SellerHomeView navigation={navigation} route={route} />
+            )}
+          </ScrollView>}
+        </View>}
+      </View>}
     </View>
   );
 }
@@ -106,7 +190,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     padding: 15,
-    marginHorizontal:15
+    marginHorizontal: 15
   },
   totalMoneyStyle: {
     justifyContent: 'center',

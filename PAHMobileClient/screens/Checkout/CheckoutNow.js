@@ -24,6 +24,7 @@ import {
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
 import { useIsFocused } from '@react-navigation/native';
+import config from '../../config';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -199,7 +200,7 @@ function CheckoutNow(props) {
     const [token, setToken] = useState('')
     const [returncode, setReturnCode] = React.useState('')
 
-
+    // Get current time for transaction id
     function getCurrentDateYYMMDD() {
         const todayDate = new Date().toISOString().slice(2, 10);
         return todayDate.split('-').join('');
@@ -207,20 +208,27 @@ function CheckoutNow(props) {
 
     async function payOrder() {
         setIsLoadingPayment(true);
-        let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime()
+        let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime();
 
         let appid = 2553
         let amount = parseInt(totalPrice())
-        let appuser = "ZaloPayDemo"
+        let appuser = "PAHUser"
         let apptime = (new Date).getTime()
         let embeddata = "{}"
         let item = "[]"
         let description = `Thanh toán đơn hàng ${apptransid}`
         let hmacInput = appid + "|" + apptransid + "|" + appuser + "|" + amount + "|" + apptime + "|" + embeddata + "|" + item
         let mac = CryptoJS.HmacSHA256(hmacInput, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+
+        let hmacInput2 = appid + "|" + apptransid + "|" + "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL";
+        let mac2 = CryptoJS.HmacSHA256(hmacInput2, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
         console.log('====================================');
         console.log("hmacInput: " + hmacInput);
         console.log("mac: " + mac)
+        console.log('====================================');
+        console.log('====================================');
+        console.log("hmacInput2: " + hmacInput2);
+        console.log("mac2: " + mac2)
         console.log('====================================');
         var order = {
             'app_id': appid,
@@ -244,7 +252,7 @@ function CheckoutNow(props) {
         }
         formBody = formBody.join("&");
 
-        await fetch('https://sb-openapi.zalopay.vn/v2/create', {
+        await fetch(`${config.ZALOPAY_SB_API}/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -274,7 +282,7 @@ function CheckoutNow(props) {
             // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
             setIsLoadingPayment(true);
             navigation.pop();
-            navigate('CheckoutComplete', {returnCode: 1});
+            navigate('CheckoutComplete', { returnCode: 1 });
         }
     }
 

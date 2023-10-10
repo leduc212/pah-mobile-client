@@ -87,7 +87,7 @@ function Account(props) {
             setIsEmpty(true);
             getCurrentUserInfo();
         }
-    }, [isFocused]);
+    }, [authContext?.authState?.authenticated]);
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}

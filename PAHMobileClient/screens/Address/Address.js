@@ -136,7 +136,7 @@ function Address(props) {
                           paddingHorizontal: 10,
                           marginBottom: 5
                         }}>
-                        Địa chỉ giao hàng mặc định
+                        Địa chỉ {address.type == 1 ? 'giao hàng' : 'lấy hàng'} mặc định
                       </Text>
                     ) : null}
                     <Text
