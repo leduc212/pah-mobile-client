@@ -249,7 +249,7 @@ function ListingDetail(props) {
                         <ListingDetailInfoText label='Danh mục' text={product.categoryName} />
                         <ListingDetailInfoText label='Chất liệu' text={product.materialName} />
                         <ListingDetailInfoText label='Xuất xứ' text={product.origin} />
-                        <ListingDetailInfoText label='Kích thước' text={product.dimension} />
+                        <ListingDetailInfoText label='Kích thước' text={product.dimension + ' cm'} />
                         <ListingDetailInfoText label='Khối lượng' text={product.weight + ' g'} />
                         <ListingDetailInfoText label='Đóng gói' text={product.packageMethod} />
                     </View>

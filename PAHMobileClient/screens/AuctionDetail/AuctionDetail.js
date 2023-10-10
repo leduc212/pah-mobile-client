@@ -253,7 +253,7 @@ function AuctionDetail(props) {
                         <ListingDetailInfoText label='Danh mục' text={auction.product.categoryName} />
                         <ListingDetailInfoText label='Chất liệu' text={auction.product.materialName} />
                         <ListingDetailInfoText label='Xuất xứ' text={auction.product.origin} />
-                        <ListingDetailInfoText label='Kích thước' text={auction.product.dimension} />
+                        <ListingDetailInfoText label='Kích thước' text={auction.product.dimension + ' cm'} />
                         <ListingDetailInfoText label='Khối lượng' text={auction.product.weight + ' g'} />
                         <ListingDetailInfoText label='Đóng gói' text={auction.product.packageMethod} />
                     </View>

@@ -117,7 +117,7 @@ function EditAddress(props) {
       })
       .catch(err => {
         setIsLoadingCreate(false);
-        console.log(err.response)
+        console.log(err.response.data)
       })
   }
 
@@ -352,7 +352,7 @@ function EditAddress(props) {
             fontFamily: fonts.OpenSansMedium,
             marginLeft: 5
           }}>
-          Địa chỉ hiện tại đang là địa chỉ mặc định
+          Địa chỉ hiện tại đang là địa chỉ {typeParam == 1 ? 'giao hàng' : 'lấy hàng'} mặc định
         </Text>}
       </View>}
       {isLoadingCreate && <View style={{

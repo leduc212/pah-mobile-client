@@ -22,6 +22,7 @@ import {
     Account as AccountRepository,
     Wallet as WalletRepository
 } from '../../repositories';
+import config from '../../config';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -92,16 +93,23 @@ function Wallet(props) {
 
         let appid = 2553
         let amount = parseInt(topupAmount)
-        let appuser = "ZaloPayDemo"
+        let appuser = "PAHUser"
         let apptime = (new Date).getTime()
         let embeddata = "{}"
         let item = "[]"
         let description = "Nạp tiền vào ví PAH"
         let hmacInput = appid + "|" + apptransid + "|" + appuser + "|" + amount + "|" + apptime + "|" + embeddata + "|" + item
         let mac = CryptoJS.HmacSHA256(hmacInput, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+
+        let hmacInput2 = appid + "|" + apptransid + "|" + "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL";
+        let mac2 = CryptoJS.HmacSHA256(hmacInput2, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
         console.log('====================================');
         console.log("hmacInput: " + hmacInput);
         console.log("mac: " + mac)
+        console.log('====================================');
+        console.log('====================================');
+        console.log("hmacInput2: " + hmacInput2);
+        console.log("mac2: " + mac2)
         console.log('====================================');
         var order = {
             'app_id': appid,
@@ -125,7 +133,7 @@ function Wallet(props) {
         }
         formBody = formBody.join("&");
 
-        await fetch('https://sb-openapi.zalopay.vn/v2/create', {
+        await fetch(`${config.ZALOPAY_SB_API}/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
