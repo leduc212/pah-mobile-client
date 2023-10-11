@@ -1,17 +1,14 @@
 async function getAuctionsHome(axiosContext) {
-    const auctionPath = `/auction?status=5`;
+    const auctionPath = `/auction?status=5&PageSize=8&PageNumber=1`;
     try {
-        let result = [];
+        let result = {
+            auctionList: {},
+            count: 0
+        };
         let responseData = await axiosContext.publicAxios.get(auctionPath);
-        responseData.data.data.forEach(function (item) {
-            let myObject = {};
-            myObject.id = item.id;
-            myObject.title = item.title;
-            myObject.endedAt = item.endedAt;
-            myObject.currentPrice = item.currentPrice;
-            myObject.imageUrl = item.imageUrl;
-            result.push(myObject);
-        })
+        
+        result.auctionList = responseData.data.data.auctionList;
+        result.count = responseData.data.data.count;
         return result;
     } catch (error) {
         throw error;
@@ -23,22 +20,13 @@ async function getAuctions(axiosContext, query) {
     const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=5`;
 
     try {
-        let result = [];
+        let result = {
+            auctionList: {},
+            count: 0
+        };
         let responseData = await axiosContext.publicAxios.get(auctionPath);
-        responseData.data.data.forEach(function (item) {
-            let myObject = {};
-            myObject.id = item.id;
-            myObject.productId = item.productId;
-            myObject.title = item.title;
-            myObject.entryFee = item.entryFee;
-            myObject.startingPrice = item.startingPrice;
-            myObject.currentPrice = item.currentPrice;
-            myObject.startedAt = item.startedAt;
-            myObject.endedAt = item.endedAt;
-            myObject.imageUrl = item.imageUrl;
-            result.push(myObject);
-        })
-
+        result.auctionList = responseData.data.data.auctionList;
+        result.count = responseData.data.data.count;
         return result;
     } catch (error) {
         throw error;

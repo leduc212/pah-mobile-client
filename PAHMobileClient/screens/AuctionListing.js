@@ -45,6 +45,7 @@ function AuctionListing(props) {
 
     // Data for auctions and filters
     const [auctions, setAuctions] = useState([]);
+    const [auctionCount, setAuctionCount] = useState(0);
     const [sortOrders, setSortOrders] = useState([
         {
             id: 0,
@@ -122,7 +123,8 @@ function AuctionListing(props) {
                 materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
             })
             .then(response => {
-                setAuctions(response);
+                setAuctions(response.auctionList);
+                setAuctionCount(response.count);
             });
 
         Promise.all([promiseCategory, promiseAuction, promiseMaterial])
@@ -159,7 +161,8 @@ function AuctionListing(props) {
                 materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
             })
             .then(response => {
-                setAuctions(response);
+                setAuctions(response.auctionList);
+                setAuctionCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
             }).catch(error => {
@@ -179,7 +182,8 @@ function AuctionListing(props) {
                 materialId: 0, categoryId: 0, orderBy: 0
             })
             .then(response => {
-                setAuctions(response);
+                setAuctions(response.auctionList);
+                setAuctionCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
             }).catch(error => {
@@ -196,7 +200,8 @@ function AuctionListing(props) {
                 materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
             })
             .then(response => {
-                setAuctions(response);
+                setAuctions(response.auctionList);
+                setAuctionCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
                 setIsLoading(false);
@@ -246,7 +251,7 @@ function AuctionListing(props) {
                     color: 'black',
                     fontFamily: fonts.OpenSansBold,
                     fontSize: fontSizes.h2
-                }}>Đấu giá đang diễn ra ({auctions.length})</Text>
+                }}>Đấu giá đang diễn ra ({auctionCount})</Text>
                 <TouchableOpacity style={{
                     flexDirection: 'row',
                     alignItems: 'center',

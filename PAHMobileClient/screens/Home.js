@@ -65,13 +65,14 @@ function Home(props) {
         // Get Products
         const promiseProduct = ProductRepository.getProductsHome(axiosContext)
             .then(response => {
-                setPopularProducts(response);
+                setPopularProducts(response.productList);
             });
 
         // Get Auctions
         const promiseAuction = AuctionRepository.getAuctionsHome(axiosContext)
             .then(response => {
-                setOngoingAuctions(response);
+                console.log(response);
+                setOngoingAuctions(response.auctionList);
             });
 
         Promise.all([promiseCategory, promiseProduct, promiseAuction])

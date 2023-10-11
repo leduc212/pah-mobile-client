@@ -69,11 +69,7 @@ function CheckoutNow(props) {
         {
             id: 'ZALOPAY',
             text: 'ZaloPay'
-        },
-        {
-            id: 'COD',
-            text: 'Thanh toán COD'
-        },
+        }
     ]);
 
     const [shippingAddress, setShippingAddress] = useState([]);

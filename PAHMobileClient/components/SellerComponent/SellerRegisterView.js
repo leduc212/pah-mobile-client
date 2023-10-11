@@ -238,7 +238,7 @@ function SellerRegisterView(props) {
         <View style={styles.sectionStyle}>
           <Text style={styles.titleSection}>Thông tin cơ bản</Text>
           <TextInput
-            disable={!editable}
+            editable={editable}
             placeholder="Nhập tên cửa hàng"
             value={name}
             onChangeText={text => {
@@ -256,7 +256,7 @@ function SellerRegisterView(props) {
             }}
           />
           <TextInput
-            disable={!editable}
+            editable={editable}
             placeholder="Nhập số điện thoại liên lạc"
             keyboardType='phone-pad'
             value={phone}
@@ -279,7 +279,7 @@ function SellerRegisterView(props) {
         <View style={styles.sectionStyle}>
           <Text style={styles.titleSection}>Địa chỉ lấy hàng</Text>
           <TextInput
-            disable={!editable}
+            editable={editable}
             value={street}
             onChangeText={text => {
               setStreet(text);
@@ -520,7 +520,6 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h4,
   },
   inputBox: {
-    fontSize: fontSizes.h3,
     color: colors.black,
     fontFamily: fonts.OpenSansMedium,
     height: 50,

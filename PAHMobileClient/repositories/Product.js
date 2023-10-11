@@ -1,16 +1,13 @@
 async function getProductsHome(axiosContext) {
-    const productPath = `/product?type=1`;
+    const productPath = `/product?type=1&PageSize=8&PageNumber=1`;
     try {
-        let result = [];
+        let result = {
+            productList: {},
+            count: 0
+        };
         let responseData = await axiosContext.publicAxios.get(productPath);
-        responseData.data.data.forEach(function (item) {
-            let myObject = {};
-            myObject.id = item.id;
-            myObject.name = item.name;
-            myObject.price = item.price;
-            myObject.imageUrl = item.imageUrl;
-            result.push(myObject);
-        })
+        result.productList = responseData.data.data.productList;
+        result.count = responseData.data.data.count;
         return result;
     } catch (error) {
         throw error;
@@ -21,18 +18,15 @@ async function getProducts(axiosContext, query) {
     const { nameSearch = '', materialId = 0, categoryId = 0,
         type = 1, priceMin = 0, priceMax = 0, orderBy = 0 } = query
     const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&priceMax=${priceMax}&orderBy=${orderBy}`;
-    
+
     try {
-        let result = [];
+        let result = {
+            productList: {},
+            count: 0
+        };
         let responseData = await axiosContext.publicAxios.get(productPath);
-        responseData.data.data.forEach(function (item) {
-            let myObject = {};
-            myObject.id = item.id;
-            myObject.name = item.name;
-            myObject.price = item.price;
-            myObject.imageUrl = item.imageUrl;
-            result.push(myObject);
-        })
+        result.productList = responseData.data.data.productList;
+        result.count = responseData.data.data.count;
         return result;
     } catch (error) {
         throw error;
@@ -48,12 +42,12 @@ async function getProductDetail(axiosContext, product_id) {
         }
         let responseProduct = responseData.data.data;
         let product = {};
-        
-        product.id = responseProduct.id  ?? 0;
+
+        product.id = responseProduct.id ?? 0;
         product.name = responseProduct.name ?? '';
-        product.description = responseProduct.description  ?? '';
+        product.description = responseProduct.description ?? '';
         product.price = responseProduct.price ?? 0;
-        product.dimension = responseProduct.dimension  ?? '';
+        product.dimension = responseProduct.dimension ?? '';
         product.weight = responseProduct.weight ?? '';
         product.origin = responseProduct.origin ?? '';
         product.packageMethod = responseProduct.packageMethod ?? '';

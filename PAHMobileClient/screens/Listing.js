@@ -51,6 +51,7 @@ function Listing(props) {
 
     // Data for products and filters
     const [products, setProducts] = useState([]);
+    const [productCount, setProductCount] = useState(0);
     const [sortOrders, setSortOrders] = useState([
         {
             id: 0,
@@ -127,7 +128,8 @@ function Listing(props) {
                         priceMin: '', priceMax: ''
                     })
                     .then(response => {
-                        setProducts(response);
+                        setProducts(response.productList);
+                        setProductCount(response.count);
                         setIsLoading(false);
                     }).catch(error => {
                         setIsLoading(false);
@@ -169,7 +171,8 @@ function Listing(props) {
                 priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
-                setProducts(response);
+                setProducts(response.productList);
+                setProductCount(response.count);
             });
 
         Promise.all([promiseCategory, promiseProduct, promiseMaterial])
@@ -196,7 +199,8 @@ function Listing(props) {
                 priceMin: '', priceMax: ''
             })
             .then(response => {
-                setProducts(response);
+                setProducts(response.productList);
+                setProductCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
                 setIsLoading(false);
@@ -230,7 +234,8 @@ function Listing(props) {
                 priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
-                setProducts(response);
+                setProducts(response.productList);
+                setProductCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
             }).catch(error => {
@@ -252,7 +257,8 @@ function Listing(props) {
                 priceMin: '', priceMax: ''
             })
             .then(response => {
-                setProducts(response);
+                setProducts(response.productList);
+                setProductCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
             }).catch(error => {
@@ -271,7 +277,8 @@ function Listing(props) {
                 priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
-                setProducts(response);
+                setProducts(response.productList);
+                setProductCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
                 setIsLoading(false);
@@ -339,7 +346,7 @@ function Listing(props) {
                     color: 'black',
                     fontFamily: fonts.OpenSansBold,
                     fontSize: fontSizes.h2
-                }}>Sản phẩm đăng bán ({products.length})</Text>
+                }}>Sản phẩm đăng bán ({productCount})</Text>
                 <TouchableOpacity style={{
                     flexDirection: 'row',
                     alignItems: 'center',
