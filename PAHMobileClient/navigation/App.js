@@ -23,8 +23,9 @@ import {
     AddAddress,
     Wallet,
     PaymentResult,
-    EditAddress
-    ProductListing
+    EditAddress,
+    ProductListing,
+    OrderList
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -105,6 +106,8 @@ function App(props) {
                     <Stack.Screen name={"EditAccount"} component={EditAccount} />
                     <Stack.Screen name={"Wallet"} component={Wallet} />
                     <Stack.Screen name={"PaymentResult"} component={PaymentResult} />
+                    <Stack.Screen name={"OrderList"} component={OrderList} />
+                    <Stack.Screen name={"ProductListing"} component={ProductListing} />
                 </>
             ) : (
                 <>
@@ -112,15 +115,6 @@ function App(props) {
                     <Stack.Screen name={"Register"} component={Register} />
                 </>
             )}
-            <Stack.Screen name={"CheckoutNow"} component={CheckoutNow} />
-            <Stack.Screen name={"CheckoutCart"} component={CheckoutCart} />
-            <Stack.Screen name={"CheckoutComplete"} component={CheckoutComplete} />
-            <Stack.Screen name={"Address"} component={Address} />
-            <Stack.Screen name={"AddAddress"} component={AddAddress} />
-            <Stack.Screen name={"EditAccount"} component={EditAccount} />
-            <Stack.Screen name={"Wallet"} component={Wallet} />
-            <Stack.Screen name={"PaymentResult"} component={PaymentResult} />
-            <Stack.Screen name={"ProductListing"} component={ProductListing} />
         </Stack.Navigator>
     </NavigationContainer>
 }

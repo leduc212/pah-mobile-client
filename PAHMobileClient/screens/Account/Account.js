@@ -210,7 +210,7 @@ function Account(props) {
                             {/* User's orders navigation */}
                             <AccountMenuItem iconName='box' text='Đơn hàng'
                                 onPress={() => {
-                                    navigate('Home')
+                                    navigate('OrderList')
                                 }} />
                             {/* User's wallet information */}
                             <AccountMenuItem iconName='credit-card' text='Ví PAH'
