@@ -20,7 +20,7 @@ async function getProductsHome(axiosContext) {
 async function getProducts(axiosContext, query) {
     const { nameSearch = '', materialId = 0, categoryId = 0,
         type = 1, priceMin = 0, priceMax = 0, orderBy = 0 } = query
-    const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&orderBy=${orderBy}`;
+    const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&priceMax=${priceMax}&orderBy=${orderBy}`;
     
     try {
         let result = [];

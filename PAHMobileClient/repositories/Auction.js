@@ -1,5 +1,5 @@
 async function getAuctionsHome(axiosContext) {
-    const auctionPath = `/auction`;
+    const auctionPath = `/auction?status=5`;
     try {
         let result = [];
         let responseData = await axiosContext.publicAxios.get(auctionPath);
@@ -20,7 +20,7 @@ async function getAuctionsHome(axiosContext) {
 
 async function getAuctions(axiosContext, query) {
     const { materialId = 0, categoryId = 0, orderBy = 0 } = query
-    const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}`;
+    const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=5`;
 
     try {
         let result = [];

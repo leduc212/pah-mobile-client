@@ -75,7 +75,6 @@ function Account(props) {
         // If user is logined
         if (authContext?.authState?.authenticated) {
             setIsLoading(true);
-            setIsEmpty(true);
             getCurrentUserInfo();
         }
     }, [])
@@ -84,7 +83,6 @@ function Account(props) {
         // If user is logined
         if (authContext?.authState?.authenticated) {
             setIsLoading(true);
-            setIsEmpty(true);
             getCurrentUserInfo();
         }
     }, [authContext?.authState?.authenticated]);

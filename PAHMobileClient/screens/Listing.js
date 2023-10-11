@@ -77,12 +77,19 @@ function Listing(props) {
     const [materials, setMaterials] = useState([]);
     const [currentMaterial, setCurrentMaterial] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
+    const [currentPriceMin, setCurrentPriceMin] = useState('');
+    const [selectedPriceMin, setSelectedPriceMin] = useState('');
+    const [currentPriceMax, setCurrentPriceMax] = useState('');
+    const [selectedPriceMax, setSelectedPriceMax] = useState('');
 
     // Data for filter count
     const filterCount = () => {
         let count = 0;
+        if (selectedSortOrder !== 0) count++;
         if (selectedCategory !== 0) count++;
         if (selectedMaterial !== 0) count++;
+        if (selectedPriceMin !== '') count++;
+        if (selectedPriceMax !== '') count++;
         return count;
     }
 
@@ -93,9 +100,13 @@ function Listing(props) {
         setSelectedCategory(0);
         setSelectedSortOrder(0);
         setSelectedMaterial(0);
+        setSelectedPriceMin('');
+        setSelectedPriceMax('');
         setCurrentCategory(0);
         setCurrentSortOrder(0);
         setCurrentMaterial(0);
+        setCurrentPriceMin('');
+        setCurrentPriceMax('');
     }
 
     // Get search param on screen focus
@@ -112,7 +123,8 @@ function Listing(props) {
                 ProductRepository.getProducts(axiosContext,
                     {
                         nameSearch: searchText, materialId: 0,
-                        categoryId: 0, orderBy: 0
+                        categoryId: 0, orderBy: 0,
+                        priceMin: '', priceMax: ''
                     })
                     .then(response => {
                         setProducts(response);
@@ -153,7 +165,8 @@ function Listing(props) {
         const promiseProduct = ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: selectedMaterial,
-                categoryId: selectedCategory, orderBy: selectedSortOrder
+                categoryId: selectedCategory, orderBy: selectedSortOrder,
+                priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
                 setProducts(response);
@@ -179,7 +192,8 @@ function Listing(props) {
         ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: 0,
-                categoryId: 0, orderBy: 0
+                categoryId: 0, orderBy: 0,
+                priceMin: '', priceMax: ''
             })
             .then(response => {
                 setProducts(response);
@@ -195,6 +209,8 @@ function Listing(props) {
         setSelectedCategory(currentCategory);
         setSelectedSortOrder(currentSortOrder);
         setSelectedMaterial(currentMaterial);
+        setSelectedPriceMin(currentPriceMin);
+        setSelectedPriceMax(currentPriceMax);
     }
 
     // Filter submit function
@@ -202,13 +218,16 @@ function Listing(props) {
         setCurrentCategory(selectedCategory);
         setCurrentSortOrder(selectedSortOrder);
         setCurrentMaterial(selectedMaterial);
+        setCurrentPriceMin(selectedPriceMin);
+        setCurrentPriceMax(selectedPriceMax);
 
         // Get Products
         setIsLoading(true);
         ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: selectedMaterial,
-                categoryId: selectedCategory, orderBy: selectedSortOrder
+                categoryId: selectedCategory, orderBy: selectedSortOrder,
+                priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
                 setProducts(response);
@@ -229,7 +248,8 @@ function Listing(props) {
         ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: 0,
-                categoryId: 0, orderBy: 0
+                categoryId: 0, orderBy: 0,
+                priceMin: '', priceMax: ''
             })
             .then(response => {
                 setProducts(response);
@@ -247,7 +267,8 @@ function Listing(props) {
         ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: selectedMaterial,
-                categoryId: selectedCategory, orderBy: selectedSortOrder
+                categoryId: selectedCategory, orderBy: selectedSortOrder,
+                priceMin: selectedPriceMin, priceMax: selectedPriceMax
             })
             .then(response => {
                 setProducts(response);
@@ -499,10 +520,12 @@ function Listing(props) {
                         <View style={{
                             paddingVertical: 15
                         }}>
-                            <Text style={styles.filterTitle}>Giá thành</Text>
+                            <Text style={styles.filterTitle}>Giá thành (VNĐ)</Text>
                             <View style={styles.priceContainer}>
                                 <View>
-                                    <TextInput style={styles.priceInput} />
+                                    <TextInput style={styles.priceInput} value={selectedPriceMin}
+                                        keyboardType='number-pad'
+                                        onChangeText={(text) => setSelectedPriceMin(text)} />
                                     <Text style={styles.priceLabel}>Thấp nhất</Text>
                                 </View>
                                 <View style={{
@@ -511,7 +534,9 @@ function Listing(props) {
                                     backgroundColor: 'black',
                                 }}></View>
                                 <View>
-                                    <TextInput style={styles.priceInput} />
+                                    <TextInput style={styles.priceInput} value={selectedPriceMax}
+                                        keyboardType='number-pad'
+                                        onChangeText={(text) => setSelectedPriceMax(text)} />
                                     <Text style={styles.priceLabel}>Cao nhất</Text>
                                 </View>
                             </View>
@@ -609,7 +634,7 @@ const styles = StyleSheet.create({
         borderBottomColor: 'black',
         width: 120,
         paddingBottom: 0,
-        fontSize: fontSizes.h4,
+        fontSize: fontSizes.h3,
         fontFamily: fonts.OpenSansMedium,
         color: 'black'
     },
