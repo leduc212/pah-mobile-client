@@ -62,7 +62,7 @@ function OrderList(props) {
   // Scroll view refresh
   const onRefresh = () => {
     setRefreshing(true);
-    getAllAddress();
+
     setRefreshing(false);
   };
   return (
@@ -125,14 +125,17 @@ function OrderList(props) {
                         justifyContent: 'space-between',
                       }}>
                       <Text style={styles.orderMoneyText}>
-                        1.222.800.000 VND
+                        1.222.800.000 đ
                       </Text>
                       <Text style={styles.orderDateText}>10/1/2023</Text>
                     </View>
                     <Text style={styles.orderShippingText}>
                       Giao hàng miễn phí
                     </Text>
+                    <View style={{flexDirection: 'row',justifyContent: 'space-between'}}>
                     <Text style={styles.orderFeedbackText}>Đã phản hồi</Text>
+                    <Text style={styles.orderItemCountText}>2 sản phảm</Text>
+                    </View>
                   </View>
                 </View>
                 <View
@@ -140,52 +143,17 @@ function OrderList(props) {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
-                  <TouchableOpacity style={styles.orderDetailButton}>
+                  <TouchableOpacity 
+                  onPress={()=>{
+                    navigate('OrderDetail')
+                  }}
+                  style={styles.orderDetailButton}>
                     <Text style={styles.orderDetailText}>Chi tiết</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.buyAgainButton}>
                     <Text style={styles.buyAgainText}>Mua lại</Text>
                   </TouchableOpacity>
                 </View>
-              </View>
-              <View style={{marginBottom:15}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 10,
-                  }}>
-                  <View style={styles.orderImageZone}>
-                    <Image 
-                    width={100}
-                    height={100}
-                    borderRadius={10}
-                    source={{uri:'https://i.pinimg.com/564x/34/e0/7a/34e07adbd823772cde8247405733a0e2.jpg'}}/>
-                  </View>
-                  <View style={{flex: 70}}>
-                    <Text style={styles.orderStatusText}>HOÀN THÀNH</Text>
-                    <Text numberOfLines={1} style={styles.orderTitleText}>Tựa đềTựa đềTựa đềTựa đềTựa đềTựa đềTựa đềTựa đề</Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.orderMoneyText}>
-                        1.222.800.000 VND
-                      </Text>
-                      <Text style={styles.orderDateText}>10/1/2023</Text>
-                    </View>
-                    <Text style={styles.orderShippingText}>
-                      Giao hàng miễn phí
-                    </Text>
-                    <Text style={styles.orderFeedbackText}>Đã phản hồi</Text>
-                  </View>
-                </View>
-                
-                  <TouchableOpacity style={styles.buySimilarButton}>
-                    <Text style={styles.buySimilarText}>Mua tương tự</Text>
-                  </TouchableOpacity>
-                
               </View>
             </ScrollView>
           </View>
@@ -276,7 +244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:5
   },
   orderStatusText: {
-    color: colors.greyText,
+    color: colors.primary,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
@@ -305,5 +273,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
+  orderItemCountText:{
+    color: colors.greyText,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h5,
+  }
 });
 export default OrderList;
