@@ -104,6 +104,9 @@ android {
 }
 
 dependencies {
+    // Splash screen
+    implementation project(':react-native-splash-screen')
+    
     // ZaloPay SDK
     implementation project(path: ':zpdk-release-v31')
     

@@ -58,7 +58,7 @@ function Register(props) {
           text2: 'Hãy đăng nhập vào tài khoản mới của bạn!',
           position: 'bottom',
           autoHide: true,
-          visibilityTime: 3000
+          visibilityTime: 2000
         });
         goBack();
       })

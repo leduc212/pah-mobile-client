@@ -53,7 +53,7 @@ function Account(props) {
             text1: 'Đăng xuất thành công',
             position: 'bottom',
             autoHide: true,
-            visibilityTime: 3000
+            visibilityTime: 2000
         });
     }
 

@@ -31,6 +31,7 @@ import { AuthContext } from '../context/AuthContext';
 import * as Keychain from 'react-native-keychain';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { fonts, fontSizes } from '../constants';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,6 +77,10 @@ function App(props) {
     useEffect(() => {
         loadJWT();
     }, [loadJWT]);
+
+    useEffect(() => {
+        SplashScreen.hide();
+    }, []);
 
     return (
         <>

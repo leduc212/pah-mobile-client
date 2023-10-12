@@ -11,7 +11,7 @@ import com.facebook.soloader.SoLoader;
 import java.util.List;
 
 import com.pahmobileclient.zpmodule.PayZaloBridge;
-
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import vn.zalopay.sdk.Environment;
 import vn.zalopay.sdk.ZaloPaySDK;
 

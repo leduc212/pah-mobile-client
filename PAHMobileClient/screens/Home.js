@@ -71,7 +71,6 @@ function Home(props) {
         // Get Auctions
         const promiseAuction = AuctionRepository.getAuctionsHome(axiosContext)
             .then(response => {
-                console.log(response);
                 setOngoingAuctions(response.auctionList);
             });
 
@@ -344,8 +343,8 @@ const styles = StyleSheet.create({
     },
     logoImage: {
         resizeMode: 'cover',
-        height: 35,
-        width: 70,
+        height: 25,
+        width: 68,
         alignSelf: 'center'
     },
     headerLayout: {

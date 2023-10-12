@@ -65,7 +65,7 @@ function Login(props) {
           text1: 'Đăng nhập thành công',
           position: 'bottom',
           autoHide: true,
-          visibilityTime: 3000
+          visibilityTime: 2000
         });
 
         goBack();
