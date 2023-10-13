@@ -30,14 +30,14 @@ function SellerHomeView(props) {
           style={{
             fontSize: fontSizes.h4,
             color: 'white',
-            fontFamily: fonts.OpenSansMedium,
+            fontFamily: fonts.OpenSansBold,
           }}>
           Đăng bán sản phẩm
         </Text>
       </TouchableOpacity>
       {/* total money */}
       <View style={styles.totalMoneyStyle}>
-        <Text style={styles.totalTextStyle}>$6,000</Text>
+        <Text style={styles.totalTextStyle}>12.000.000 VNĐ</Text>
         <Text style={styles.subtotalTextStyle}>Tổng 90 ngày</Text>
       </View>
       {/* selling status */}
@@ -50,23 +50,26 @@ function SellerHomeView(props) {
         <View
           style={{
             alignItems: 'center',
+            flex: 1
           }}>
           <Text style={styles.statStyle}>801</Text>
-          <Text style={styles.statTitleStyle}>Đang bán</Text>
+          <Text style={styles.statTitleStyle}>Sản phẩm đang bán</Text>
         </View>
         <View
           style={{
             alignItems: 'center',
+            flex: 1
           }}>
           <Text style={styles.statStyle}>251</Text>
-          <Text style={styles.statTitleStyle}>Đã bán</Text>
+          <Text style={styles.statTitleStyle}>Đơn đang xử lý</Text>
         </View>
         <View
           style={{
             alignItems: 'center',
+            flex: 1
           }}>
           <Text style={styles.statStyle}>250</Text>
-          <Text style={styles.statTitleStyle}>Bán thất bại</Text>
+          <Text style={styles.statTitleStyle}>Đơn đã bán</Text>
         </View>
       </View>
       {/* summary section */}
@@ -88,7 +91,7 @@ function SellerHomeView(props) {
               color: colors.black,
               fontFamily: fonts.OpenSansBold,
             }}>
-            Payment summary
+            Ví PAH
           </Text>
           <Text
             style={{
@@ -96,7 +99,26 @@ function SellerHomeView(props) {
               color: colors.black,
               fontFamily: fonts.OpenSansMedium,
             }}>
-            current total funds $145
+            Số dư khả dụng: 11.000.000 VNĐ
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 15,
+          gap: 15,
+          marginTop: 5,
+        }}>
+        <View>
+          <Text
+            style={{
+              fontSize: fontSizes.h3,
+              color: colors.black,
+              fontFamily: fonts.OpenSansMedium,
+            }}>
+            Hồ sơ người bán
           </Text>
         </View>
         <IconFeather
@@ -114,32 +136,14 @@ function SellerHomeView(props) {
           gap: 15,
           marginTop: 5,
         }}>
-        <View
-          style={{
-            backgroundColor: colors.darkGrey,
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: 50,
-          }}>
-          <Text
-            style={{
-              fontSize: fontSizes.h1,
-              color: colors.primary,
-              fontFamily: fonts.OpenSansMedium,
-            }}>
-            144
-          </Text>
-        </View>
         <View>
           <Text
             style={{
-              fontSize: fontSizes.h5,
+              fontSize: fontSizes.h3,
               color: colors.black,
               fontFamily: fonts.OpenSansMedium,
             }}>
-            Add recommended item specifics
+            Sản phẩm đang bán
           </Text>
         </View>
         <IconFeather
@@ -157,32 +161,14 @@ function SellerHomeView(props) {
           gap: 15,
           marginTop: 5,
         }}>
-        <View
-          style={{
-            backgroundColor: colors.darkGrey,
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: 50,
-          }}>
-          <Text
-            style={{
-              fontSize: fontSizes.h1,
-              color: colors.primary,
-              fontFamily: fonts.OpenSansMedium,
-            }}>
-            2
-          </Text>
-        </View>
         <View>
           <Text
             style={{
-              fontSize: fontSizes.h5,
+              fontSize: fontSizes.h3,
               color: colors.black,
               fontFamily: fonts.OpenSansMedium,
             }}>
-            Gửi đề nghị tới người mua
+            Các cuộc đấu giá
           </Text>
         </View>
         <IconFeather
@@ -200,32 +186,14 @@ function SellerHomeView(props) {
           gap: 15,
           marginTop: 5,
         }}>
-        <View
-          style={{
-            backgroundColor: colors.darkGrey,
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: 50,
-          }}>
-          <Text
-            style={{
-              fontSize: fontSizes.h1,
-              color: colors.primary,
-              fontFamily: fonts.OpenSansMedium,
-            }}>
-            598
-          </Text>
-        </View>
         <View>
           <Text
             style={{
-              fontSize: fontSizes.h5,
+              fontSize: fontSizes.h3,
               color: colors.black,
               fontFamily: fonts.OpenSansMedium,
             }}>
-            Đẩy bài của bạn
+            Đơn hàng
           </Text>
         </View>
         <IconFeather
@@ -286,7 +254,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   totalTextStyle: {
-    fontSize: fontSizes.h1 * 2,
+    fontSize: fontSizes.h1 * 1.5,
     color: colors.black,
     fontFamily: fonts.OpenSansMedium,
   },

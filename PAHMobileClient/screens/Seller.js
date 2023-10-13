@@ -57,7 +57,6 @@ function Seller(props) {
     // If user is logined
     if (authContext?.authState?.authenticated) {
       setIsLoading(true);
-      setIsEmpty(true);
       getCurrentUserInfo();
     }
   }, [])
@@ -66,7 +65,6 @@ function Seller(props) {
     // If user is logined
     if (authContext?.authState?.authenticated) {
       setIsLoading(true);
-      setIsEmpty(true);
       getCurrentUserInfo();
     }
   }, [isFocused]);

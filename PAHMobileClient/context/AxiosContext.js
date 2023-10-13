@@ -65,6 +65,7 @@ const AxiosProvider = ({ children }) => {
 
             return await Promise.resolve();
         } catch (e) {
+            console.log('refresh token fail');
             authContext.logout();
         }
     };
