@@ -9,6 +9,7 @@ import Feedback from "./Feedback";
 import Bid from "./Bid";
 import Account from "./Account";
 import Wallet from "./Wallet";
+import Order from "./Order";
 
 export {
     Category,
@@ -21,5 +22,6 @@ export {
     Feedback,
     Bid,
     Account,
-    Wallet
+    Wallet,
+    Order
 }

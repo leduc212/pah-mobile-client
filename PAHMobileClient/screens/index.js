@@ -25,6 +25,8 @@ import Wallet from "./Wallet/Wallet";
 import PaymentResult from "./Wallet/PaymentResult";
 import EditAddress from "./Address/EditAddress";
 import ProductListing from "./ProductListing";
+import OrderList from "./Order/OrderList";
+import OrderDetail from "./Order/OrderDetail";
 
 export {
     Account,
@@ -53,5 +55,7 @@ export {
     EditAddress,
     Wallet,
     PaymentResult,
-    ProductListing
+    ProductListing,
+    OrderList,
+    OrderDetail
 }
