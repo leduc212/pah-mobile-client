@@ -50,6 +50,23 @@ async function getAllOrderCurrentUser(axiosContext) {
     throw error;
   }
 }
+
+async function checkout(axiosContext, cartInfo) {
+  const orderPath = `/buyer/checkout`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath, cartInfo);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllOrderCurrentUser,
+  checkout
 };

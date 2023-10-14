@@ -18,6 +18,22 @@ async function getWalletCurrentUser(axiosContext) {
     }
 }
 
+async function topup(axiosContext, topupInfo) {
+    const walletPath = `/wallet/topup`;
+    try {
+        let responseData = await axiosContext.authAxios.post(walletPath, topupInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseWallet = responseData.data.data;
+        
+        return responseWallet;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getWalletCurrentUser,
+    topup
 }

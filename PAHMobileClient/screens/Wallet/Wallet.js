@@ -46,7 +46,9 @@ function Wallet(props) {
 
     // Wallet
     const [wallet, setWallet] = useState({});
-
+    const [appidRequest, setAppidRequest] = useState(0);
+    const [apptransidRequest, setApptransidRequest] = useState('');
+    const [hmacRequest, setHmacRequest] = useState('');
     // Payment methods
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
         id: '',
@@ -111,6 +113,12 @@ function Wallet(props) {
         console.log("hmacInput2: " + hmacInput2);
         console.log("mac2: " + mac2)
         console.log('====================================');
+
+        // Set state
+        setAppidRequest(appid);
+        setApptransidRequest(apptransid);
+        setHmacRequest(mac2);
+
         var order = {
             'app_id': appid,
             'app_user': appuser,
@@ -150,8 +158,25 @@ function Wallet(props) {
             .catch((error) => {
                 console.log("error ", error)
             });
+    }
 
-        setIsLoadingPayment(false);
+    function topup() {
+        WalletRepository.topup(axiosContext, {
+            topup: topupAmount,
+            appId: appidRequest,
+            appTransId: apptransidRequest,
+            mac: hmacRequest
+        })
+            .then(response => {
+                setIsLoadingPayment(false);
+                setTopupModal(false);
+                navigate('PaymentResult', { returnCode: 1 })
+            })
+            .catch(err => {
+                setIsLoadingPayment(false);
+                setTopupModal(false);
+                navigate('PaymentResult', { returnCode: 2 })
+            })
     }
 
     // validating
@@ -189,8 +214,14 @@ function Wallet(props) {
             (data) => {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, add money to wallet
-                setTopupModal(false);
-                navigate('PaymentResult', { returnCode: data.returnCode })
+                if (data.returnCode === 1) {
+                    topup();
+                }
+                else {
+                    setIsLoadingPayment(false);
+                    setTopupModal(false);
+                    navigate('PaymentResult', { returnCode: data.returnCode })
+                }
             }
         );
 
@@ -304,7 +335,7 @@ function Wallet(props) {
                     color: colors.darkGreyText,
                     marginHorizontal: 25
                 }}>* Số dư bị khóa là lượng tiền bạn đã sử dụng để tham gia vào các cuộc đấu giá.
-                 Lượng tiền này sẽ bị khóa cho đến khi cuộc đấu giá đó kết thúc hoặc bạn rút khỏi cuộc đấu giá.</Text>
+                    Lượng tiền này sẽ bị khóa cho đến khi cuộc đấu giá đó kết thúc hoặc bạn rút khỏi cuộc đấu giá.</Text>
 
                 <TouchableOpacity style={styles.primaryButton}
                     onPress={() => setTopupModal(!topupModal)}>

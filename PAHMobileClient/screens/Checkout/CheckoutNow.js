@@ -19,7 +19,8 @@ import Modal from 'react-native-modal';
 import {
     Product as ProductRepository,
     Address as AddressRepository,
-    Shipping as ShippingRepository
+    Shipping as ShippingRepository,
+    Order as OrderRepository
 } from '../../repositories';
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
@@ -56,18 +57,19 @@ function CheckoutNow(props) {
         imageUrls: [],
         price: 0
     });
+    const [quantity, setQuantity] = useState(1);
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
-        id: '',
+        id: 0,
         text: ''
     });
     const [paymentMethods, setPaymentMethods] = useState([
         {
-            id: 'PAH_WALLET',
+            id: 1,
             text: 'Số dư ví PAH'
         },
         {
-            id: 'ZALOPAY',
+            id: 2,
             text: 'ZaloPay'
         }
     ]);
@@ -78,7 +80,7 @@ function CheckoutNow(props) {
     // Calculate data for shipping price
     const [shippingPrice, setShippingPrice] = useState(0);
     const [shippingDate, setShippingDate] = useState(0);
-    const totalPrice = () => product.price + shippingPrice;
+    const totalPrice = () => product.price * quantity + shippingPrice;
 
     // Data modal
     const [addressModal, setAddressModal] = useState(false);
@@ -90,7 +92,7 @@ function CheckoutNow(props) {
     const [refreshing, setRefreshing] = useState(false);
 
     // Validating
-    const validation = () => selectedPaymentMethod.id !== '' && shippingAddress.length > 0;
+    const validation = () => selectedPaymentMethod.id != 0 && shippingAddress.length > 0;
 
     //// FUNCTION
     // Get product detail from current product id
@@ -166,6 +168,38 @@ function CheckoutNow(props) {
             })
     }
 
+    // Create order function
+    function createOrder() {
+        OrderRepository.checkout(axiosContext, {
+            order: [
+                {
+                    sellerId: product.seller.id,
+                    products: [
+                        {
+                            id: product.id,
+                            price: product.price,
+                            amount: quantity
+                        }
+                    ],
+                    total: product.price * quantity,
+                    shippingCost: shippingPrice
+                }
+            ],
+            total: product.price * quantity,
+            paymentType: selectedPaymentMethod.id,
+            addressId: currentShippingAddress.id
+        }).then(response => {
+            setIsLoadingPayment(false);
+            navigation.pop();
+            navigate('CheckoutComplete', { returnCode: 1 });
+        }).catch(err => {
+            console.log(err.response.data);
+            setIsLoadingPayment(false);
+            navigation.pop();
+            navigate('CheckoutComplete', { returnCode: 2 });
+        })
+    }
+
     useEffect(() => {
         getProductDetail();
 
@@ -174,8 +208,13 @@ function CheckoutNow(props) {
             (data) => {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, create order with zalopay method
-                navigation.pop();
-                navigate('CheckoutComplete', { returnCode: data.returnCode });
+                if (data.returnCode == 1) {
+                    createOrder();
+                } else {
+                    setIsLoadingPayment(false);
+                    navigation.pop();
+                    navigate('CheckoutComplete', { returnCode: data.returnCode });
+                }
             }
         );
     }, []);
@@ -265,20 +304,17 @@ function CheckoutNow(props) {
             .catch((error) => {
                 console.log("error ", error)
             });
-
-        setIsLoadingPayment(false);
     }
 
     // Checkout function
     function checkout() {
-        if (selectedPaymentMethod.id === 'ZALOPAY') {
+        if (selectedPaymentMethod.id === 2) {
             // If method == ZALOPAY, create order
             payOrder();
         } else {
             // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
             setIsLoadingPayment(true);
-            navigation.pop();
-            navigate('CheckoutComplete', { returnCode: 1 });
+            createOrder();
         }
     }
 
@@ -345,7 +381,7 @@ function CheckoutNow(props) {
                             color: colors.darkGreyText,
                             fontFamily: fonts.OpenSansMedium,
                             fontSize: fontSizes.h4
-                        }}>Số lượng: 1</Text>
+                        }}>Số lượng: {quantity}</Text>
                     </View>
                 </View>
                 <View style={{
@@ -449,11 +485,11 @@ function CheckoutNow(props) {
                         }}>Phương thức thanh toán</Text>
                         <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
-                                color: selectedPaymentMethod.id === '' ? 'red' : 'black',
+                                color: selectedPaymentMethod.id === 0 ? 'red' : 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{selectedPaymentMethod.id === '' ? 'Xin hãy chọn phương thức thanh toán' : selectedPaymentMethod.text}</Text>
+                            >{selectedPaymentMethod.id === 0 ? 'Xin hãy chọn phương thức thanh toán' : selectedPaymentMethod.text}</Text>
                         </View>
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />

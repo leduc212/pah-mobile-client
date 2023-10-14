@@ -76,11 +76,7 @@ function CheckoutCart(props) {
         {
             id: 'ZALOPAY',
             text: 'ZaloPay'
-        },
-        {
-            id: 'COD',
-            text: 'Thanh toán COD'
-        },
+        }
     ]);
     const [paymentModal, setPaymentModal] = useState(false);
     const [shippingAddress, setShippingAddress] = useState([

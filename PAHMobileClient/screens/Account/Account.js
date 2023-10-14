@@ -33,7 +33,9 @@ function Account(props) {
 
     //// DATA
     // User data
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState({
+        profilePicture: images.defaultAvatar
+    });
 
     // Data for loading and refreshing
     const [isLoading, setIsLoading] = useState(true);
@@ -208,7 +210,7 @@ function Account(props) {
                             {/* User's orders navigation */}
                             <AccountMenuItem iconName='box' text='Đơn hàng'
                                 onPress={() => {
-                                    navigate('Home')
+                                    navigate('OrderList')
                                 }} />
                             {/* User's wallet information */}
                             <AccountMenuItem iconName='credit-card' text='Ví PAH'
