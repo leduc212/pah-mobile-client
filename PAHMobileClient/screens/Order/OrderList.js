@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import {
   Text,
   View,
@@ -10,12 +10,13 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import {colors, fontSizes, images, fonts} from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import { AxiosContext } from '../../context/AxiosContext';
-import { Order as OrderRepository } from '../../repositories';
-import { orderStatusText } from '../../utilities/OrderStatus';
-import { numberWithCommas } from '../../utilities/PriceFormat';
+import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import {AxiosContext} from '../../context/AxiosContext';
+import {Order as OrderRepository} from '../../repositories';
+import {orderStatusText} from '../../utilities/OrderStatus';
+import {numberWithCommas} from '../../utilities/PriceFormat';
 import moment from 'moment';
 
 function OrderList(props) {
@@ -24,10 +25,10 @@ function OrderList(props) {
   const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const { navigation, route } = props;
+  const {navigation, route} = props;
 
   // Function of navigate to/back
-  const { navigate, goBack } = navigation;
+  const {navigate, goBack} = navigation;
 
   //// DATA
   // Data for orders
@@ -53,7 +54,9 @@ function OrderList(props) {
       .then(response => {
         console.log(response);
         setOrders(response);
-        setFilteredOrders(response.filter(item => item.status == currentOrderStatus));
+        setFilteredOrders(
+          response.filter(item => item.status == currentOrderStatus),
+        );
         setIsLoading(false);
       })
       .catch(error => {
@@ -76,7 +79,7 @@ function OrderList(props) {
   };
   return (
     <View style={styles.container}>
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <View style={styles.titleContainer}>
           <TouchableOpacity
             style={styles.backButton}
@@ -101,22 +104,30 @@ function OrderList(props) {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={orderStatus}
-            renderItem={({ item }) => {
-              return <TouchableOpacity style={{
-                paddingVertical: 10,
-                paddingHorizontal: 15,
-                borderBottomWidth: item == currentOrderStatus ? 2 : null,
-                borderBottomColor: item == currentOrderStatus ? colors.primary : null
-              }}
-              onPress={() => {
-                setCurrentOrderStatus(item);
-              }}>
-                <Text style={{
-                  color: item == currentOrderStatus ? colors.primary : 'black',
-                  fontFamily: fonts.OpenSansMedium,
-                  fontSize: fontSizes.h5
-                }}>{orderStatusText(item)}</Text>
-              </TouchableOpacity>
+            renderItem={({item}) => {
+              return (
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 15,
+                    borderBottomWidth: item == currentOrderStatus ? 2 : null,
+                    borderBottomColor:
+                      item == currentOrderStatus ? colors.primary : null,
+                  }}
+                  onPress={() => {
+                    setCurrentOrderStatus(item);
+                  }}>
+                  <Text
+                    style={{
+                      color:
+                        item == currentOrderStatus ? colors.primary : 'black',
+                      fontFamily: fonts.OpenSansMedium,
+                      fontSize: fontSizes.h5,
+                    }}>
+                    {orderStatusText(item)}
+                  </Text>
+                </TouchableOpacity>
+              );
             }}
             keyExtractor={status => status}
           />
@@ -131,104 +142,168 @@ function OrderList(props) {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : (
-          <View style={{ flex: 1 }}>
-            {isAllEmpty() ? <View style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingTop: 150
-            }}>
-              <Image source={images.warningImage} style={{
-                resizeMode: 'cover',
-                width: 140,
-                height: 140
-              }} />
-              <Text style={{
-                fontSize: fontSizes.h4,
-                fontFamily: fonts.OpenSansMedium,
-                color: 'black',
-                textAlign: 'center',
-                marginHorizontal: 35,
-                marginTop: 10
-              }}>Không thể tìm thấy đơn hàng nào.</Text>
-              <TouchableOpacity onPress={() => getAllOrder()}>
-                <Text style={{
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.OpenSansMedium,
-                  color: colors.primary,
-                  textAlign: 'center',
-                  marginHorizontal: 35,
-                  marginTop: 20
-                }}>Tải lại</Text>
-              </TouchableOpacity>
-            </View> : <View style={{ backgroundColor: colors.grey, flex: 1 }}>
-              <ScrollView
+          <View style={{flex: 1}}>
+            {isAllEmpty() ? (
+              <View
                 style={{
-                  paddingVertical: 5
-                }}
-                refreshControl={
-                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }>
-                {filteredOrders.map(order =>
-                  <View style={{
-                    marginBottom: 5,
-                    backgroundColor: 'white',
-                    padding: 15,
-                  }} key={order.id}>
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingTop: 150,
+                }}>
+                <Image
+                  source={images.warningImage}
+                  style={{
+                    resizeMode: 'cover',
+                    width: 140,
+                    height: 140,
+                  }}
+                />
+                <Text
+                  style={{
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.OpenSansMedium,
+                    color: 'black',
+                    textAlign: 'center',
+                    marginHorizontal: 35,
+                    marginTop: 10,
+                  }}>
+                  Không thể tìm thấy đơn hàng nào.
+                </Text>
+                <TouchableOpacity onPress={() => getAllOrder()}>
+                  <Text
+                    style={{
+                      fontSize: fontSizes.h5,
+                      fontFamily: fonts.OpenSansMedium,
+                      color: colors.primary,
+                      textAlign: 'center',
+                      marginHorizontal: 35,
+                      marginTop: 20,
+                    }}>
+                    Tải lại
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{backgroundColor: colors.grey, flex: 1}}>
+                <ScrollView
+                  style={{
+                    paddingVertical: 5,
+                  }}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }>
+                  {filteredOrders.map(order => (
                     <View
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginBottom: 10,
-                      }}>
-                      <View style={styles.orderImageZone}>
-                        <Image
-                          width={100}
-                          height={100}
-                          borderRadius={10}
-                          source={{ uri: order.orderItems[0].imageUrl }} />
+                        marginBottom: 5,
+                        backgroundColor: 'white',
+                        padding: 15,
+                      }}
+                      key={order.id}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TouchableOpacity
+                          style={{
+                            flex: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginVertical:5
+                          }}>
+                          <Text style={styles.sellerNameText}>
+                            {order.seller.name}
+                          </Text>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              marginLeft: 'auto',
+                            }}>
+                            <Text style={styles.orderStatus}>
+                              {orderStatusText(order.status)}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
                       </View>
-                      <View style={{ flex: 70 }}>
-                        <Text style={styles.orderStatusText}>{orderStatusText(order.status)}</Text>
-                        <Text numberOfLines={1} style={styles.orderTitleText}>Đơn hàng #{order.id}</Text>
+                      <View style={styles.itemSection}>
+                        <View style={styles.itemImageZone}>
+                          <Image
+                            width={80}
+                            height={80}
+                            borderRadius={10}
+                            source={{uri: order.orderItems[0].imageUrl}}
+                          />
+                        </View>
+                        <View style={styles.itemDetailSection}>
+                          <Text numberOfLines={1} style={styles.itemTitleText}>
+                            Đơn hàng #{order.id}
+                          </Text>
+                          <View
+                            style={{
+                              alignItems: 'center',
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              marginBottom:10
+                            }}>
+                            <Text style={styles.itemDescriptionText}>
+                              {order.orderItems[0].productName}
+                            </Text>
+                            <Text style={styles.itemQuantityText}>
+                              x{order.orderItems[0].quantity}
+                            </Text>
+                          </View>
+                          <View style={{flexDirection: 'row'}}>
+                            <Text style={styles.itemMoneyText}>
+                              đ {numberWithCommas(order.orderItems[0].price)}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.orderFooter}>
                         <View
                           style={{
+                            alignItems:'center',
                             flexDirection: 'row',
                             justifyContent: 'space-between',
-                            alignItems: 'baseline'
                           }}>
-                          <Text style={styles.orderMoneyText}>
-                            {numberWithCommas(order.totalAmount)} VNĐ
+                          <Text style={styles.orderTotalMoneyText}>
+                            {order.orderItems.length} sản phẩm
                           </Text>
-                          <Text style={styles.orderDateText}>{moment(order.orderDate).format('DD/MM/YYYY')}</Text>
+                          <Text style={styles.orderTotalMoneyText}>
+                            Thành tiền :
+                            <Text style={styles.itemMoneyText}> đ {numberWithCommas(order.totalAmount)}</Text>
+                          </Text>
                         </View>
-                        <Text style={styles.orderShippingText}>
-                          {numberWithCommas(order.shippingCost)} VNĐ cước vận chuyển
-                        </Text>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <Text style={styles.orderFeedbackText}>Đã phản hồi</Text>
-                          <Text style={styles.orderItemCountText}>2 sản phảm</Text>
-                        </View>
+                        <Text style={styles.orderDateText}>Ngày đặt: {moment(order.orderDate).format('DD/MM/YYYY')}</Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigate('OrderDetail', {orderId: order.id});
+                          }}
+                          style={styles.orderDetailButton}>
+                          <Text style={styles.orderDetailText}>Chi tiết</Text>
+                        </TouchableOpacity>
+                        {[4, 10, 11, 12].includes(order.status) && (
+                          <TouchableOpacity style={styles.buyAgainButton}>
+                            <Text style={styles.buyAgainText}>Mua lại</Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigate('OrderDetail', { orderId: order.id })
-                        }}
-                        style={styles.orderDetailButton}>
-                        <Text style={styles.orderDetailText}>Chi tiết</Text>
-                      </TouchableOpacity>
-                      {[4, 10, 11, 12].includes(order.status) && <TouchableOpacity style={styles.buyAgainButton}>
-                        <Text style={styles.buyAgainText}>Mua lại</Text>
-                      </TouchableOpacity>}
-                    </View>
-                  </View>)}
-              </ScrollView>
-            </View>}
+                  ))}
+                </ScrollView>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -274,8 +349,9 @@ const styles = StyleSheet.create({
   orderDetailButton: {
     width: '48%',
     height: 40,
-    borderRadius: 100,
+    borderRadius: 10,
     backgroundColor: colors.primary,
+    marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -287,7 +363,7 @@ const styles = StyleSheet.create({
   buyAgainButton: {
     width: '48%',
     height: 40,
-    borderRadius: 100,
+    borderRadius: 10,
     borderColor: colors.primary,
     borderWidth: 1,
     alignItems: 'center',
@@ -298,24 +374,11 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansMedium,
   },
-  buySimilarButton: {
-    width: '100%',
-    height: 40,
-    borderRadius: 100,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buySimilarText: {
-    color: 'white',
-    fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansBold,
-  },
   orderImageZone: {
     flex: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
   },
   orderStatusText: {
     color: colors.primary,
@@ -333,7 +396,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h4,
   },
   orderDateText: {
-    color: colors.greyText,
+    color: colors.black,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
@@ -351,6 +414,68 @@ const styles = StyleSheet.create({
     color: colors.greyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
-  }
+  },
+  itemSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderColor: colors.grey,
+  },
+  itemImageZone: {
+    flex: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+  },
+  itemDetailSection: {
+    flex: 80,
+    paddingVertical: 15,
+    paddingStart: 10,
+  },
+  itemTitleText: {
+    color: colors.black,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h4,
+    marginBottom:10
+  },
+  itemDescriptionText: {
+    color: colors.greyText,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h5,
+    
+  },
+  itemQuantityText: {
+    color: colors.black,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h4,
+  },
+  itemMoneyText: {
+    marginLeft: 'auto',
+    color: 'red',
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h4,
+  },
+  sellerNameText: {
+    color: colors.black,
+    fontFamily: fonts.OpenSansBold,
+    fontSize: fontSizes.h3,
+  },
+  orderStatus: {
+    marginRight: 5,
+    color: colors.black,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h5,
+  },
+  orderFooter: {
+    paddingVertical: 10,
+    borderBottomWidth:1,
+    borderBottomColor: colors.grey
+  },
+  orderTotalMoneyText: {
+    marginBottom:10,
+    color: colors.black,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h5,
+  },
 });
 export default OrderList;
