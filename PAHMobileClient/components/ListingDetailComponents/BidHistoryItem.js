@@ -6,14 +6,12 @@ import {
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../../constants';
 import TimeLeft from '../TimeLeft';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function BidHistoryItem(props) {
     const { bid } = props;
     const { id, bidderName, bidAmount, bidDate } = bid
-    // Price format function
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    
     return <View key={id}>
         <View style={{
             flexDirection: 'row',

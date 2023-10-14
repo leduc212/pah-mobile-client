@@ -5,14 +5,13 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { fontSizes, fonts } from '../../constants';
+import { fontSizes, fonts, images } from '../../constants';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function HomeItemCard(props) {
     const { item, onPress } = props;
-    const { name, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', price } = item;
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    const { name, imageUrl = images.defaultAvatar, price } = item;
+
     return <TouchableOpacity
         onPress={onPress}
         style={{

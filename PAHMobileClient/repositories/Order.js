@@ -1,31 +1,4 @@
-async function getOrderCurrentUser(axiosContext) {
-  const orderPath = `/buyer/order`;
-  try {
-    let responseData = await axiosContext.authAxios.get(orderPath);
-    if (responseData.status != 200) {
-      throw responseData.message;
-    }
-    let responseOrder = responseData.data.data;
-    let order = {};
-
-    order.id = responseOrder.id;
-    order.buyerId = responseOrder.buyerId;
-    order.sellerId = responseOrder.sellerId;
-    order.recipientName = responseOrder.recipientName;
-    order.recipientPhone = responseOrder.recipientPhone;
-    order.recipientOrder = responseOrder.recipientOrder;
-    order.orderDate = responseOrder.orderDate;
-    order.totalAmount = responseOrder.totalAmount;
-    order.shippingCost = responseOrder.shippingCost;
-    order.status = responseOrder.status;
-
-    return order;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getAllOrderCurrentUser(axiosContext) {
+async function getAllOrderCurrentBuyer(axiosContext) {
   const orderPath = `/buyer/order`;
   try {
     let result = [];
@@ -42,6 +15,9 @@ async function getAllOrderCurrentUser(axiosContext) {
       order.totalAmount = responseOrder.totalAmount;
       order.shippingCost = responseOrder.shippingCost;
       order.status = responseOrder.status;
+      order.seller = responseOrder.seller;
+      order.orderItems = responseOrder.orderItems || [];
+
       result.push(order);
     });
 
@@ -67,6 +43,6 @@ async function checkout(axiosContext, cartInfo) {
 }
 
 export default {
-  getAllOrderCurrentUser,
+  getAllOrderCurrentBuyer,
   checkout
 };

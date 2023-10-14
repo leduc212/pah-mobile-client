@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   Text,
   View,
@@ -10,24 +10,24 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {colors, fontSizes, images, fonts} from '../../constants';
+import { colors, fontSizes, images, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {AxiosContext} from '../../context/AxiosContext';
-import {Order as OrderRepository} from '../../repositories';
-import {useIsFocused} from '@react-navigation/native';
+import { AxiosContext } from '../../context/AxiosContext';
+import { Order as OrderRepository } from '../../repositories';
+import { orderStatusText } from '../../utilities/OrderStatus';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import moment from 'moment';
+
 function OrderList(props) {
   //// AXIOS AND NAVIGATION
   // Axios Context
   const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
-
-  // On focus
-  const isFocused = useIsFocused();
+  const { navigate, goBack } = navigation;
 
   //// DATA
   // Data for orders
@@ -38,13 +38,22 @@ function OrderList(props) {
   const [refreshing, setRefreshing] = useState(false);
   const isAllEmpty = () => !(Array.isArray(orders) && orders.length);
 
+  // Order status filter
+  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 10, 11, 12]);
+  const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
+
+  // Filtered order
+  const [filteredOrders, setFilteredOrders] = useState([]);
+
   //// FUNCTIONS
   // Get all orders
   function getAllOrder() {
     setIsLoading(true);
-    OrderRepository.getAllOrderCurrentUser(axiosContext)
+    OrderRepository.getAllOrderCurrentBuyer(axiosContext)
       .then(response => {
+        console.log(response);
         setOrders(response);
+        setFilteredOrders(response.filter(item => item.status == currentOrderStatus));
         setIsLoading(false);
       })
       .catch(error => {
@@ -56,18 +65,18 @@ function OrderList(props) {
   }, []);
 
   useEffect(() => {
-    getAllOrder();
-  }, [isFocused]);
+    setFilteredOrders(orders.filter(item => item.status == currentOrderStatus));
+  }, [currentOrderStatus]);
 
   // Scroll view refresh
   const onRefresh = () => {
     setRefreshing(true);
-
+    getAllOrder();
     setRefreshing(false);
   };
   return (
     <View style={styles.container}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View style={styles.titleContainer}>
           <TouchableOpacity
             style={styles.backButton}
@@ -82,9 +91,37 @@ function OrderList(props) {
             onPress={() => {
               navigate('Cart');
             }}>
-            <IconFeather name="shopping-cart" size={25} color={'black'} />
+            <IconFeather name="shopping-cart" size={20} color={'black'} />
           </TouchableOpacity>
         </View>
+
+        {/* Filter section */}
+        <View>
+          <FlatList
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={orderStatus}
+            renderItem={({ item }) => {
+              return <TouchableOpacity style={{
+                paddingVertical: 10,
+                paddingHorizontal: 15,
+                borderBottomWidth: item == currentOrderStatus ? 2 : null,
+                borderBottomColor: item == currentOrderStatus ? colors.primary : null
+              }}
+              onPress={() => {
+                setCurrentOrderStatus(item);
+              }}>
+                <Text style={{
+                  color: item == currentOrderStatus ? colors.primary : 'black',
+                  fontFamily: fonts.OpenSansMedium,
+                  fontSize: fontSizes.h5
+                }}>{orderStatusText(item)}</Text>
+              </TouchableOpacity>
+            }}
+            keyExtractor={status => status}
+          />
+        </View>
+
         {isLoading ? (
           <View
             style={{
@@ -94,68 +131,104 @@ function OrderList(props) {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : (
-          <View>
-            <ScrollView
-              style={{
-                paddingHorizontal: 15,
-              }}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }>
-              <View style={{marginBottom:15}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 10,
-                  }}>
-                  <View style={styles.orderImageZone}>
-                    <Image 
-                    width={100}
-                    height={100}
-                    borderRadius={10}
-                    source={{uri:'https://i.pinimg.com/564x/34/e0/7a/34e07adbd823772cde8247405733a0e2.jpg'}}/>
-                  </View>
-                  <View style={{flex: 70}}>
-                    <Text style={styles.orderStatusText}>HOÀN THÀNH</Text>
-                    <Text numberOfLines={1} style={styles.orderTitleText}>Tựa đềTựa đềTựa đềTựa đềTựa đềTựa đềTựa đềTựa đề</Text>
+          <View style={{ flex: 1 }}>
+            {isAllEmpty() ? <View style={{
+              flex: 1,
+              alignItems: 'center',
+              paddingTop: 150
+            }}>
+              <Image source={images.warningImage} style={{
+                resizeMode: 'cover',
+                width: 140,
+                height: 140
+              }} />
+              <Text style={{
+                fontSize: fontSizes.h4,
+                fontFamily: fonts.OpenSansMedium,
+                color: 'black',
+                textAlign: 'center',
+                marginHorizontal: 35,
+                marginTop: 10
+              }}>Không thể tìm thấy đơn hàng nào.</Text>
+              <TouchableOpacity onPress={() => getAllOrder()}>
+                <Text style={{
+                  fontSize: fontSizes.h5,
+                  fontFamily: fonts.OpenSansMedium,
+                  color: colors.primary,
+                  textAlign: 'center',
+                  marginHorizontal: 35,
+                  marginTop: 20
+                }}>Tải lại</Text>
+              </TouchableOpacity>
+            </View> : <View style={{ backgroundColor: colors.grey, flex: 1 }}>
+              <ScrollView
+                style={{
+                  paddingVertical: 5
+                }}
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
+                {filteredOrders.map(order =>
+                  <View style={{
+                    marginBottom: 5,
+                    backgroundColor: 'white',
+                    padding: 15,
+                  }} key={order.id}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginBottom: 10,
+                      }}>
+                      <View style={styles.orderImageZone}>
+                        <Image
+                          width={100}
+                          height={100}
+                          borderRadius={10}
+                          source={{ uri: order.orderItems[0].imageUrl }} />
+                      </View>
+                      <View style={{ flex: 70 }}>
+                        <Text style={styles.orderStatusText}>{orderStatusText(order.status)}</Text>
+                        <Text numberOfLines={1} style={styles.orderTitleText}>Đơn hàng #{order.id}</Text>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'baseline'
+                          }}>
+                          <Text style={styles.orderMoneyText}>
+                            {numberWithCommas(order.totalAmount)} VNĐ
+                          </Text>
+                          <Text style={styles.orderDateText}>{moment(order.orderDate).format('DD/MM/YYYY')}</Text>
+                        </View>
+                        <Text style={styles.orderShippingText}>
+                          {numberWithCommas(order.shippingCost)} VNĐ cước vận chuyển
+                        </Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Text style={styles.orderFeedbackText}>Đã phản hồi</Text>
+                          <Text style={styles.orderItemCountText}>2 sản phảm</Text>
+                        </View>
+                      </View>
+                    </View>
                     <View
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.orderMoneyText}>
-                        1.222.800.000 đ
-                      </Text>
-                      <Text style={styles.orderDateText}>10/1/2023</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigate('OrderDetail', { orderId: order.id })
+                        }}
+                        style={styles.orderDetailButton}>
+                        <Text style={styles.orderDetailText}>Chi tiết</Text>
+                      </TouchableOpacity>
+                      {[4, 10, 11, 12].includes(order.status) && <TouchableOpacity style={styles.buyAgainButton}>
+                        <Text style={styles.buyAgainText}>Mua lại</Text>
+                      </TouchableOpacity>}
                     </View>
-                    <Text style={styles.orderShippingText}>
-                      Giao hàng miễn phí
-                    </Text>
-                    <View style={{flexDirection: 'row',justifyContent: 'space-between'}}>
-                    <Text style={styles.orderFeedbackText}>Đã phản hồi</Text>
-                    <Text style={styles.orderItemCountText}>2 sản phảm</Text>
-                    </View>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <TouchableOpacity 
-                  onPress={()=>{
-                    navigate('OrderDetail')
-                  }}
-                  style={styles.orderDetailButton}>
-                    <Text style={styles.orderDetailText}>Chi tiết</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buyAgainButton}>
-                    <Text style={styles.buyAgainText}>Mua lại</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </ScrollView>
+                  </View>)}
+              </ScrollView>
+            </View>}
           </View>
         )}
       </View>
@@ -173,16 +246,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grey,
   },
   addButton: {
-    padding: 8,
+    marginLeft: 'auto',
+    padding: 12,
     borderRadius: 50,
     backgroundColor: colors.grey,
   },
   titleContainer: {
     height: 70,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     paddingHorizontal: 15,
     alignItems: 'center',
+    gap: 20,
   },
   titleText: {
     color: 'black',
@@ -224,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansMedium,
   },
-  buySimilarButton:{
+  buySimilarButton: {
     width: '100%',
     height: 40,
     borderRadius: 100,
@@ -241,7 +315,7 @@ const styles = StyleSheet.create({
     flex: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal:5
+    paddingHorizontal: 5
   },
   orderStatusText: {
     color: colors.primary,
@@ -273,7 +347,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
-  orderItemCountText:{
+  orderItemCountText: {
     color: colors.greyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,

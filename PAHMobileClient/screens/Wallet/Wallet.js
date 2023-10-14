@@ -23,6 +23,7 @@ import {
     Wallet as WalletRepository
 } from '../../repositories';
 import config from '../../config';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -76,11 +77,6 @@ function Wallet(props) {
 
 
     //// FUNCTION
-
-    // Price format function
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     // Get current time for transaction id
     function getCurrentDateYYMMDD() {

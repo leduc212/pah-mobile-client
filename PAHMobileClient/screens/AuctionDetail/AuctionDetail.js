@@ -26,6 +26,7 @@ import {
 } from '../../repositories';
 import { conditionText } from '../../utilities/Condition';
 import moment from 'moment';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function AuctionDetail(props) {
     //// AUTH AND NAVIGATION
@@ -121,11 +122,6 @@ function AuctionDetail(props) {
     useEffect(() => {
         getAutionDetail();
     }, []);
-
-    // Price format function
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     // Scroll view refresh
     const onRefresh = () => {

@@ -5,15 +5,13 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
-import { colors, fontSizes, fonts } from '../../constants';
-import TimeLeft from '../TimeLeft';
+import { colors, fontSizes, fonts, images } from '../../constants';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function ProductListingCard(props) {
     const { product, onPress } = props;
-    const { name, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', price } = product;
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    const { name, imageUrl = images.defaultAvatar, price } = product;
+
     return <View style={{
         paddingHorizontal: 15
     }}>

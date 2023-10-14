@@ -23,6 +23,7 @@ import {
   Bid as BidRepository
 } from '../../repositories';
 import moment from 'moment';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function BiddingHistory(props) {
 
@@ -81,11 +82,6 @@ function BiddingHistory(props) {
   useEffect(() => {
     getAutionDetail();
   }, []);
-
-  // Price format function
-  function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  }
 
   return <View style={styles.container}>
     {/* Fixed screen title: Cart */}

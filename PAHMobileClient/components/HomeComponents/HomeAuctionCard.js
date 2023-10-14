@@ -5,15 +5,14 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import {  fontSizes, fonts } from '../../constants';
+import {  fontSizes, fonts, images } from '../../constants';
 import TimeLeft from '../TimeLeft';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function HomeAuctionCard(props) {
     const { item, onPress } = props;
-    const { title, endedAt, currentPrice, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg' } = item;
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    const { title, endedAt, currentPrice, imageUrl = images.defaultAvatar } = item;
+
     return <TouchableOpacity
         onPress={onPress}
         style={{

@@ -14,9 +14,6 @@ export const conditionText = (conditionNumber) => {
         case 5:
             result = 'Cổ'
             break;
-        default:
-            result = 'Mới tinh'
-            break;
     }
     return result;
 }

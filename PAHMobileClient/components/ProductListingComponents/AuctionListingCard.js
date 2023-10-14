@@ -7,13 +7,11 @@ import {
 } from 'react-native';
 import { colors, fontSizes, fonts } from '../../constants';
 import TimeLeft from '../TimeLeft';
-
+import { numberWithCommas } from '../../utilities/PriceFormat';
 function AuctionListingCard(props) {
     const { auction, onPress } = props;
     const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', currentPrice, endedAt } = auction;
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+
     return <View style={{
         paddingHorizontal: 15
     }}>

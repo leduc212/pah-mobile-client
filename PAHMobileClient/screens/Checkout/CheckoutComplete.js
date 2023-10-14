@@ -82,7 +82,9 @@ function CheckoutComplete(props) {
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h5
                     }}>Kiểm tra đơn hàng của bạn</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigate('OrderList')
+                    }}>
                         <Text style={{
                             color: colors.primary,
                             fontFamily: fonts.OpenSansMedium,

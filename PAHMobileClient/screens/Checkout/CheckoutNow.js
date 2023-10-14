@@ -20,12 +20,15 @@ import {
     Product as ProductRepository,
     Address as AddressRepository,
     Shipping as ShippingRepository,
-    Order as OrderRepository
+    Order as OrderRepository,
+    Wallet as WalletRepository
 } from '../../repositories';
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
 import { useIsFocused } from '@react-navigation/native';
 import config from '../../config';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import Toast from 'react-native-toast-message';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -170,34 +173,51 @@ function CheckoutNow(props) {
 
     // Create order function
     function createOrder() {
-        OrderRepository.checkout(axiosContext, {
-            order: [
-                {
-                    sellerId: product.seller.id,
-                    products: [
-                        {
-                            id: product.id,
-                            price: product.price,
-                            amount: quantity
-                        }
-                    ],
-                    total: product.price * quantity,
-                    shippingCost: shippingPrice
+        WalletRepository.getWalletCurrentUser(axiosContext)
+            .then(response => {
+                if ((product.price * quantity + shippingPrice) < response.availableBalance) {
+                    OrderRepository.checkout(axiosContext, {
+                        order: [
+                            {
+                                sellerId: product.seller.id,
+                                products: [
+                                    {
+                                        id: product.id,
+                                        price: product.price,
+                                        amount: quantity
+                                    }
+                                ],
+                                total: product.price * quantity,
+                                shippingCost: shippingPrice
+                            }
+                        ],
+                        total: product.price * quantity,
+                        paymentType: selectedPaymentMethod.id,
+                        addressId: currentShippingAddress.id
+                    }).then(response => {
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 1 });
+                    }).catch(err => {
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 2 });
+                    })
                 }
-            ],
-            total: product.price * quantity,
-            paymentType: selectedPaymentMethod.id,
-            addressId: currentShippingAddress.id
-        }).then(response => {
-            setIsLoadingPayment(false);
-            navigation.pop();
-            navigate('CheckoutComplete', { returnCode: 1 });
-        }).catch(err => {
-            console.log(err.response.data);
-            setIsLoadingPayment(false);
-            navigation.pop();
-            navigate('CheckoutComplete', { returnCode: 2 });
-        })
+                else {
+                    setIsLoadingPayment(false);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Số dư trong tài khoản không đủ',
+                        position: 'bottom',
+                        autoHide: true,
+                        visibilityTime: 2000
+                    });
+                }
+            })
+            .catch(error => {
+                setIsLoadingPayment(false);
+            });
     }
 
     useEffect(() => {
@@ -218,11 +238,6 @@ function CheckoutNow(props) {
             }
         );
     }, []);
-
-    // Price format function
-    function numberWithCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     // Scroll view refresh
     const onRefresh = () => {
