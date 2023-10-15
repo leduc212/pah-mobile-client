@@ -1,20 +1,47 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
-    Image
+    Image,
+    ActivityIndicator,
+    NativeModules,
+    NativeEventEmitter
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import {
+    Address as AddressRepository,
+    Shipping as ShippingRepository,
+    Wallet as WalletRepository,
+    Order as OrderRepository
+} from '../../repositories';
+import moment from 'moment';
+import CryptoJS from 'crypto-js';
+import config from '../../config';
+import Toast from 'react-native-toast-message';
+import { emptyCart } from '../../reducers/CartReducer';
+
+const { PayZaloBridge } = NativeModules;
+
+const payZaloBridgeEmitter = new NativeEventEmitter(PayZaloBridge);
 
 function CheckoutCart(props) {
+    //// CART REDUX STORE
+    const cart = useSelector((state) => state.cart.cart)
+    const dispatch = useDispatch();
+
+    //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
+    const axiosContext = useContext(AxiosContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -22,81 +49,296 @@ function CheckoutCart(props) {
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
 
-    // Data
-    // Cart data
-    const [cart, setCart] = useState([
-        {
-            user_id: 12,
-            seller_name: 'avd seller',
-            seller_address: '2 Đ. Hải Triều, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh',
-            shipping_cost: '120,000',
-            cart_items: [
-                {
-                    id: 1,
-                    name: 'Đá thạch anh hồng phong thuỷ',
-                    price: '1,220,000',
-                    url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-thach-anh-hong-m277415-3.jpg',
-                    quantity: 1
-                },
-                {
-                    id: 2,
-                    name: 'Đá thạch anh xanh phong thuỷ',
-                    price: '6,430,000',
-                    url: 'https://media.loveitopcdn.com/25808/thumb/da-canh-fluorite-xanh-m282420.jpg',
-                    quantity: 2
-                }
-            ]
-        },
-        {
-            user_id: 13,
-            seller_name: 'mckavlin',
-            seller_address: '720A Đ. Điện Biên Phủ, Vinhomes Tân Cảng, Bình Thạnh, Thành phố Hồ Chí Minh',
-            shipping_cost: '90,000',
-            cart_items: [
-                {
-                    id: 5,
-                    name: 'Đá thạch anh vàng phong thuỷ',
-                    price: '4,632,000',
-                    url: 'https://media.loveitopcdn.com/25808/thumb/img01082-copy.jpg',
-                    quantity: 1
-                }
-            ]
-        }
-    ]);
+    //// DATA
+    // Loading
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingPayment, setIsLoadingPayment] = useState(false);
 
+    // Cart data
+    const cartGroupedComputed = () => {
+        return Object.values(groupItemBy(cart, 'seller.id'));
+    }
+    const [cartGrouped, setCartGrouped] = useState([]);
+
+    // Cart sum quantity
+    const sumQuantity = () =>
+        cart.reduce((accumulator, object) => {
+            return accumulator + object.amount;
+        }, 0);
+
+    // Cart sum price
+    const sumTotal = () =>
+        cart.reduce((accumulator, object) => {
+            return accumulator + object.amount * object.price;
+        }, 0);
+
+    // Total shipping price
+    const [totalShippingPrice, setTotalShippingPrice] = useState(0);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
-        id: '',
+        id: 0,
         text: ''
     });
     const [paymentMethods, setPaymentMethods] = useState([
         {
-            id: 'PAH_WALLET',
+            id: 1,
             text: 'Số dư ví PAH'
         },
         {
-            id: 'ZALOPAY',
+            id: 2,
             text: 'ZaloPay'
         }
     ]);
     const [paymentModal, setPaymentModal] = useState(false);
-    const [shippingAddress, setShippingAddress] = useState([
-        {
-            id: 1,
-            name: 'Lê Minh Đức',
-            phone: '0931856541',
-            address: '2, đường D4, khu phố 6, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
-        },
-        {
-            id: 2,
-            name: 'Lê Đức Hiền',
-            phone: '0918031377',
-            address: '16 đường D3, kdc Kiến Á, phường Phước Long B, thành phố Thủ Đức, thành phố Hồ Chí Minh'
-        },
-    ]);
-    const [currentShippingAddress, setCurrentShippingAddress] = useState(shippingAddress.at(0));
+    const [shippingAddress, setShippingAddress] = useState([]);
+    const [currentShippingAddress, setCurrentShippingAddress] = useState({});
     const [addressModal, setAddressModal] = useState(false);
     // validating
-    const validationPaymentMethod = () => selectedPaymentMethod.id !== '';
+    const validation = () => selectedPaymentMethod.id != 0 && shippingAddress.length > 0;
+
+    //// FUNCTIONS
+    // Get cart group by seller
+    function groupItemBy(array, property) {
+        let hash = [];
+        for (const element of array) {
+            if (hash.filter(item => item.sellerId == element.seller.id).length == 0) {
+                hash.push({
+                    sellerId: element.seller.id,
+                    name: element.seller.name,
+                    province: element.seller.province,
+                    district: element.seller.district,
+                    districtId: element.seller.districtId,
+                    ward: element.seller.ward,
+                    wardCode: element.seller.wardCode,
+                    shippingCost: 0,
+                    shippingDate: '',
+                    total: 0,
+                    products: []
+                })
+            }
+
+            const foundSeller = hash.find(item => item.sellerId == element.seller.id);
+            if (foundSeller) {
+                foundSeller.products.push(element);
+            }
+        }
+
+        return hash;
+    }
+
+    //// FUNCTIONS
+
+    // Insert shipping cost and shipping date
+    async function calculateCart() {
+        setCartGrouped([]);
+        setIsLoading(true);
+        let defaultAddress;
+        const responseAddress = await AddressRepository.getAllAdrressCurrentUser(axiosContext)
+            .catch(error => {
+                console.log(error);
+                setIsLoading(false);
+            });
+
+        setShippingAddress(responseAddress);
+        // After get default address successfully, iterate grouped cart and calculate shipping cost for each seller
+        if (responseAddress.length > 0) {
+            // Set default shipping address
+            defaultAddress = responseAddress.filter(address => {
+                return address.isDefault;
+            }).at(0)
+            setCurrentShippingAddress(defaultAddress);
+        }
+        await Promise.all(cartGroupedComputed().map(async (seller, index, array) => {
+            seller.total = seller.products.reduce((accumulator, object) => {
+                return accumulator + object.price * object.amount;
+            }, 0)
+
+            // Calculate shipping cost for each seller
+            const responseShip = await ShippingRepository.calculateShippingCost({
+                service_type_id: 2,
+                from_district_id: seller.districtId,
+                from_ward_code: seller.wardCode,
+                to_district_id: defaultAddress.districtId,
+                to_ward_code: defaultAddress.wardCode,
+                weight: seller.products.reduce((accumulator, object) => {
+                    return accumulator + object.weight * object.amount;
+                }, 0)
+            })
+                .catch(error => {
+                    console.log(error);
+                });
+
+            seller.shippingCost = responseShip.total;
+            setTotalShippingPrice(oldShippingCost => oldShippingCost + responseShip.total);
+
+            // Calculate shipping date for each seller
+            const responseDate = await ShippingRepository.calculateShippingDate({
+                service_id: 53320,
+                from_district_id: seller.districtId,
+                from_ward_code: seller.wardCode,
+                to_district_id: defaultAddress.districtId,
+                to_ward_code: defaultAddress.wardCode
+            })
+                .catch(error => {
+                    console.log(error.response.data);
+                })
+
+            seller.shippingDate = responseDate.leadtime;
+
+            setCartGrouped(oldArray => [...oldArray, seller]);
+            if (index === array.length - 1) {
+                setIsLoading(false);
+            }
+
+        }));
+    }
+
+    useEffect(() => {
+        calculateCart();
+
+        const subscription = payZaloBridgeEmitter.addListener(
+            'EventPayZalo',
+            (data) => {
+                // 1: SUCCESS, -1: FAILED, 4: CANCELLED
+                // If returncode = 1, create order with zalopay method
+                if (data.returnCode == 1) {
+                    createOrder();
+                } else {
+                    setIsLoadingPayment(false);
+                    navigation.pop();
+                    navigate('CheckoutComplete', { returnCode: data.returnCode });
+                }
+            }
+        );
+    }, []);
+
+    // Empty cart
+    function emptyCartItems(){
+        dispatch(emptyCart());
+    }
+
+    // Create order function
+    function createOrder() {
+        WalletRepository.getWalletCurrentUser(axiosContext)
+            .then(response => {
+                if ((sumTotal() + totalShippingPrice) < response.availableBalance) {
+                    OrderRepository.checkout(axiosContext, {
+                        order: cartGrouped,
+                        total: sumTotal(),
+                        paymentType: selectedPaymentMethod.id,
+                        addressId: currentShippingAddress.id
+                    }).then(response => {
+                        emptyCartItems();
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 1 });
+                    }).catch(err => {
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 2 });
+                    })
+                }
+                else {
+                    setIsLoadingPayment(false);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Số dư trong tài khoản không đủ',
+                        position: 'bottom',
+                        autoHide: true,
+                        visibilityTime: 2000
+                    });
+                }
+            })
+            .catch(error => {
+                setIsLoadingPayment(false);
+            });
+    }
+
+    // Zalopayment
+    const [token, setToken] = useState('')
+    const [returncode, setReturnCode] = React.useState('')
+
+    // Get current time for transaction id
+    function getCurrentDateYYMMDD() {
+        const todayDate = new Date().toISOString().slice(2, 10);
+        return todayDate.split('-').join('');
+    }
+
+    async function payOrder() {
+        setIsLoadingPayment(true);
+        let apptransid = getCurrentDateYYMMDD() + '_' + new Date().getTime();
+
+        let appid = 2553
+        let amount = parseInt(sumTotal() + totalShippingPrice)
+        let appuser = "PAHUser"
+        let apptime = (new Date).getTime()
+        let embeddata = "{}"
+        let item = "[]"
+        let description = `Thanh toán đơn hàng ${apptransid}`
+        let hmacInput = appid + "|" + apptransid + "|" + appuser + "|" + amount + "|" + apptime + "|" + embeddata + "|" + item
+        let mac = CryptoJS.HmacSHA256(hmacInput, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+
+        let hmacInput2 = appid + "|" + apptransid + "|" + "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL";
+        let mac2 = CryptoJS.HmacSHA256(hmacInput2, "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL")
+        console.log('====================================');
+        console.log("hmacInput: " + hmacInput);
+        console.log("mac: " + mac)
+        console.log('====================================');
+        console.log('====================================');
+        console.log("hmacInput2: " + hmacInput2);
+        console.log("mac2: " + mac2)
+        console.log('====================================');
+        var order = {
+            'app_id': appid,
+            'app_user': appuser,
+            'app_time': apptime,
+            'amount': amount,
+            'app_trans_id': apptransid,
+            'embed_data': embeddata,
+            'item': item,
+            'description': description,
+            'mac': mac
+        }
+
+        console.log(order)
+
+        let formBody = []
+        for (let i in order) {
+            var encodedKey = encodeURIComponent(i);
+            var encodedValue = encodeURIComponent(order[i]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+
+        await fetch(`${config.ZALOPAY_SB_API}/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
+        })
+            .then(response => response.json())
+            .then(resJson => {
+                setToken(resJson.zp_trans_token);
+                setReturnCode(resJson.return_code);
+                var payZP = NativeModules.PayZaloBridge;
+                payZP.payOrder(resJson.zp_trans_token);
+            })
+            .catch((error) => {
+                console.log("error ", error)
+            });
+    }
+
+    // Checkout function
+    function checkout() {
+        if (selectedPaymentMethod.id === 2) {
+            // If method == ZALOPAY, create order
+            payOrder();
+        } else {
+            // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
+            setIsLoadingPayment(true);
+            createOrder();
+        }
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: Checkout */}
@@ -110,11 +352,32 @@ function CheckoutCart(props) {
             <Text style={styles.titleText}>Thanh toán</Text>
         </View>
 
-        <ScrollView>
+        {isLoading ? <View style={{
+            flex: 1,
+            justifyContent: 'center'
+        }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+        </View> : <ScrollView>
+            {/* Optional: if cart contain items from different seller information */}
+            {cartGrouped.length > 1 && <View style={{
+                backgroundColor: colors.info,
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                paddingVertical: 15,
+                gap: 15
+            }}>
+                <IconFeather name='info' size={25} color={'white'} />
+                <Text style={{
+                    color: 'white',
+                    fontFamily: fonts.OpenSansMedium,
+                    fontSize: fontSizes.h5,
+                    flex: 1
+                }}>Giỏ hàng của bạn chứa các sản phẩm từ hai hoặc nhiều người bán khác nhau. Do đó, các đơn hàng của bạn sẽ được tách ra theo người bán sau khi thanh toán giỏ hàng.</Text>
+            </View>}
             {/* Product basic info section */}
             <View>
-                {cart.map((seller) =>
-                    <View key={seller.user_id}>
+                {cartGrouped.map((seller) =>
+                    <View key={seller.id}>
                         <View style={{
                             paddingHorizontal: 15,
                             marginBottom: 10
@@ -124,14 +387,14 @@ function CheckoutCart(props) {
                                 fontFamily: fonts.OpenSansBold,
                                 fontSize: fontSizes.h4,
                                 marginVertical: 15
-                            }}>Người bán: {seller.seller_name}</Text>
-                            {seller.cart_items.map((item) =>
+                            }}>Người bán: {seller.name}</Text>
+                            {seller.products.map((item) =>
                                 <View key={item.id} style={{
                                     flexDirection: 'row',
                                     gap: 10,
                                     marginBottom: 10
                                 }}>
-                                    <Image source={{ uri: item.url }}
+                                    <Image source={{ uri: item.imageUrls[0] }}
                                         style={{
                                             resizeMode: 'cover',
                                             width: 100,
@@ -153,12 +416,12 @@ function CheckoutCart(props) {
                                             color: 'black',
                                             fontFamily: fonts.OpenSansBold,
                                             fontSize: fontSizes.h2
-                                        }}>{item.price} VNĐ</Text>
+                                        }}>{numberWithCommas(item.price)} VNĐ</Text>
                                         <Text style={{
                                             color: colors.darkGreyText,
                                             fontFamily: fonts.OpenSansMedium,
                                             fontSize: fontSizes.h4
-                                        }}>Số lượng: {item.quantity}</Text>
+                                        }}>Số lượng: {item.amount}</Text>
                                     </View>
                                 </View>
                             )}
@@ -175,7 +438,7 @@ function CheckoutCart(props) {
                                     color: colors.darkGreyText,
                                     fontFamily: fonts.OpenSansMedium,
                                     fontSize: fontSizes.h4
-                                }}>Giao dự kiến: 6/10 - 8/10</Text>
+                                }}>Giao dự kiến: {moment(seller.shippingDate * 1000).format('DD/MM/YYYY')}</Text>
                                 <Text style={{
                                     color: colors.darkGreyText,
                                     fontFamily: fonts.OpenSansMedium,
@@ -185,7 +448,7 @@ function CheckoutCart(props) {
                                     color: 'black',
                                     fontFamily: fonts.OpenSansMedium,
                                     fontSize: fontSizes.h4
-                                }}>Phí vận chuyển: 80,000 VNĐ </Text>
+                                }}>Phí vận chuyển: {numberWithCommas(seller.shippingCost)} VNĐ </Text>
                             </View>
                         </View>
                         <View style={styles.separator}></View>
@@ -216,26 +479,33 @@ function CheckoutCart(props) {
                             fontSize: fontSizes.h4,
                             flex: 1
                         }}>Vận chuyển tới</Text>
-                        <View style={{ flex: 2, gap: 5 }}>
+                        {shippingAddress.length > 0 ? <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.name}</Text>
+                            >{currentShippingAddress.recipientName}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.address}</Text>
+                            >{`${currentShippingAddress.street}, ${currentShippingAddress.ward}, ${currentShippingAddress.district}, ${currentShippingAddress.province}`}</Text>
                             <Text style={{
                                 color: 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{currentShippingAddress.phone}</Text>
-                        </View>
+                            >{currentShippingAddress.recipientPhone}</Text>
+                        </View> : <View style={{ flex: 2, gap: 5 }}>
+                            <Text style={{
+                                color: 'red',
+                                fontFamily: fonts.OpenSansMedium,
+                                fontSize: fontSizes.h4
+                            }}
+                            >Xin hãy thêm địa chỉ nhận hàng</Text>
+                        </View>}
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
@@ -257,11 +527,11 @@ function CheckoutCart(props) {
                         }}>Phương thức thanh toán</Text>
                         <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
-                                color: selectedPaymentMethod.id === '' ? 'red' : 'black',
+                                color: selectedPaymentMethod.id === 0 ? 'red' : 'black',
                                 fontFamily: fonts.OpenSansMedium,
                                 fontSize: fontSizes.h4
                             }}
-                            >{selectedPaymentMethod.id === '' ? 'Xin hãy chọn phương thức thanh toán' : selectedPaymentMethod.text}</Text>
+                            >{selectedPaymentMethod.id === 0 ? 'Xin hãy chọn phương thức thanh toán' : selectedPaymentMethod.text}</Text>
                         </View>
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
@@ -282,12 +552,12 @@ function CheckoutCart(props) {
                         color: colors.darkGreyText,
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>Sản phẩm (4)</Text>
+                    }}>Sản phẩm ({sumQuantity()})</Text>
                     <Text style={{
                         color: 'black',
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>18,712,000 VNĐ</Text>
+                    }}>{numberWithCommas(sumTotal())} VNĐ</Text>
                 </View>
                 <View style={{
                     flexDirection: 'row',
@@ -302,7 +572,7 @@ function CheckoutCart(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansMedium,
                         fontSize: fontSizes.h4
-                    }}>160,000 VNĐ</Text>
+                    }}>{numberWithCommas(totalShippingPrice)} VNĐ</Text>
                 </View>
                 <View style={styles.separator}></View>
                 <View style={{
@@ -318,7 +588,7 @@ function CheckoutCart(props) {
                         color: 'black',
                         fontFamily: fonts.OpenSansBold,
                         fontSize: fontSizes.h3
-                    }}>18,872,000 VNĐ</Text>
+                    }}>{numberWithCommas(totalShippingPrice + sumTotal())} VNĐ</Text>
                 </View>
             </View>
             <Text style={{
@@ -330,24 +600,22 @@ function CheckoutCart(props) {
             }}>
                 Bằng cách xác nhận đơn đặt hàng của bạn, bạn đồng ý với các điều khoản và điều kiện Vận chuyển của PAH.
             </Text>
-        </ScrollView>
+        </ScrollView>}
+
         {/* Checkout button */}
         <TouchableOpacity style={{
             borderRadius: 35,
-            backgroundColor: validationPaymentMethod() ? colors.primary : colors.grey,
+            backgroundColor: validation() ? colors.primary : colors.grey,
             paddingVertical: 10,
             marginVertical: 5,
             marginHorizontal: 15
         }}
-            disabled={!validationPaymentMethod()}
-            onPress={() => {
-                navigation.pop();
-                navigate('CheckoutComplete');
-            }}>
+            disabled={!validation()}
+            onPress={() => checkout()}>
             <Text style={{
                 fontSize: fontSizes.h3,
                 fontFamily: fonts.OpenSansBold,
-                color: validationPaymentMethod() ? 'white' : colors.greyText,
+                color: validation() ? 'white' : colors.greyText,
                 textAlign: 'center'
             }}>Xác nhận thanh toán</Text>
         </TouchableOpacity>
@@ -377,11 +645,13 @@ function CheckoutCart(props) {
                 </View>
 
                 {/* All address information */}
-                <View style={{
-                    gap: 10,
-                    marginHorizontal: 20,
-                    marginBottom: 30
-                }}>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    style={{
+                        gap: 10,
+                        marginHorizontal: 20,
+                        marginBottom: 30
+                    }}>
                     {/* Address options */}
                     <View>
                         {shippingAddress.map(item =>
@@ -392,28 +662,29 @@ function CheckoutCart(props) {
                                 <TouchableOpacity style={[styles.sortModalOptionContainer, { flex: 1 }]}
                                     onPress={() => {
                                         setCurrentShippingAddress(item);
+                                        getShippingCost(item, product);
+                                        getShippingDate(item, product);
                                         setAddressModal(!addressModal);
                                     }}>
                                     <View style={[{
-                                        borderColor: item === currentShippingAddress ? colors.primary : 'black',
+                                        borderColor: item.id === currentShippingAddress.id ? colors.primary : 'black',
                                     }, styles.radioButtonOuter]}>
                                         <View style={[{
-                                            backgroundColor: item === currentShippingAddress ? colors.primary : 'white',
+                                            backgroundColor: item.id === currentShippingAddress.id ? colors.primary : 'white',
                                         }, styles.radioButtonInner]}></View>
                                     </View>
                                     <View style={{ flexShrink: 1 }}>
-                                        <Text style={styles.radioTextSecondary}>{item.name}</Text>
-                                        <Text style={styles.radioTextSecondary}>{item.phone}</Text>
-                                        <Text style={styles.radioTextSecondary}>{item.address}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.recipientName}</Text>
+                                        <Text style={styles.radioTextSecondary}>{item.recipientPhone}</Text>
+                                        <Text style={styles.radioTextSecondary}>{`${item.street}, ${item.ward}, ${item.district}, ${item.province}`}</Text>
                                     </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <IconFeather name='more-vertical' size={25} color={'black'} />
                                 </TouchableOpacity>
                             </View>
                         )}
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigate('AddAddress');
+                    }}>
                         <Text style={{
                             color: colors.primary,
                             fontSize: fontSizes.h4,
@@ -421,7 +692,7 @@ function CheckoutCart(props) {
                             alignSelf: 'flex-end'
                         }}>Thêm địa chỉ mới</Text>
                     </TouchableOpacity>
-                </View>
+                </ScrollView>
             </View>
         </Modal>
 
@@ -479,6 +750,20 @@ function CheckoutCart(props) {
                 </View>
             </View>
         </Modal>
+
+        {/* Loading overlay for payment */}
+        {isLoadingPayment && <View style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.inactive
+        }}>
+            <ActivityIndicator size='large' color={colors.primary} />
+        </View>}
     </View>
 }
 

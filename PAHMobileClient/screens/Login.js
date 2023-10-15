@@ -67,8 +67,6 @@ function Login(props) {
           autoHide: true,
           visibilityTime: 2000
         });
-
-        goBack();
       })
       .catch(error => {
         setIsLoginLoading(false);

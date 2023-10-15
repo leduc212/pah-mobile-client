@@ -27,8 +27,14 @@ import {
 import { conditionText } from '../../utilities/Condition';
 import moment from 'moment';
 import { numberWithCommas } from '../../utilities/PriceFormat';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../reducers/CartReducer';
+import Toast from 'react-native-toast-message';
 
 function ListingDetail(props) {
+    //// CART REDUX STORE
+    const dispatch = useDispatch();
+
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
@@ -116,6 +122,11 @@ function ListingDetail(props) {
                 console.log(error);
                 setIsLoading(false);
             })
+    }
+
+    // Add item to cart
+    const addItemToCart = (item) => {
+        dispatch(addToCart(item));
     }
 
     useEffect(() => {
@@ -227,7 +238,17 @@ function ListingDetail(props) {
                         }}>
                         <Text style={styles.primaryButtonText}>Mua ngay</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.secondaryButton}>
+                    <TouchableOpacity style={styles.secondaryButton}
+                        onPress={() => {
+                            addItemToCart(product);
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Đã thêm sản phẩm vào giỏ hàng',
+                                position: 'bottom',
+                                autoHide: true,
+                                visibilityTime: 2000
+                              });
+                        }}>
                         <Text style={styles.secondaryButtonText}>Thêm vào giỏ hàng</Text>
                     </TouchableOpacity>
                 </View>

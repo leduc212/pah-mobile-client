@@ -34,6 +34,8 @@ import * as Keychain from 'react-native-keychain';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { fonts, fontSizes } from '../constants';
 import SplashScreen from 'react-native-splash-screen';
+import { Provider } from 'react-redux';
+import CartStore from '../stores/CartStore';
 
 const Stack = createNativeStackNavigator();
 
@@ -96,7 +98,7 @@ function App(props) {
     }, []);
 
     return (
-        <>
+        <Provider store={CartStore}>
             <NavigationContainer>
                 <Stack.Navigator
                     screenOptions={{
@@ -138,7 +140,7 @@ function App(props) {
                 </Stack.Navigator>
             </NavigationContainer>
             <Toast />
-        </>
+        </Provider>
     )
 }
 
