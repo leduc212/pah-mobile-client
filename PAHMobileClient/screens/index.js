@@ -25,8 +25,10 @@ import Wallet from "./Wallet/Wallet";
 import PaymentResult from "./Wallet/PaymentResult";
 import EditAddress from "./Address/EditAddress";
 import ProductListing from "./ProductListing";
-import OrderList from "./Order/OrderList";
-import OrderDetail from "./Order/OrderDetail";
+import BuyerOrderList from "./Order/BuyerOrderList";
+import BuyerOrderDetail from "./Order/BuyerOrderDetail";
+import SellerOrderList from "./Order/SellerOrderList";
+import SellerOrderDetail from "./Order/SellerOrderDetail";
 
 export {
     Account,
@@ -56,6 +58,8 @@ export {
     Wallet,
     PaymentResult,
     ProductListing,
-    OrderList,
-    OrderDetail
+    BuyerOrderList,
+    BuyerOrderDetail,
+    SellerOrderList,
+    SellerOrderDetail
 }

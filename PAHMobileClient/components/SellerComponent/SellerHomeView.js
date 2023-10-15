@@ -179,6 +179,9 @@ function SellerHomeView(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity
+      onPress={()=>{
+        navigate('SellerOrderList')
+      }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',

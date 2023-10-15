@@ -19,7 +19,7 @@ import {orderStatusText} from '../../utilities/OrderStatus';
 import {numberWithCommas} from '../../utilities/PriceFormat';
 import moment from 'moment';
 
-function OrderList(props) {
+function SellerOrderList(props) {
   //// AXIOS AND NAVIGATION
   // Axios Context
   const axiosContext = useContext(AxiosContext);
@@ -50,7 +50,7 @@ function OrderList(props) {
   // Get all orders
   function getAllOrder() {
     setIsLoading(true);
-    OrderRepository.getAllOrderCurrentBuyer(axiosContext)
+    OrderRepository.getAllOrderCurrentSeller(axiosContext)
       .then(response => {
         console.log(response);
         setOrders(response);
@@ -285,19 +285,16 @@ function OrderList(props) {
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
+                          alignItems:'center',
+                          paddingTop:10,
                         }}>
                         <TouchableOpacity
                           onPress={() => {
-                            navigate('OrderDetail', {orderId: order.id});
+                            navigate('SellerOrderDetail', {orderId: order.id});
                           }}
                           style={styles.orderDetailButton}>
                           <Text style={styles.orderDetailText}>Chi tiết</Text>
                         </TouchableOpacity>
-                        {[4, 10, 11, 12].includes(order.status) && (
-                          <TouchableOpacity style={styles.buyAgainButton}>
-                            <Text style={styles.buyAgainText}>Mua lại</Text>
-                          </TouchableOpacity>
-                        )}
                       </View>
                     </View>
                   ))}
@@ -348,10 +345,10 @@ const styles = StyleSheet.create({
   },
   orderDetailButton: {
     width: '48%',
+    flex:1,
     height: 40,
     borderRadius: 10,
     backgroundColor: colors.primary,
-    marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -360,7 +357,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansBold,
   },
-  buyAgainButton: {
+  confirmButton: {
     width: '48%',
     height: 40,
     borderRadius: 10,
@@ -369,7 +366,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buyAgainText: {
+  confirmText: {
     color: colors.primary,
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansMedium,
@@ -478,4 +475,4 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h5,
   },
 });
-export default OrderList;
+export default SellerOrderList;

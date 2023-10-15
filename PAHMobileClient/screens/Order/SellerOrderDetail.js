@@ -15,7 +15,7 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
 
-function OrderDetail(props) {
+function SellerOrderDetail(props) {
   // Navigation
   const {navigation, route} = props;
 
@@ -90,7 +90,7 @@ function OrderDetail(props) {
             }}>
             <TouchableOpacity
               style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={styles.sellerNameText}>Seller</Text>
+              <Text style={styles.sellerNameText}>Buyer</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -184,12 +184,17 @@ function OrderDetail(props) {
             <Text style={styles.orderTimeText}>22-09-2023 13:24</Text>
           </View>
           <View style={{
+            flexDirection:'row',
             padding:10,
+            justifyContent:'space-between',
             borderColor:colors.grey,
             borderTopWidth:1
           }}>
-            <TouchableOpacity style={styles.buyAgainButton}>
-                <Text style={styles.buyAgainText}>Mua lại</Text>
+            <TouchableOpacity style={styles.cancelButton}>
+                <Text style={styles.cancelText}>Hủy đơn</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.confirmButton}>
+                <Text style={styles.confirmText}>Xác nhận</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -357,16 +362,29 @@ const styles = StyleSheet.create({
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
-  buyAgainButton: {
-    flex: 1,
+  cancelButton: {
+    width:'48%',
     alignItems: 'center',
-    borderWidth:1,
+    backgroundColor: 'red',
+    paddingVertical:5,
     borderRadius:10,
 },
-  buyAgainText: {
-    color: colors.greyText,
+  cancelText: {
+    color: 'white',
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h3,
+  },
+  confirmButton: {
+    width:'48%',
+    alignItems: 'center',
+    backgroundColor: 'green',
+    paddingVertical:5,
+    borderRadius:10,
+},
+  confirmText: {
+    color: 'white',
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h3,
   }
 });
-export default OrderDetail;
+export default SellerOrderDetail;
