@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   Text,
   View,
@@ -6,21 +6,64 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   ActivityIndicator,
-  RefreshControl,
+  RefreshControl
 } from 'react-native';
-import {colors, fontSizes, images, fonts} from '../../constants';
+import { colors, fontSizes, images, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
-
+import IconFA5 from 'react-native-vector-icons/FontAwesome5';
+import { AxiosContext } from '../../context/AxiosContext';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import { Order as OrderRepository } from '../../repositories';
+import moment from 'moment';
 function BuyerOrderDetail(props) {
+  //// AXIOS AND NAVIGATION
+  // Axios Context
+  const axiosContext = useContext(AxiosContext);
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
+
+  //// DATA
+  // Get orderId from routes
+  const { orderId } = props.route.params;
+
+  // Order detail data
+  const [order, setOrder] = useState({});
+
+  // Loading state data
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  //// FUNCTIONS
+  // Get all orders
+  function getOrder() {
+    setIsLoading(true);
+    OrderRepository.getOrderDetail(axiosContext, orderId)
+      .then(response => {
+        setOrder(response);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    getOrder();
+  }, []);
+
+  // Scroll view refresh
+  const onRefresh = () => {
+    setRefreshing(true);
+    getOrder();
+    setRefreshing(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -37,39 +80,132 @@ function BuyerOrderDetail(props) {
           onPress={() => {
             navigate('Cart');
           }}>
-          <IconFeather name="shopping-cart" size={25} color={'black'} />
+          <IconFeather name="shopping-cart" size={20} color={'black'} />
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      {isLoading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : <ScrollView refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }>
         {/* Status and note */}
-        <View style={{backgroundColor: 'white', marginBottom: 10}}>
-          <View style={styles.statusSection}>
-            <View style={{flex: 80}}>
-              <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
+        <View style={{ backgroundColor: 'white', marginBottom: 10 }}>
+          {order.status == 5 && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Chờ xác nhận</Text>
               <Text style={styles.noteText}>
-                Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả
-                hàng/Hoàn tiền trước 16/10/2023
+                Đang chờ người bán xác nhận đơn hàng, trong thời gian này, bạn có thể liên hệ với người bán để xác nhận thêm thông tin đơn hàng nhé!
               </Text>
             </View>
-            <View style={{flex: 20, alignItems: 'center'}}>
-              <IconAntDesign name="like2" size={30} color={colors.primary} />
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
             </View>
-          </View>
-          <View style={{padding: 15}}>
-            <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+          </View>}
+
+          {order.status == 2 && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Chờ lấy hàng</Text>
+              <Text style={styles.noteText}>
+                Đơn hàng của bạn đã được người bán xác nhận và trong giai đoạn chuẩn bị hàng hóa giao đi. Hãy kiên nhẫn chờ đợi nhé!
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          {order.status == 3 && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Đang vận chuyển</Text>
+              <Text style={styles.noteText}>
+                Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang trên đường tới chỗ bạn. Hãy kiên nhẫn chờ đợi nhé!
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          {order.status == 4 && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
+              <Text style={styles.noteText}>
+                Cảm ơn các bạn đã mua sắm tại PAH!
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          {([10, 11, 12].includes(order.status)) && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
+              <Text style={styles.noteText}>
+                Chi tiết tại mục 'Chi tiết đơn hủy'
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          <View style={{ marginVertical: 15, marginLeft: 5, marginRight: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
               <IconEvilIcons name="location" size={30} color={colors.black} />
               <Text style={styles.addressTitleText}>Địa chỉ nhận hàng</Text>
-              <TouchableOpacity style={{marginLeft: 'auto'}}>
+              <TouchableOpacity style={{ marginLeft: 'auto' }}>
                 <Text style={styles.copyTextButton}>SAO CHÉP</Text>
               </TouchableOpacity>
             </View>
-            <View style={{paddingTop: 10, paddingHorizontal: 25}}>
-              <Text style={styles.addressDetailText}>Nguyễn Huỳnh Tuấn</Text>
-              <Text style={styles.addressDetailText}>0966948473</Text>
-              <Text style={styles.addressDetailText}>
-                Safira Khang Điền, đường Võ Chí Công, Phường Phú Hữu, Thành Phố
-                Thủ Đức, TP. Hồ Chí Minh
-              </Text>
+            <View style={{ paddingTop: 10, paddingHorizontal: 30 }}>
+              <Text style={styles.addressDetailText}>{order.recipientName}</Text>
+              <Text style={styles.addressDetailText}>(+84) {order.recipientPhone}</Text>
+              <Text style={styles.addressDetailText}>{order.recipientAddress}</Text>
             </View>
           </View>
         </View>
@@ -89,8 +225,16 @@ function BuyerOrderDetail(props) {
               paddingVertical: 15,
             }}>
             <TouchableOpacity
-              style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={styles.sellerNameText}>Seller</Text>
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10
+                }}>
+                <IconFA5 name='store-alt' size={15} color={colors.black} />
+                <Text style={styles.sellerNameText}>{order.seller.name}</Text>
+              </View>
               <View
                 style={{
                   flexDirection: 'row',
@@ -102,64 +246,77 @@ function BuyerOrderDetail(props) {
               </View>
             </TouchableOpacity>
           </View>
-          <View style={styles.itemSection}>
-            <View style={styles.itemImageZone}>
-              <Image
-                width={70}
-                height={70}
-                borderRadius={10}
-                source={{
-                  uri: 'https://i.pinimg.com/564x/34/e0/7a/34e07adbd823772cde8247405733a0e2.jpg',
-                }}
-              />
-            </View>
-            <View style={styles.itemDetailSection}>
-              <Text numberOfLines={1} style={styles.itemTitleText}>
-                Tựa đề
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <Text style={styles.itemDescriptionText}>Airpods 3-Xám</Text>
-                <Text style={styles.itemQuantityText}>x1</Text>
+          {order.orderItems.map(orderItem =>
+            <View style={styles.itemSection} key={orderItem.productId}>
+              <View style={styles.itemImageZone}>
+                <Image
+                  width={70}
+                  height={70}
+                  borderRadius={10}
+                  source={{
+                    uri: orderItem.imageUrl,
+                  }}
+                />
               </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={styles.itemMoneyText}>đ 59.000</Text>
+              <View style={styles.itemDetailSection}>
+                <Text numberOfLines={1} style={styles.itemTitleText}>
+                  {orderItem.productName}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={styles.itemDescriptionText}></Text>
+                  <Text style={styles.itemQuantityText}>x{orderItem.quantity}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={styles.itemMoneyText}>đ {numberWithCommas(orderItem.price)}</Text>
+                </View>
               </View>
-            </View>
-          </View>
+            </View>)}
+
           <View style={styles.orderDetailFooter}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Text style={styles.orderMoneyText}>Tổng tiền hàng</Text>
+              <Text style={styles.orderMoneyText}>đ {numberWithCommas(order.totalAmount)}</Text>
+            </View>
             <View
               style={{
                 marginBottom: 10,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.orderTotalMoneyText}>Thành tiền</Text>
-              <Text style={styles.orderTotalMoneyText}>đ 75.500</Text>
+              <Text style={styles.orderMoneyText}>Phí vận chuyển</Text>
+              <Text style={styles.orderMoneyText}>đ {numberWithCommas(order.shippingCost)}</Text>
             </View>
-            <Text>
-              <Text style={styles.orderNoteText}>Vui lòng thanh toán </Text>
-              <Text style={styles.orderNoteMoneyText}>đ 75.500</Text>
-              <Text style={styles.orderNoteText}> khi nhận hàng</Text>
-            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Text style={styles.orderTotalMoneyText}>Thành tiền</Text>
+              <Text style={styles.orderTotalMoneyText}>đ {numberWithCommas(order.totalAmount + order.shippingCost)}</Text>
+            </View>
           </View>
         </View>
         {/* Payment method */}
-        <View style={{backgroundColor: 'white', padding: 15, marginBottom: 10}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <IconEvilIcons name="location" size={20} color={colors.black} />
+        <View style={{ backgroundColor: 'white', padding: 15, marginBottom: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <IconFA5 name="wallet" size={18} color={colors.black} />
             <Text style={styles.paymentMethodTitle}>
               Phương thức thanh toán
             </Text>
           </View>
-          <Text style={styles.paymentMethodText}>Thanh toán khi nhận hàng</Text>
+          <Text style={styles.paymentMethodText}>Trả trước qua ví điện tử</Text>
         </View>
         {/* Order time and id */}
-        <View style={{backgroundColor: 'white', padding: 15}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ backgroundColor: 'white', padding: 15 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.orderIdText}>Mã đơn hàng</Text>
             <View
               style={{
@@ -167,7 +324,7 @@ function BuyerOrderDetail(props) {
                 flexDirection: 'row',
                 marginLeft: 'auto',
               }}>
-              <Text style={styles.orderIdText}>2324324ASSDF</Text>
+              <Text style={styles.orderIdText}>#{order.id}</Text>
               <TouchableOpacity>
                 <Text style={styles.copyTextButton}>SAO CHÉP</Text>
               </TouchableOpacity>
@@ -175,26 +332,99 @@ function BuyerOrderDetail(props) {
           </View>
           <View
             style={{
-              paddingVertical:10,
+              paddingVertical: 10,
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
             <Text style={styles.orderTimeText}>Thời gian đặt hàng</Text>
-            <Text style={styles.orderTimeText}>22-09-2023 13:24</Text>
-          </View>
-          <View style={{
-            padding:10,
-            borderColor:colors.grey,
-            borderTopWidth:1
-          }}>
-            <TouchableOpacity style={styles.buyAgainButton}>
-                <Text style={styles.buyAgainText}>Mua lại</Text>
-            </TouchableOpacity>
+            <Text style={styles.orderTimeText}>{moment(order.orderDate).format('DD/MM/YYYY HH:mm')}</Text>
           </View>
         </View>
-      </ScrollView>
-    </View>
+
+        {/* Cancel button */}
+        {order.status == 5 && <View style={{
+          padding: 15,
+          marginVertical: 10
+        }}>
+          <TouchableOpacity style={styles.buyAgainButton}>
+            <Text style={styles.buyAgainText}>Hủy đơn hàng</Text>
+          </TouchableOpacity>
+        </View>}
+      </ScrollView>}
+      {[5, 2, 3].includes(order.status) && <View style={{
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10
+      }}>
+        <TouchableOpacity
+          disabled={true}
+          style={{
+            borderRadius: 35,
+            paddingVertical: 10,
+            backgroundColor: colors.grey
+          }}>
+          <Text style={styles.buyAgainText}>Đang xử lý</Text>
+        </TouchableOpacity>
+      </View>}
+      {order.status == 4 && <View style={{
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10
+      }}>
+        <TouchableOpacity
+          style={{
+            borderRadius: 35,
+            paddingVertical: 10,
+            backgroundColor: colors.primary
+          }}>
+          <Text style={{
+            fontSize: fontSizes.h3,
+            fontFamily: fonts.OpenSansMedium,
+            textAlign: 'center',
+            color: 'white'
+          }}>Mua lại</Text>
+        </TouchableOpacity>
+      </View>}
+      {[10, 11, 12].includes(order.status) && <View style={{
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10
+      }}>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              borderRadius: 35,
+              paddingVertical: 10,
+              backgroundColor: colors.white,
+              borderWidth: 1,
+              borderColor: colors.primary
+            }}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.OpenSansMedium,
+              textAlign: 'center',
+              color: colors.primary
+            }}>Chi tiết đơn hủy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              borderRadius: 35,
+              paddingVertical: 10,
+              backgroundColor: colors.primary
+            }}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.OpenSansMedium,
+              textAlign: 'center',
+              color: 'white'
+            }}>Mua lại</Text>
+          </TouchableOpacity>
+        </View>
+      </View>}
+    </View >
   );
 }
 
@@ -209,16 +439,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grey,
   },
   addButton: {
-    padding: 8,
+    marginLeft: 'auto',
+    padding: 12,
     borderRadius: 50,
     backgroundColor: colors.grey,
   },
   titleContainer: {
     height: 70,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     paddingHorizontal: 15,
     alignItems: 'center',
+    gap: 20,
+    backgroundColor: 'white'
   },
   titleText: {
     color: 'black',
@@ -242,7 +474,7 @@ const styles = StyleSheet.create({
   statusText: {
     marginBottom: 15,
     color: colors.black,
-    fontSize: fontSizes.h3,
+    fontSize: fontSizes.h4,
     fontFamily: fonts.OpenSansBold,
   },
   noteText: {
@@ -275,7 +507,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     color: colors.black,
     fontFamily: fonts.OpenSansMedium,
-    fontSize: fontSizes.h4,
+    fontSize: fontSizes.h5,
   },
   itemSection: {
     flexDirection: 'row',
@@ -311,7 +543,7 @@ const styles = StyleSheet.create({
   },
   itemMoneyText: {
     marginLeft: 'auto',
-    color: 'red',
+    color: colors.primary,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h4,
   },
@@ -325,13 +557,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.OpenSansBold,
     fontSize: fontSizes.h5,
   },
+  orderMoneyText: {
+    color: colors.darkGreyText,
+    fontFamily: fonts.OpenSansMedium,
+    fontSize: fontSizes.h5,
+  },
   orderNoteText: {
     color: colors.greyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h6,
   },
   orderNoteMoneyText: {
-    color: 'red',
+    color: colors.primary,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
@@ -342,7 +579,7 @@ const styles = StyleSheet.create({
   },
   paymentMethodText: {
     marginTop: 10,
-    marginStart: 15,
+    marginStart: 28,
     color: colors.greyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
@@ -358,15 +595,16 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h5,
   },
   buyAgainButton: {
-    flex: 1,
-    alignItems: 'center',
-    borderWidth:1,
-    borderRadius:10,
-},
+    borderRadius: 35,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: colors.darkGreyText
+  },
   buyAgainText: {
-    color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h3,
+    fontFamily: fonts.OpenSansMedium,
+    textAlign: 'center',
+    color: colors.darkGreyText
   }
 });
 export default BuyerOrderDetail;

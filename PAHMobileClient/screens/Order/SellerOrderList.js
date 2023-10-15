@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,13 +10,13 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {colors, fontSizes, images, fonts} from '../../constants';
+import { colors, fontSizes, images, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
-import IconAntDesign from 'react-native-vector-icons/AntDesign';
-import {AxiosContext} from '../../context/AxiosContext';
-import {Order as OrderRepository} from '../../repositories';
-import {orderStatusText} from '../../utilities/OrderStatus';
-import {numberWithCommas} from '../../utilities/PriceFormat';
+import IconFA5 from 'react-native-vector-icons/FontAwesome5';
+import { AxiosContext } from '../../context/AxiosContext';
+import { Order as OrderRepository } from '../../repositories';
+import { orderStatusText } from '../../utilities/OrderStatus';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 import moment from 'moment';
 
 function SellerOrderList(props) {
@@ -25,10 +25,10 @@ function SellerOrderList(props) {
   const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   //// DATA
   // Data for orders
@@ -43,20 +43,13 @@ function SellerOrderList(props) {
   const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 10, 11, 12]);
   const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
 
-  // Filtered order
-  const [filteredOrders, setFilteredOrders] = useState([]);
-
   //// FUNCTIONS
   // Get all orders
   function getAllOrder() {
     setIsLoading(true);
-    OrderRepository.getAllOrderCurrentSeller(axiosContext)
+    OrderRepository.getAllOrderCurrentSeller(axiosContext, currentOrderStatus)
       .then(response => {
-        console.log(response);
         setOrders(response);
-        setFilteredOrders(
-          response.filter(item => item.status == currentOrderStatus),
-        );
         setIsLoading(false);
       })
       .catch(error => {
@@ -65,10 +58,6 @@ function SellerOrderList(props) {
   }
   useEffect(() => {
     getAllOrder();
-  }, []);
-
-  useEffect(() => {
-    setFilteredOrders(orders.filter(item => item.status == currentOrderStatus));
   }, [currentOrderStatus]);
 
   // Scroll view refresh
@@ -79,7 +68,7 @@ function SellerOrderList(props) {
   };
   return (
     <View style={styles.container}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View style={styles.titleContainer}>
           <TouchableOpacity
             style={styles.backButton}
@@ -104,7 +93,7 @@ function SellerOrderList(props) {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={orderStatus}
-            renderItem={({item}) => {
+            renderItem={({ item }) => {
               return (
                 <TouchableOpacity
                   style={{
@@ -142,7 +131,7 @@ function SellerOrderList(props) {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : (
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             {isAllEmpty() ? (
               <View
                 style={{
@@ -151,7 +140,7 @@ function SellerOrderList(props) {
                   paddingTop: 150,
                 }}>
                 <Image
-                  source={images.warningImage}
+                  source={images.cartImage}
                   style={{
                     resizeMode: 'cover',
                     width: 140,
@@ -184,7 +173,7 @@ function SellerOrderList(props) {
                 </TouchableOpacity>
               </View>
             ) : (
-              <View style={{backgroundColor: colors.grey, flex: 1}}>
+              <View style={{ backgroundColor: colors.grey, flex: 1 }}>
                 <ScrollView
                   style={{
                     paddingVertical: 5,
@@ -195,26 +184,33 @@ function SellerOrderList(props) {
                       onRefresh={onRefresh}
                     />
                   }>
-                  {filteredOrders.map(order => (
-                    <View
+                  {orders.map(order => (
+                    <TouchableOpacity
                       style={{
                         marginBottom: 5,
                         backgroundColor: 'white',
-                        padding: 15,
+                        padding: 0,
                       }}
-                      key={order.id}>
+                      key={order.id}
+                      onPress={() => {
+                        navigate('SellerOrderDetail', { orderId: order.id });
+                      }}>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
+                          paddingHorizontal: 15,
+                          paddingTop: 15
                         }}>
-                        <TouchableOpacity
+                        <View
                           style={{
                             flex: 1,
                             flexDirection: 'row',
                             alignItems: 'center',
-                            marginVertical:5
+                            marginVertical: 5,
+                            gap: 5
                           }}>
+                          <IconFA5 name='store-alt' size={15} color='black' />
                           <Text style={styles.sellerNameText}>
                             {order.seller.name}
                           </Text>
@@ -228,7 +224,7 @@ function SellerOrderList(props) {
                               {orderStatusText(order.status)}
                             </Text>
                           </View>
-                        </TouchableOpacity>
+                        </View>
                       </View>
                       <View style={styles.itemSection}>
                         <View style={styles.itemImageZone}>
@@ -236,7 +232,7 @@ function SellerOrderList(props) {
                             width={80}
                             height={80}
                             borderRadius={10}
-                            source={{uri: order.orderItems[0].imageUrl}}
+                            source={{ uri: order.orderItems[0].imageUrl }}
                           />
                         </View>
                         <View style={styles.itemDetailSection}>
@@ -248,7 +244,7 @@ function SellerOrderList(props) {
                               alignItems: 'center',
                               flexDirection: 'row',
                               justifyContent: 'space-between',
-                              marginBottom:10
+                              marginBottom: 10
                             }}>
                             <Text style={styles.itemDescriptionText}>
                               {order.orderItems[0].productName}
@@ -257,7 +253,7 @@ function SellerOrderList(props) {
                               x{order.orderItems[0].quantity}
                             </Text>
                           </View>
-                          <View style={{flexDirection: 'row'}}>
+                          <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.itemMoneyText}>
                               đ {numberWithCommas(order.orderItems[0].price)}
                             </Text>
@@ -267,7 +263,7 @@ function SellerOrderList(props) {
                       <View style={styles.orderFooter}>
                         <View
                           style={{
-                            alignItems:'center',
+                            alignItems: 'center',
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                           }}>
@@ -275,36 +271,56 @@ function SellerOrderList(props) {
                             {order.orderItems.length} sản phẩm
                           </Text>
                           <Text style={styles.orderTotalMoneyText}>
-                            Thành tiền :
-                            <Text style={styles.itemMoneyText}> đ {numberWithCommas(order.totalAmount)}</Text>
+                            Tổng thanh toán:
+                            <Text style={styles.itemMoneyText}> đ {numberWithCommas(order.totalAmount + order.shippingCost)}</Text>
                           </Text>
                         </View>
+                      </View>
+                      <View style={styles.orderFooter}>
                         <Text style={styles.orderDateText}>Ngày đặt: {moment(order.orderDate).format('DD/MM/YYYY')}</Text>
                       </View>
                       <View
                         style={{
                           flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems:'center',
-                          paddingTop:10,
+                          justifyContent: 'flex-end',
+                          alignItems: 'center',
+                          paddingTop: 10,
+                          paddingHorizontal: 15,
+                          paddingBottom: 15
                         }}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigate('SellerOrderDetail', {orderId: order.id});
-                          }}
-                          style={styles.orderDetailButton}>
-                          <Text style={styles.orderDetailText}>Chi tiết</Text>
-                        </TouchableOpacity>
+                        {[5, 2, 3].includes(order.status) && (
+                          <TouchableOpacity
+                            disabled={true}
+                            style={[styles.orderDetailButton, {
+                              backgroundColor: colors.grey
+                            }]}>
+                            <Text style={[styles.orderDetailText, {
+                              color: colors.greyText
+                            }]}>Đang xử lý</Text>
+                          </TouchableOpacity>
+                        )}
+
+                        {[4, 10, 11, 12].includes(order.status) && (
+                          <TouchableOpacity style={[styles.orderDetailButton, {
+                            backgroundColor: colors.primary
+                          }]}
+                            onPress={() => navigate('SellerOrderDetail', { orderId: order.id })}>
+                            <Text style={[styles.orderDetailText, {
+                              color: 'white'
+                            }]}>Chi tiết</Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </ScrollView>
               </View>
-            )}
-          </View>
+            )
+            }
+          </View >
         )}
-      </View>
-    </View>
+      </View >
+    </View >
   );
 }
 const styles = StyleSheet.create({
@@ -344,20 +360,17 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   orderDetailButton: {
-    width: '48%',
-    flex:1,
+    width: '38%',
     height: 40,
-    borderRadius: 10,
-    backgroundColor: colors.primary,
+    borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   orderDetailText: {
-    color: 'white',
-    fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansBold,
+    fontSize: fontSizes.h4,
+    fontFamily: fonts.OpenSansMedium,
   },
-  confirmButton: {
+  buyAgainButton: {
     width: '48%',
     height: 40,
     borderRadius: 10,
@@ -366,7 +379,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  confirmText: {
+  buyAgainText: {
     color: colors.primary,
     fontSize: fontSizes.h3,
     fontFamily: fonts.OpenSansMedium,
@@ -417,6 +430,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: colors.grey,
+    paddingHorizontal: 15
   },
   itemImageZone: {
     flex: 20,
@@ -433,13 +447,13 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h4,
-    marginBottom:10
+    marginBottom: 10
   },
   itemDescriptionText: {
     color: colors.greyText,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
-    
+
   },
   itemQuantityText: {
     color: colors.black,
@@ -448,7 +462,7 @@ const styles = StyleSheet.create({
   },
   itemMoneyText: {
     marginLeft: 'auto',
-    color: 'red',
+    color: colors.primary,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h4,
   },
@@ -459,17 +473,17 @@ const styles = StyleSheet.create({
   },
   orderStatus: {
     marginRight: 5,
-    color: colors.black,
+    color: colors.primary,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,
   },
   orderFooter: {
     paddingVertical: 10,
-    borderBottomWidth:1,
-    borderBottomColor: colors.grey
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grey,
+    paddingHorizontal: 15
   },
   orderTotalMoneyText: {
-    marginBottom:10,
     color: colors.black,
     fontFamily: fonts.OpenSansMedium,
     fontSize: fontSizes.h5,

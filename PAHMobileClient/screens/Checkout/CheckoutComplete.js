@@ -83,7 +83,7 @@ function CheckoutComplete(props) {
                         fontSize: fontSizes.h5
                     }}>Kiểm tra đơn hàng của bạn</Text>
                     <TouchableOpacity onPress={() => {
-                        navigate('OrderList')
+                        navigate('BuyerOrderList')
                     }}>
                         <Text style={{
                             color: colors.primary,

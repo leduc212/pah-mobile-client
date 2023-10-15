@@ -1,5 +1,5 @@
-async function getAllOrderCurrentBuyer(axiosContext) {
-  const orderPath = `/buyer/order`;
+async function getAllOrderCurrentBuyer(axiosContext, status) {
+  const orderPath = `/buyer/order?Status=${status}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);
@@ -10,7 +10,7 @@ async function getAllOrderCurrentBuyer(axiosContext) {
       order.sellerId = responseOrder.sellerId;
       order.recipientName = responseOrder.recipientName;
       order.recipientPhone = responseOrder.recipientPhone;
-      order.recipientOrder = responseOrder.recipientOrder;
+      order.recipientAddress = responseOrder.recipientAddress;
       order.orderDate = responseOrder.orderDate;
       order.totalAmount = responseOrder.totalAmount;
       order.shippingCost = responseOrder.shippingCost;
@@ -27,8 +27,8 @@ async function getAllOrderCurrentBuyer(axiosContext) {
   }
 }
 
-async function getAllOrderCurrentSeller(axiosContext) {
-  const orderPath = `/seller/order`;
+async function getAllOrderCurrentSeller(axiosContext, status) {
+  const orderPath = `/seller/order?Status=${status}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);
@@ -39,7 +39,7 @@ async function getAllOrderCurrentSeller(axiosContext) {
       order.sellerId = responseOrder.sellerId;
       order.recipientName = responseOrder.recipientName;
       order.recipientPhone = responseOrder.recipientPhone;
-      order.recipientOrder = responseOrder.recipientOrder;
+      order.recipientAddress = responseOrder.recipientAddress;
       order.orderDate = responseOrder.orderDate;
       order.totalAmount = responseOrder.totalAmount;
       order.shippingCost = responseOrder.shippingCost;
@@ -57,9 +57,9 @@ async function getAllOrderCurrentSeller(axiosContext) {
 }
 
 async function getOrderDetail(axiosContext,id) {
-  const orderPath = `/order/`;
+  const orderPath = `/order/${id}`;
   try {
-      let responseData = await axiosContext.authAxios.get(orderPath+`${id}`);
+      let responseData = await axiosContext.authAxios.get(orderPath);
       if (responseData.status != 200) {
           throw responseData.message;
       }
@@ -71,7 +71,7 @@ async function getOrderDetail(axiosContext,id) {
       order.sellerId = responseOrder.sellerId;
       order.recipientName = responseOrder.recipientName;
       order.recipientPhone = responseOrder.recipientPhone;
-      order.recipientOrder = responseOrder.recipientOrder;
+      order.recipientAddress = responseOrder.recipientAddress;
       order.orderDate = responseOrder.orderDate;
       order.totalAmount = responseOrder.totalAmount;
       order.shippingCost = responseOrder.shippingCost;
