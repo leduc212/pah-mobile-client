@@ -190,7 +190,7 @@ function AuctionBidding(props) {
         }}>
         <Text
           style={{
-            fontFamily: fonts.OpenSansBold,
+            fontFamily: fonts.MontserratBold,
             fontSize: fontSizes.h4,
             color: colors.greyText,
             alignSelf:'center'
@@ -209,7 +209,7 @@ function AuctionBidding(props) {
           </TouchableOpacity>
           <Text
             style={{
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               fontSize: fontSizes.h2,
               color: 'black',
             }}>
@@ -222,7 +222,7 @@ function AuctionBidding(props) {
         {!validationBidAmount() && (
           <Text
             style={{
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               fontSize: fontSizes.h4,
               color: 'red',
             }}>
@@ -242,7 +242,7 @@ function AuctionBidding(props) {
         <TouchableOpacity
           disabled={!validationBidAmount()}
           style={{
-            borderRadius: 35,
+            borderRadius: 5,
             backgroundColor: validationBidAmount()
               ? colors.primary
               : colors.darkGrey,
@@ -252,7 +252,7 @@ function AuctionBidding(props) {
           <Text
             style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansBold,
+              fontFamily: fonts.MontserratBold,
               color: validationBidAmount() ? 'white' : colors.greyText,
               textAlign: 'center',
             }}>
@@ -318,7 +318,7 @@ function AuctionBidding(props) {
             <Text
               style={{
                 fontSize: fontSizes.h5,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 color: 'black',
               }}>
               Khi bạn xác nhận giá đặt của mình, điều đó có nghĩa là bạn cam kết
@@ -329,7 +329,7 @@ function AuctionBidding(props) {
               style={{
                 borderWidth: 1.2,
                 borderColor: colors.primary,
-                borderRadius: 35,
+                borderRadius: 5,
                 backgroundColor: colors.primary,
                 paddingVertical: 10,
               }}
@@ -337,7 +337,7 @@ function AuctionBidding(props) {
               <Text
                 style={{
                   fontSize: fontSizes.h3,
-                  fontFamily: fonts.OpenSansBold,
+                  fontFamily: fonts.MontserratBold,
                   color: 'white',
                   textAlign: 'center',
                 }}>
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     color: 'black',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h3,
     alignSelf: 'center',
   },
@@ -403,29 +403,29 @@ const styles = StyleSheet.create({
   },
   auctionTitleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
     paddingVertical: 5,
   },
   auctionDetailText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
     paddingVertical: 1,
   },
   auctionHighestBidText: {
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h3,
   },
   auctionHistoryTitle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h2,
   },
   auctionHistoryButtonText: {
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   auctionBidderDetail: {
@@ -440,13 +440,13 @@ const styles = StyleSheet.create({
   auctionBidderName: {
     marginStart: 10,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   auctionBidderMoney: {
     marginStart: 10,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
 });
