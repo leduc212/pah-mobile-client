@@ -225,7 +225,7 @@ function Account(props) {
                             {/* Seller's page */}
                             <AccountMenuItem iconName='tag' text='Trang người bán'
                                 onPress={() => {
-                                    navigate('Home')
+                                    navigate('Seller')
                                 }} />
                             {/* Transaction history */}
                             <AccountMenuItem iconName='file-text' text='Lịch sử giao dịch'

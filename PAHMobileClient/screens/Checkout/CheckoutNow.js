@@ -175,7 +175,7 @@ function CheckoutNow(props) {
     function createOrder() {
         WalletRepository.getWalletCurrentUser(axiosContext)
             .then(response => {
-                if ((product.price * quantity + shippingPrice) < response.availableBalance) {
+                if (((product.price * quantity + shippingPrice) < response.availableBalance) || selectedPaymentMethod.id == 2) {
                     OrderRepository.checkout(axiosContext, {
                         order: [
                             {
@@ -199,6 +199,7 @@ function CheckoutNow(props) {
                         navigation.pop();
                         navigate('CheckoutComplete', { returnCode: 1 });
                     }).catch(err => {
+                        console.log(err.response);
                         setIsLoadingPayment(false);
                         navigation.pop();
                         navigate('CheckoutComplete', { returnCode: 2 });
@@ -219,7 +220,9 @@ function CheckoutNow(props) {
                 setIsLoadingPayment(false);
             });
     }
-
+    // Zalopayment
+    const [token, setToken] = useState('')
+    const [returncode, setReturnCode] = useState(0)
     useEffect(() => {
         getProductDetail();
 
@@ -229,7 +232,7 @@ function CheckoutNow(props) {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, create order with zalopay method
                 if (data.returnCode == 1) {
-                    createOrder();
+                    setReturnCode(data.returnCode);
                 } else {
                     setIsLoadingPayment(false);
                     navigation.pop();
@@ -239,16 +242,18 @@ function CheckoutNow(props) {
         );
     }, []);
 
+    useEffect(() => {
+        if (returncode == 1) {
+            createOrder();
+        }
+    }, [returncode]);
+
     // Scroll view refresh
     const onRefresh = () => {
         setRefreshing(true);
         getProductDetail();
         setRefreshing(false);
     };
-
-    // Zalopayment
-    const [token, setToken] = useState('')
-    const [returncode, setReturnCode] = React.useState('')
 
     // Get current time for transaction id
     function getCurrentDateYYMMDD() {
@@ -312,7 +317,6 @@ function CheckoutNow(props) {
             .then(response => response.json())
             .then(resJson => {
                 setToken(resJson.zp_trans_token);
-                setReturnCode(resJson.return_code);
                 var payZP = NativeModules.PayZaloBridge;
                 payZP.payOrder(resJson.zp_trans_token);
             })

@@ -100,9 +100,25 @@ async function checkout(axiosContext, cartInfo) {
   }
 }
 
+async function sellerConfirm(axiosContext, orderId, confirmInfo) {
+  const orderPath = `/seller/order/${orderId}`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath, confirmInfo);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllOrderCurrentBuyer,
   getAllOrderCurrentSeller,
   getOrderDetail,
-  checkout
+  checkout,
+  sellerConfirm
 };

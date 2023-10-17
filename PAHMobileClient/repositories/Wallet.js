@@ -22,6 +22,7 @@ async function topup(axiosContext, topupInfo) {
     const walletPath = `/wallet/topup`;
     try {
         let responseData = await axiosContext.authAxios.post(walletPath, topupInfo);
+        
         if (responseData.status != 200) {
             throw responseData.message;
         }

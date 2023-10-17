@@ -24,6 +24,7 @@ import {
 } from '../../repositories';
 import config from '../../config';
 import { numberWithCommas } from '../../utilities/PriceFormat';
+import { useIsFocused } from '@react-navigation/native';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -40,6 +41,9 @@ function Wallet(props) {
 
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
+
+    // On focus
+    const isFocused = useIsFocused();
 
     //// DATA
     // User
@@ -73,8 +77,10 @@ function Wallet(props) {
     // Payment
     const [topupAmount, setTopupAmount] = useState('20000');
     const [token, setToken] = useState('')
-    const [returncode, setReturnCode] = React.useState('')
+    const [returncode, setReturnCode] = useState(0)
 
+
+    let appTransIdTemp = '';
 
     //// FUNCTION
 
@@ -113,8 +119,8 @@ function Wallet(props) {
         // Set state
         setAppidRequest(appid);
         setApptransidRequest(apptransid);
-        setHmacRequest(mac2);
-
+        setHmacRequest("" + mac2);
+        appTransIdTemp = apptransid;
         var order = {
             'app_id': appid,
             'app_user': appuser,
@@ -147,7 +153,6 @@ function Wallet(props) {
             .then(response => response.json())
             .then(resJson => {
                 setToken(resJson.zp_trans_token);
-                setReturnCode(resJson.return_code);
                 var payZP = NativeModules.PayZaloBridge;
                 payZP.payOrder(resJson.zp_trans_token);
             })
@@ -169,6 +174,7 @@ function Wallet(props) {
                 navigate('PaymentResult', { returnCode: 1 })
             })
             .catch(err => {
+                console.log(err);
                 setIsLoadingPayment(false);
                 setTopupModal(false);
                 navigate('PaymentResult', { returnCode: 2 })
@@ -210,8 +216,9 @@ function Wallet(props) {
             (data) => {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, add money to wallet
-                if (data.returnCode === 1) {
-                    topup();
+                if (data.returnCode == 1) {
+                    //topup();
+                    setReturnCode(data.returnCode)
                 }
                 else {
                     setIsLoadingPayment(false);
@@ -223,7 +230,13 @@ function Wallet(props) {
 
         // Init data
         initData()
-    }, [])
+    }, [isFocused])
+
+    useEffect(() => {
+        if (returncode == 1) {
+            topup();
+        }
+    }, [returncode]);
 
     // Scroll view refresh
     const onRefresh = () => {

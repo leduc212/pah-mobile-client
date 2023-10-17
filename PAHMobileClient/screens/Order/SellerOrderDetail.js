@@ -53,6 +53,17 @@ function SellerOrderDetail(props) {
       });
   }
 
+  // Change order status
+  function confirmOrder(confirmInfo) {
+    OrderRepository.sellerConfirm(axiosContext, orderId, confirmInfo)
+      .then(response => {
+        getOrder();
+      })
+      .catch(err => {
+
+      })
+  }
+
   useEffect(() => {
     getOrder();
   }, []);
@@ -347,7 +358,11 @@ function SellerOrderDetail(props) {
               backgroundColor: colors.white,
               borderWidth: 1,
               borderColor: colors.primary
-            }}>
+            }}
+            onPress={() => confirmOrder({
+              status: 12,
+              message: "Gặp vấn đề trong khâu đóng gói hàng"
+            })}>
             <Text style={{
               fontSize: fontSizes.h3,
               fontFamily: fonts.OpenSansMedium,
@@ -361,7 +376,11 @@ function SellerOrderDetail(props) {
               borderRadius: 35,
               paddingVertical: 10,
               backgroundColor: colors.primary
-            }}>
+            }}
+            onPress={() => confirmOrder({
+              status: 2,
+              message: ""
+            })}>
             <Text style={{
               fontSize: fontSizes.h3,
               fontFamily: fonts.OpenSansMedium,
@@ -372,76 +391,88 @@ function SellerOrderDetail(props) {
         </View>
       </View>}
 
-      {order.status == 2 && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          style={{
-            borderRadius: 35,
-            paddingVertical: 10,
-            backgroundColor: colors.primary
-          }}>
-          <Text style={{
-            fontSize: fontSizes.h3,
-            fontFamily: fonts.OpenSansMedium,
-            textAlign: 'center',
-            color: 'white'
-          }}>Đã giao cho đơn vị vận chuyển</Text>
-        </TouchableOpacity>
-      </View>}
-      {order.status == 3 && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          disabled={true}
-          style={{
-            borderRadius: 35,
-            paddingVertical: 10,
-            backgroundColor: colors.grey
-          }}>
-          <Text style={styles.buyAgainText}>Đang xử lý</Text>
-        </TouchableOpacity>
-      </View>}
-      {order.status == 4 && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          disabled={true}
-          style={{
-            borderRadius: 35,
-            paddingVertical: 10,
-            backgroundColor: colors.grey
-          }}>
-          <Text style={styles.buyAgainText}>Đơn đã hoàn thành</Text>
-        </TouchableOpacity>
-      </View>}
-      {[10, 11, 12].includes(order.status) && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          style={{
-            borderRadius: 35,
+      {
+        order.status == 2 && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            style={{
+              borderRadius: 35,
+              paddingVertical: 10,
+              backgroundColor: colors.primary
+            }}
+            onPress={() => confirmOrder({
+              status: 3,
+              message: ""
+            })}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.OpenSansMedium,
+              textAlign: 'center',
+              color: 'white'
+            }}>Đã giao cho đơn vị vận chuyển</Text>
+          </TouchableOpacity>
+        </View>
+      }
+      {
+        order.status == 3 && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            disabled={true}
+            style={{
+              borderRadius: 35,
+              paddingVertical: 10,
+              backgroundColor: colors.grey
+            }}>
+            <Text style={styles.buyAgainText}>Đang xử lý</Text>
+          </TouchableOpacity>
+        </View>
+      }
+      {
+        order.status == 4 && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            disabled={true}
+            style={{
+              borderRadius: 35,
+              paddingVertical: 10,
+              backgroundColor: colors.grey
+            }}>
+            <Text style={styles.buyAgainText}>Đơn đã hoàn thành</Text>
+          </TouchableOpacity>
+        </View>
+      }
+      {
+        [10, 11, 12].includes(order.status) && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            style={{
+              borderRadius: 35,
               paddingVertical: 10,
               backgroundColor: colors.white,
               borderWidth: 1,
               borderColor: colors.primary
-          }}>
-          <Text style={{
-            fontSize: fontSizes.h3,
-            fontFamily: fonts.OpenSansMedium,
-            textAlign: 'center',
-            color: colors.primary
-          }}>Chi tiết đơn hủy</Text>
-        </TouchableOpacity>
-      </View>}
+            }}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.OpenSansMedium,
+              textAlign: 'center',
+              color: colors.primary
+            }}>Chi tiết đơn hủy</Text>
+          </TouchableOpacity>
+        </View>
+      }
     </View >
   );
 }

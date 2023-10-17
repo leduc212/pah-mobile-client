@@ -192,6 +192,10 @@ function CheckoutCart(props) {
         }));
     }
 
+    // Zalopayment
+    const [token, setToken] = useState('')
+    const [returncode, setReturnCode] = useState(0);
+
     useEffect(() => {
         calculateCart();
 
@@ -201,7 +205,7 @@ function CheckoutCart(props) {
                 // 1: SUCCESS, -1: FAILED, 4: CANCELLED
                 // If returncode = 1, create order with zalopay method
                 if (data.returnCode == 1) {
-                    createOrder();
+                    setReturnCode(data.returnCode);
                 } else {
                     setIsLoadingPayment(false);
                     navigation.pop();
@@ -220,7 +224,7 @@ function CheckoutCart(props) {
     function createOrder() {
         WalletRepository.getWalletCurrentUser(axiosContext)
             .then(response => {
-                if ((sumTotal() + totalShippingPrice) < response.availableBalance) {
+                if (((sumTotal() + totalShippingPrice) < response.availableBalance) || selectedPaymentMethod.id == 2) {
                     OrderRepository.checkout(axiosContext, {
                         order: cartGrouped,
                         total: sumTotal(),
@@ -252,10 +256,6 @@ function CheckoutCart(props) {
                 setIsLoadingPayment(false);
             });
     }
-
-    // Zalopayment
-    const [token, setToken] = useState('')
-    const [returncode, setReturnCode] = React.useState('')
 
     // Get current time for transaction id
     function getCurrentDateYYMMDD() {
@@ -319,7 +319,6 @@ function CheckoutCart(props) {
             .then(response => response.json())
             .then(resJson => {
                 setToken(resJson.zp_trans_token);
-                setReturnCode(resJson.return_code);
                 var payZP = NativeModules.PayZaloBridge;
                 payZP.payOrder(resJson.zp_trans_token);
             })
@@ -327,6 +326,12 @@ function CheckoutCart(props) {
                 console.log("error ", error)
             });
     }
+
+    useEffect(() => {
+        if (returncode == 1) {
+            createOrder();
+        }
+    }, [returncode]);
 
     // Checkout function
     function checkout() {

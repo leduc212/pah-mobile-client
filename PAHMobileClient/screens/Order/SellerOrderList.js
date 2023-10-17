@@ -17,6 +17,7 @@ import { AxiosContext } from '../../context/AxiosContext';
 import { Order as OrderRepository } from '../../repositories';
 import { orderStatusText } from '../../utilities/OrderStatus';
 import { numberWithCommas } from '../../utilities/PriceFormat';
+import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
 
 function SellerOrderList(props) {
@@ -29,6 +30,9 @@ function SellerOrderList(props) {
 
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
+
+  // On focus
+  const isFocused = useIsFocused();
 
   //// DATA
   // Data for orders
@@ -58,7 +62,7 @@ function SellerOrderList(props) {
   }
   useEffect(() => {
     getAllOrder();
-  }, [currentOrderStatus]);
+  }, [currentOrderStatus, isFocused]);
 
   // Scroll view refresh
   const onRefresh = () => {
@@ -296,7 +300,7 @@ function SellerOrderList(props) {
                             }]}>
                             <Text style={[styles.orderDetailText, {
                               color: colors.greyText
-                            }]}>Đang xử lý</Text>
+                            }]}>Chờ xác nhận</Text>
                           </TouchableOpacity>
                         )}
 

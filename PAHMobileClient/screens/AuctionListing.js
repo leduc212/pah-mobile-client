@@ -76,6 +76,7 @@ function AuctionListing(props) {
     // Data for filter count
     const filterCount = () => {
         let count = 0;
+        if (selectedSortOrder !== 0) count++;
         if (selectedCategory !== 0) count++;
         if (selectedMaterial !== 0) count++;
         return count;
