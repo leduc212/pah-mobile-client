@@ -114,7 +114,7 @@ function SellerOrderList(props) {
                     style={{
                       color:
                         item == currentOrderStatus ? colors.primary : 'black',
-                      fontFamily: fonts.OpenSansMedium,
+                      fontFamily: fonts.MontserratMedium,
                       fontSize: fontSizes.h5,
                     }}>
                     {orderStatusText(item)}
@@ -154,7 +154,7 @@ function SellerOrderList(props) {
                 <Text
                   style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -166,7 +166,7 @@ function SellerOrderList(props) {
                   <Text
                     style={{
                       fontSize: fontSizes.h5,
-                      fontFamily: fonts.OpenSansMedium,
+                      fontFamily: fonts.MontserratMedium,
                       color: colors.primary,
                       textAlign: 'center',
                       marginHorizontal: 35,
@@ -334,13 +334,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   addButton: {
     marginLeft: 'auto',
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   titleContainer: {
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     color: colors.greyText,
     fontSize: fontSizes.h4,
     textAlign: 'center',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     marginVertical: 30,
   },
   orderDetailButton: {
@@ -372,12 +372,12 @@ const styles = StyleSheet.create({
   },
   orderDetailText: {
     fontSize: fontSizes.h4,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   buyAgainButton: {
     width: '48%',
     height: 40,
-    borderRadius: 10,
+    borderRadius: 5,
     borderColor: colors.primary,
     borderWidth: 1,
     alignItems: 'center',
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   buyAgainText: {
     color: colors.primary,
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   orderImageZone: {
     flex: 30,
@@ -396,37 +396,37 @@ const styles = StyleSheet.create({
   },
   orderStatusText: {
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderTitleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   orderMoneyText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h4,
   },
   orderDateText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderShippingText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderFeedbackText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderItemCountText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   itemSection: {
@@ -449,36 +449,36 @@ const styles = StyleSheet.create({
   },
   itemTitleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
     marginBottom: 10
   },
   itemDescriptionText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
 
   },
   itemQuantityText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemMoneyText: {
     marginLeft: 'auto',
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   sellerNameText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
   },
   orderStatus: {
     marginRight: 5,
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderFooter: {
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   },
   orderTotalMoneyText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
 });

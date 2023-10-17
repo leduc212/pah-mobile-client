@@ -284,12 +284,12 @@ function Wallet(props) {
                 <View style={{ gap: 2 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3
                     }}>{userProfile.name}</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>{userProfile.email}</Text>
                 </View>
@@ -307,12 +307,12 @@ function Wallet(props) {
                 }}>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h3,
                     }}>Số dư khả dụng</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h3,
                     }}>{numberWithCommas(wallet.availableBalance)} VNĐ</Text>
                 </View>
@@ -322,12 +322,12 @@ function Wallet(props) {
                 }}>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h3,
                     }}>Số dư đang bị khóa</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h3,
                     }}>{numberWithCommas(wallet.lockedBalance)} VNĐ</Text>
                 </View>
@@ -339,7 +339,7 @@ function Wallet(props) {
                 marginBottom: 15
             }}>
                 <Text style={{
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h5,
                     color: colors.darkGreyText,
                     marginHorizontal: 25
@@ -397,7 +397,7 @@ function Wallet(props) {
                         gap: 5
                     }}>
                         <Text style={{
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h2,
                             color: 'black'
                         }}>Số tiền bạn muốn nạp</Text>
@@ -412,18 +412,18 @@ function Wallet(props) {
                                 onChangeText={(text) => setTopupAmount(text)}
                                 autoFocus={true}
                                 style={{
-                                    fontFamily: fonts.OpenSansMedium,
+                                    fontFamily: fonts.MontserratMedium,
                                     fontSize: fontSizes.h1 * 2,
                                     color: 'black'
                                 }} />
                             <Text style={{
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h1,
                                 color: 'black'
                             }}>VNĐ</Text>
                         </View>
                         {!validationTopupAmount() && <Text style={{
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4,
                             color: 'red'
                         }}>Số tiền nạp tối thiểu là 20,000 VNĐ</Text>}
@@ -460,13 +460,13 @@ function Wallet(props) {
                     }}>
                         <Text style={{
                             fontSize: fontSizes.h5,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             color: 'black',
                         }}>Khi bạn xác nhận nạp tiền vào ví PAH, điều đó có nghĩa là bạn đã đọc và đồng ý với Điều khoản của PAH.</Text>
                         <TouchableOpacity
                             disabled={!validationAll()}
                             style={{
-                                borderRadius: 35,
+                                borderRadius: 5,
                                 backgroundColor: validationAll() ? colors.primary : colors.grey,
                                 paddingVertical: 10
                             }}
@@ -475,7 +475,7 @@ function Wallet(props) {
                             }}>
                             <Text style={{
                                 fontSize: fontSizes.h3,
-                                fontFamily: fonts.OpenSansBold,
+                                fontFamily: fonts.MontserratBold,
                                 color: validationAll() ? 'white' : colors.greyText,
                                 textAlign: 'center'
                             }}>Xác nhận nạp tiền</Text>
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
     primaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         backgroundColor: colors.primary,
         paddingVertical: 10,
         marginHorizontal: 15,
@@ -544,21 +544,21 @@ const styles = StyleSheet.create({
     },
     primaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         color: 'white',
         textAlign: 'center'
     },
     secondaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 10,
         marginHorizontal: 15,
         marginTop: 20
     },
     secondaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary,
         textAlign: 'center'
     },
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
     radioText: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium
+        fontFamily: fonts.MontserratMedium
     },
 });
 

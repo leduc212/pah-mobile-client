@@ -62,7 +62,6 @@ function ListingDetail(props) {
     const [shippingPrice, setShippingPrice] = useState(0);
 
     // Modal data
-    const [sellerModalVisible, setSellerModalVisible] = useState(false);
     const [shippingModalVisible, setShippingModalVisible] = useState(false);
 
     // Data for loading and refreshing
@@ -192,30 +191,16 @@ function ListingDetail(props) {
                 {/* Product name */}
                 <Text style={styles.productName}>{product.name}</Text>
 
-                {/* Top Seller section */}
-                <TouchableOpacity style={styles.topSellerContainer}
-                    onPress={() => setSellerModalVisible(!sellerModalVisible)}>
-                    <Image source={{ uri: product.seller.profilePicture }}
-                        style={styles.topSellerImage} />
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.topSellerName}>{product.seller.name}</Text>
-                        <Text style={styles.topSellerInformation}>{product.seller.province}</Text>
-                    </View>
-                    <IconFeather name='chevron-right' size={30} color='black' />
-                </TouchableOpacity>
-
                 {/* Pricing section */}
                 <View style={styles.priceContainer}>
-                    <Text style={styles.pricePrimary}>{numberWithCommas(product.price)} VNĐ</Text>
+                    <Text style={styles.pricePrimary}>₫{numberWithCommas(product.price)}</Text>
 
                     {!authContext?.authState?.authenticated ? <Text
                         style={styles.priceSecondary}
                     >Đăng nhập để xem cước phí vận chuyển</Text> : <View>
                         {shippingPrice != 0 && userAddress != '' ? <View>
                             <Text style={styles.priceSecondary}
-                            >{numberWithCommas(shippingPrice)} VNĐ cước vận chuyển</Text>
-                            <Text style={styles.priceSecondary}
-                            >Đến {`${userAddress.ward}, ${userAddress.district}, ${userAddress.province}`}</Text>
+                            >₫{numberWithCommas(shippingPrice)} cước vận chuyển</Text>
                         </View> : <Text style={styles.priceSecondary}
                         >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
                     </View>}
@@ -257,7 +242,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
                     <View style={{ gap: 10, marginTop: 5 }}>
@@ -276,7 +261,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Thông tin thêm từ người bán</Text>
                     <TouchableOpacity style={{
@@ -305,7 +290,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
                     <TouchableOpacity style={{
@@ -320,7 +305,7 @@ function ListingDetail(props) {
                                 secondText='Thông qua Giao hàng nhanh' />
                             <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                                 secondText='Người mua trả phí vận chuyển' />
-                            <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
+                            <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                         </View>
                         <IconFeather name='chevron-right' size={30} color='black' />
                     </TouchableOpacity>
@@ -330,7 +315,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Về người bán</Text>
                     <View style={{ gap: 10, marginTop: 5 }}>
@@ -363,7 +348,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginTop: 10,
+                    marginTop: 20,
                     marginBottom: 100
                 }}>
                     <Text style={styles.sectionTitle}>Phản hồi về sản phẩm</Text>
@@ -394,7 +379,7 @@ function ListingDetail(props) {
                 }} />
                 <Text style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -403,7 +388,7 @@ function ListingDetail(props) {
                 <TouchableOpacity onPress={() => getProductDetail()}>
                     <Text style={{
                         fontSize: fontSizes.h5,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         color: colors.primary,
                         textAlign: 'center',
                         marginHorizontal: 35,
@@ -412,63 +397,6 @@ function ListingDetail(props) {
                 </TouchableOpacity>
             </View>}
         </View>}
-
-        {/* Seller modal */}
-        <Modal
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            isVisible={sellerModalVisible}
-            onRequestClose={() => {
-                setSellerModalVisible(!sellerModalVisible);
-            }}
-            style={{ margin: 0 }}>
-            <View style={{
-                flex: 1
-            }}>
-                <TouchableOpacity style={{ flex: 1 }}
-                    onPress={() => {
-                        setSellerModalVisible(!sellerModalVisible);
-                    }}></TouchableOpacity>
-                <View style={styles.modalContainer}>
-                    {/* Seller modal title */}
-                    <Text style={styles.modalTitle}>Thông tin người bán</Text>
-
-                    {/* Seller information */}
-                    <View style={{
-                        gap: 10,
-                        marginTop: 5,
-                        marginHorizontal: 20,
-                        marginBottom: 20
-                    }}>
-                        <TouchableOpacity onPress={() => {
-                            setSellerModalVisible(!sellerModalVisible);
-                            navigate('Profile', { user_id: product.seller.id })
-                        }}>
-                            <View style={{
-                                flexDirection: 'row',
-                                gap: 15
-                            }}>
-                                <Image source={{ uri: product.seller.profilePicture }}
-                                    style={styles.bottomSellerImage} />
-                                <View style={{ gap: 2 }}>
-                                    <Text style={styles.bottomSellerPrimary}>{product.seller.name}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>{product.seller.province}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {product.seller.ratings}</Text>
-                                </View>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row',
-                                marginVertical: 15,
-                                gap: 10
-                            }}>
-                                <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày {moment(product.seller.registeredAt).format('DD/MM/YYYY')}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
 
         {/* Shipping modal */}
         <Modal
@@ -502,7 +430,7 @@ function ListingDetail(props) {
                             'Cài đặt địa chỉ mặc định để thấy cước vận chuyển'} />
                         <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
                             secondText='Người mua trả phí vận chuyển' />
-                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay, COD' />
+                        <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                     </View>
                 </View>
             </View>
@@ -517,7 +445,7 @@ const styles = StyleSheet.create({
     },
     backButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -529,7 +457,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -547,30 +475,30 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     primaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         backgroundColor: colors.primary,
         paddingVertical: 10
     },
     primaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         color: 'white',
         textAlign: 'center'
     },
     secondaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 10,
     },
     secondaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary,
         textAlign: 'center'
     },
@@ -578,12 +506,12 @@ const styles = StyleSheet.create({
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         marginVertical: 30
     },
     productName: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2,
         marginHorizontal: 15,
         marginVertical: 10
@@ -603,12 +531,12 @@ const styles = StyleSheet.create({
     },
     topSellerName: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     topSellerInformation: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     priceContainer: {
@@ -619,27 +547,27 @@ const styles = StyleSheet.create({
     },
     pricePrimary: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1
     },
     priceSecondary: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4
     },
     sectionTitle: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2
     },
     descriptionText: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4
     },
     descriptionLink: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         textDecorationLine: 'underline'
     },
@@ -651,12 +579,12 @@ const styles = StyleSheet.create({
     },
     bottomSellerPrimary: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     bottomSellerSecondary: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     modalContainer: {
@@ -667,7 +595,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         marginLeft: 20,
         marginVertical: 20
     }

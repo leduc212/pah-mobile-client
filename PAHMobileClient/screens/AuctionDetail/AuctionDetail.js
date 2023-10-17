@@ -182,37 +182,23 @@ function AuctionDetail(props) {
                 {/* Auction name */}
                 <Text style={styles.productName}>{auction.title}</Text>
 
-                {/* Top Seller section */}
-                <TouchableOpacity style={styles.topSellerContainer}
-                    onPress={() => setSellerModalVisible(!sellerModalVisible)}>
-                    <Image source={{ uri: auction.seller.profilePicture }}
-                        style={styles.topSellerImage} />
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.topSellerName}>{auction.seller.name}</Text>
-                        <Text style={styles.topSellerInformation}>{auction.seller.province}</Text>
-                    </View>
-                    <IconFeather name='chevron-right' size={30} color='black' />
-                </TouchableOpacity>
-
                 {/* Pricing section */}
                 <View style={styles.priceContainer}>
-                    <Text style={styles.pricePrimary}>Giá hiện tại: {numberWithCommas(auction.currentPrice)} VNĐ</Text>
+                    <Text style={styles.pricePrimary}>₫{numberWithCommas(auction.startingPrice)} giá khởi điểm</Text>
                     {!authContext?.authState?.authenticated ? <Text
                         style={styles.priceSecondary}
                     >Đăng nhập để xem cước phí vận chuyển</Text> : <View>
                         {shippingPrice != 0 && userAddress != '' ? <View>
                             <Text style={styles.priceSecondary}
-                            >{numberWithCommas(shippingPrice)} VNĐ cước vận chuyển</Text>
-                            <Text style={styles.priceSecondary}
-                            >Đến {`${userAddress.ward}, ${userAddress.district}, ${userAddress.province}`}</Text>
+                            >₫{numberWithCommas(shippingPrice)} cước vận chuyển</Text>
                         </View> : <Text style={styles.priceSecondary}
                         >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
                     </View>}
                     <TimeLeft textStyle={{
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         color: 'black',
                         fontSize: fontSizes.h3,
-                        marginTop: 5
+                        marginTop: 15
                     }} closedTime={auction.endedAt}
                         width={500} />
                 </View>
@@ -240,7 +226,7 @@ function AuctionDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
                     <View style={{ gap: 10, marginTop: 5 }}>
@@ -259,7 +245,7 @@ function AuctionDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Thông tin thêm từ người bán</Text>
                     <TouchableOpacity style={{
@@ -288,7 +274,7 @@ function AuctionDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Thông tin đấu giá</Text>
                     <TouchableOpacity style={{
@@ -311,7 +297,7 @@ function AuctionDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10
+                    marginVertical: 20
                 }}>
                     <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
                     <TouchableOpacity style={{
@@ -337,7 +323,7 @@ function AuctionDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginTop: 10,
+                    marginTop: 20,
                     marginBottom: 100,
                 }}>
                     <Text style={styles.sectionTitle}>Về người bán</Text>
@@ -377,7 +363,7 @@ function AuctionDetail(props) {
                 }} />
                 <Text style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -386,7 +372,7 @@ function AuctionDetail(props) {
                 <TouchableOpacity onPress={() => getAutionDetail()}>
                     <Text style={{
                         fontSize: fontSizes.h5,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         color: colors.primary,
                         textAlign: 'center',
                         marginHorizontal: 35,
@@ -395,63 +381,6 @@ function AuctionDetail(props) {
                 </TouchableOpacity>
             </View>}
         </View>}
-
-        {/* Seller modal */}
-        <Modal
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            isVisible={sellerModalVisible}
-            onRequestClose={() => {
-                setSellerModalVisible(!sellerModalVisible);
-            }}
-            style={{ margin: 0 }}>
-            <View style={{
-                flex: 1
-            }}>
-                <TouchableOpacity style={{ flex: 1 }}
-                    onPress={() => {
-                        setSellerModalVisible(!sellerModalVisible);
-                    }}></TouchableOpacity>
-                <View style={styles.modalContainer}>
-                    {/* Seller modal title */}
-                    <Text style={styles.modalTitle}>Thông tin người bán</Text>
-
-                    {/* Seller information */}
-                    <View style={{
-                        gap: 10,
-                        marginTop: 5,
-                        marginHorizontal: 20,
-                        marginBottom: 20
-                    }}>
-                        <TouchableOpacity onPress={() => {
-                            setSellerModalVisible(!sellerModalVisible);
-                            navigate('Profile', { user_id: auction.seller.id })
-                        }}>
-                            <View style={{
-                                flexDirection: 'row',
-                                gap: 15
-                            }}>
-                                <Image source={{ uri: auction.seller.profilePicture }}
-                                    style={styles.bottomSellerImage} />
-                                <View style={{ gap: 2 }}>
-                                    <Text style={styles.bottomSellerPrimary}>{auction.seller.name}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>{auction.seller.province}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {auction.seller.ratings}</Text>
-                                </View>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row',
-                                marginVertical: 15,
-                                gap: 10
-                            }}>
-                                <IconFeather name='calendar' size={20} color='black' />
-                                <Text style={styles.descriptionText}>Tham gia ngày {moment(auction.seller.registeredAt).format('DD/MM/YYYY')}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
 
         {/* Shipping modal */}
         <Modal
@@ -501,7 +430,7 @@ const styles = StyleSheet.create({
     },
     backButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -513,7 +442,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -531,30 +460,30 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     primaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         backgroundColor: colors.primary,
         paddingVertical: 10
     },
     primaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         color: 'white',
         textAlign: 'center'
     },
     secondaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 15,
     },
     secondaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary,
         textAlign: 'center'
     },
@@ -562,12 +491,12 @@ const styles = StyleSheet.create({
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         marginVertical: 30
     },
     productName: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2,
         marginHorizontal: 15,
         marginVertical: 10
@@ -587,12 +516,12 @@ const styles = StyleSheet.create({
     },
     topSellerName: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     topSellerInformation: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     priceContainer: {
@@ -603,27 +532,27 @@ const styles = StyleSheet.create({
     },
     pricePrimary: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1
     },
     priceSecondary: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4
     },
     sectionTitle: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2
     },
     descriptionText: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4
     },
     descriptionLink: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         textDecorationLine: 'underline'
     },
@@ -635,12 +564,12 @@ const styles = StyleSheet.create({
     },
     bottomSellerPrimary: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     bottomSellerSecondary: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     modalContainer: {
@@ -651,7 +580,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         marginLeft: 20,
         marginVertical: 20
     }

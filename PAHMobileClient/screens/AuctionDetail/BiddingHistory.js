@@ -15,7 +15,6 @@ import { colors, fontSizes, fonts } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
   ListingDetailInfoText,
-  TimeLeft,
   BidHistoryItem
 } from '../../components';
 import {
@@ -122,14 +121,14 @@ function BiddingHistory(props) {
           }}>
             <Text style={{
               color: 'black',
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               fontSize: fontSizes.h3
             }}>{auction.product.name}</Text>
             <Text style={{
               color: 'black',
-              fontFamily: fonts.OpenSansBold,
+              fontFamily: fonts.MontserratBold,
               fontSize: fontSizes.h2
-            }}>{numberWithCommas(auction.currentPrice)} VNĐ</Text>
+            }}>₫{numberWithCommas(auction.currentPrice)}</Text>
           </View>
         </View>
       </View>
@@ -142,7 +141,7 @@ function BiddingHistory(props) {
       }}>
         <Text style={{
           color: 'black',
-          fontFamily: fonts.OpenSansBold,
+          fontFamily: fonts.MontserratBold,
           fontSize: fontSizes.h2
         }}>Thông tin cuộc đấu giá</Text>
         <View style={{ gap: 10, marginTop: 5 }}>
@@ -161,7 +160,7 @@ function BiddingHistory(props) {
       }}>
         <Text style={{
           color: 'black',
-          fontFamily: fonts.OpenSansBold,
+          fontFamily: fonts.MontserratBold,
           fontSize: fontSizes.h2
         }}>Lịch sử đấu giá</Text>
         <View style={{ gap: 10, marginTop: 5 }}>
@@ -176,19 +175,19 @@ function BiddingHistory(props) {
                 <View style={{ flex: 5 }}>
                   <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
-                  }}>{numberWithCommas(auction.startingPrice)} VNĐ</Text>
+                  }}>₫{numberWithCommas(auction.startingPrice)}</Text>
                   <Text style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
                   }}>{auction.seller.name}</Text>
                 </View>
                 <View style={{ flex: 4, flexDirection: 'row' }}>
                   <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
                   }}>Giá khởi điểm</Text>
                 </View>
@@ -199,7 +198,7 @@ function BiddingHistory(props) {
               color: colors.greyText,
               fontSize: fontSizes.h4,
               textAlign: 'center',
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               marginVertical: 30
             }}>Không có lần đặt giá nào để hiển thị</Text>
           </View>}
@@ -217,7 +216,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 12,
-    borderRadius: 50
+    borderRadius: 5
   },
   titleContainer: {
     height: 70,
@@ -228,7 +227,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   },

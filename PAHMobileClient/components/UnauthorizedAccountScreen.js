@@ -47,7 +47,7 @@ function UnauthorizedAccountScreen(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h5
                     }}>Mở tài khoản người bán? </Text>
                     <TouchableOpacity onPress={() => {
@@ -55,7 +55,7 @@ function UnauthorizedAccountScreen(props) {
                     }}>
                         <Text style={{
                             color: colors.primary,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h5
                         }}>Đăng ký tài khoản</Text>
                     </TouchableOpacity>
@@ -91,25 +91,25 @@ const styles = StyleSheet.create({
     loginButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         backgroundColor: colors.primary,
         paddingVertical: 15
     },
     loginText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         color: 'white',
         textAlign: 'center'
     },
     registerButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 15,
     },
     registerText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary,
         textAlign: 'center'
     },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     benefitText: {
         flex: 1,
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         alignSelf: 'center'
     },
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: fontSizes.h2,
         textAlign: 'center',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         marginTop: 20
     }
 });

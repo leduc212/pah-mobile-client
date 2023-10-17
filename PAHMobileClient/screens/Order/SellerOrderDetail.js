@@ -353,7 +353,7 @@ function SellerOrderDetail(props) {
           <TouchableOpacity
             style={{
               flex: 1,
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.white,
               borderWidth: 1,
@@ -365,7 +365,7 @@ function SellerOrderDetail(props) {
             })}>
             <Text style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               textAlign: 'center',
               color: colors.primary
             }}>Từ chối</Text>
@@ -373,7 +373,7 @@ function SellerOrderDetail(props) {
           <TouchableOpacity
             style={{
               flex: 1,
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.primary
             }}
@@ -383,7 +383,7 @@ function SellerOrderDetail(props) {
             })}>
             <Text style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               textAlign: 'center',
               color: 'white'
             }}>Xác nhận</Text>
@@ -399,7 +399,7 @@ function SellerOrderDetail(props) {
         }}>
           <TouchableOpacity
             style={{
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.primary
             }}
@@ -409,7 +409,7 @@ function SellerOrderDetail(props) {
             })}>
             <Text style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               textAlign: 'center',
               color: 'white'
             }}>Đã giao cho đơn vị vận chuyển</Text>
@@ -425,7 +425,7 @@ function SellerOrderDetail(props) {
           <TouchableOpacity
             disabled={true}
             style={{
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.grey
             }}>
@@ -442,7 +442,7 @@ function SellerOrderDetail(props) {
           <TouchableOpacity
             disabled={true}
             style={{
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.grey
             }}>
@@ -458,7 +458,7 @@ function SellerOrderDetail(props) {
         }}>
           <TouchableOpacity
             style={{
-              borderRadius: 35,
+              borderRadius: 5,
               paddingVertical: 10,
               backgroundColor: colors.white,
               borderWidth: 1,
@@ -466,7 +466,7 @@ function SellerOrderDetail(props) {
             }}>
             <Text style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               textAlign: 'center',
               color: colors.primary
             }}>Chi tiết đơn hủy</Text>
@@ -484,13 +484,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   addButton: {
     marginLeft: 'auto',
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   titleContainer: {
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     color: colors.greyText,
     fontSize: fontSizes.h4,
     textAlign: 'center',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     marginVertical: 30,
   },
   statusSection: {
@@ -524,38 +524,38 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: colors.black,
     fontSize: fontSizes.h4,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
   },
   noteText: {
     color: colors.black,
     fontSize: fontSizes.h5,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   addressTitleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   addressDetailText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   copyTextButton: {
     marginLeft: 7,
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   sellerNameText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h4,
   },
   goToSellerText: {
     marginRight: 5,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   itemSection: {
@@ -577,23 +577,23 @@ const styles = StyleSheet.create({
   },
   itemTitleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemDescriptionText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   itemQuantityText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemMoneyText: {
     marginLeft: 'auto',
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   orderDetailFooter: {
@@ -603,55 +603,55 @@ const styles = StyleSheet.create({
   },
   orderTotalMoneyText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h5,
   },
   orderMoneyText: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderNoteText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h6,
   },
   orderNoteMoneyText: {
     color: 'red',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   paymentMethodTitle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h4,
   },
   paymentMethodText: {
     marginTop: 10,
     marginStart: 28,
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   orderIdText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   orderTimeText: {
     color: colors.greyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   buyAgainButton: {
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10,
     borderWidth: 1,
     borderColor: colors.darkGreyText
   },
   buyAgainText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     textAlign: 'center',
     color: colors.darkGreyText
   }

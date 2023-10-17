@@ -130,7 +130,7 @@ function Address(props) {
                       <Text
                         style={{
                           color: colors.black,
-                          fontFamily: fonts.OpenSansBold,
+                          fontFamily: fonts.MontserratBold,
                           fontSize: fontSizes.h6,
                           borderWidth: 1,
                           paddingHorizontal: 10,
@@ -203,13 +203,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   addButton: {
     marginLeft: 'auto',
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   titleContainer: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     color: colors.greyText,
     fontSize: fontSizes.h4,
     textAlign: 'center',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     marginVertical: 30
   }
 });

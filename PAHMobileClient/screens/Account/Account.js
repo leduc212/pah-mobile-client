@@ -133,7 +133,7 @@ function Account(props) {
                         }} />
                         <Text style={{
                             fontSize: fontSizes.h4,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             color: 'black',
                             textAlign: 'center',
                             marginHorizontal: 35,
@@ -142,7 +142,7 @@ function Account(props) {
                         <TouchableOpacity onPress={() => getCurrentUserInfo()}>
                             <Text style={{
                                 fontSize: fontSizes.h5,
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 color: colors.primary,
                                 textAlign: 'center',
                                 marginHorizontal: 35,
@@ -170,7 +170,7 @@ function Account(props) {
                             }}>
                                 <Text style={{
                                     color: 'black',
-                                    fontFamily: fonts.OpenSansBold,
+                                    fontFamily: fonts.MontserratBold,
                                     fontSize: fontSizes.h3
                                 }}>{user.name}</Text>
                                 <View style={{ flex: 1 }}></View>
@@ -180,7 +180,6 @@ function Account(props) {
                         </TouchableOpacity>
                         <View style={{
                             flex: 1,
-                            paddingLeft: 10,
                             marginTop: 20,
                             gap: 15,
                             marginBottom: 15
@@ -269,7 +268,7 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

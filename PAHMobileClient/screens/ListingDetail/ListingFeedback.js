@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         marginVertical: 30
     }
 });

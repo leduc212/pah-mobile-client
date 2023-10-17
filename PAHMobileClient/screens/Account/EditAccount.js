@@ -127,7 +127,7 @@ function EditAccount(props) {
               <Text
                 style={{
                   color: colors.black,
-                  fontFamily: fonts.OpenSansBold,
+                  fontFamily: fonts.MontserratBold,
                   fontSize: fontSizes.h5,
                 }}>
                 {user.email}
@@ -135,7 +135,7 @@ function EditAccount(props) {
               <Text
                 style={{
                   color: colors.black,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                   fontSize: fontSizes.h6,
                   flexShrink: 1,
                 }}>
@@ -152,7 +152,7 @@ function EditAccount(props) {
               <Text
                 style={{
                   color: colors.black,
-                  fontFamily: fonts.OpenSansBold,
+                  fontFamily: fonts.MontserratBold,
                   fontSize: fontSizes.h3,
                   paddingVertical: 15,
                 }}>
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   saveText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     color: 'white',
     textAlign: 'center',
   },
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     color: 'blue',
     textAlign: 'center',
   },
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     borderColor: colors.black,
     borderRadius: 8,
     borderWidth: 1,
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   inputTitle: {
     fontSize: fontSizes.h3,
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     marginBottom: 5
   },
   dateStyle: {
@@ -440,19 +440,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: fontSizes.h4,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   labelDateStyle: {
     fontSize: fontSizes.h4,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     paddingVertical: 10,
     paddingHorizontal: 5,
   },
   labelGendersStyle: {
     fontSize: fontSizes.h3,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
 });
 export default EditAccount;

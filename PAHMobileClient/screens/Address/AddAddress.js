@@ -143,7 +143,7 @@ function AddAddress(props) {
             style={{
               color: validate() ? colors.primary : colors.darkGreyText,
               fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Xong
           </Text>
@@ -282,7 +282,7 @@ function AddAddress(props) {
             style={{
               color: colors.black,
               fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Đặt làm địa chỉ giao hàng mặc định
           </Text>
@@ -310,13 +310,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   doneButton: {
     marginLeft: 'auto',
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     height: 50,
     borderColor: colors.black,
     borderRadius: 8,
@@ -356,22 +356,22 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   selectedTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
 });

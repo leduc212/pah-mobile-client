@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey
   },
   titleContainer: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   }

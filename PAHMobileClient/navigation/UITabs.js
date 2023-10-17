@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Home, Account, Listing, Seller, AuctionListing } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { fontSizes, colors } from '../constants';
+import { fontSizes, colors, fonts } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 
 const Tab = createBottomTabNavigator();
@@ -15,7 +15,7 @@ const screenOptions = ({ route }) => ({
     tabBarLabelStyle: {
         fontSize: fontSizes.h6,
         marginBottom: 8,
-        fontFamily: 'OpenSans-Medium',
+        fontFamily: fonts.MontserratMedium,
     },
     tabBarIcon: ({ focused, color, size }) => {
         let screenName = route.name;

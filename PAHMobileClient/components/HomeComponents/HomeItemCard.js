@@ -5,17 +5,18 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { fontSizes, fonts, images } from '../../constants';
+import { colors, fontSizes, fonts, images } from '../../constants';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function HomeItemCard(props) {
-    const { item, onPress } = props;
+    const { item, onPress, index } = props;
     const { name, imageUrl = images.defaultAvatar, price } = item;
 
     return <TouchableOpacity
         onPress={onPress}
         style={{
-            alignItems: 'center'
+            marginHorizontal: 15,
+            marginLeft: index == 0 ? 15 : 0
         }}>
         <Image source={{ uri: imageUrl }}
             style={styles.itemImage} />
@@ -24,30 +25,31 @@ function HomeItemCard(props) {
             style={styles.itemTitle}>{name}</Text>
         <Text numberOfLines={2}
             ellipsizeMode='tail'
-            style={styles.itemPrice}>{numberWithCommas(price)} VND</Text>
+            style={styles.itemPrice}>₫{numberWithCommas(price)}</Text>
     </TouchableOpacity>
 }
 
 const styles = StyleSheet.create({
     itemImage: {
-        width: 150,
-        height: 150,
-        margin: 5,
+        width: 170,
+        height: 170,
         resizeMode: 'cover',
-        borderRadius: 20
+        borderRadius: 5,
+        marginBottom: 10
     },
     itemTitle: {
-        width: 150,
+        width: 160,
         height: 45,
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
+        fontWeight: '600',
         fontSize: fontSizes.h4
     },
     itemPrice: {
-        width: 150,
-        color: 'black',
-        fontFamily: fonts.OpenSansBold,
-        fontSize: fontSizes.h2
+        width: 160,
+        color: colors.primary,
+        fontFamily: fonts.MontserratMedium,
+        fontSize: fontSizes.h3
     }
 })
 

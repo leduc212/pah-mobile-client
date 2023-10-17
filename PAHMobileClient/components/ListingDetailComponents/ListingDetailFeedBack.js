@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
     },
     feedbackLabel: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     feedbackContent: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         marginVertical: 15,
     }

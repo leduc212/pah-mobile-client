@@ -44,7 +44,7 @@ function Search(props) {
             <View style={{
                 backgroundColor: colors.grey,
                 flex: 1,
-                borderRadius: 30,
+                borderRadius: 5,
                 flexDirection: 'row',
                 alignItems: 'center',
                 paddingHorizontal: 15
@@ -70,7 +70,7 @@ function Search(props) {
                         flex: 1,
                         marginHorizontal: 10,
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }} />
                 <TouchableOpacity>
@@ -97,7 +97,7 @@ function Search(props) {
                         }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>{item}</Text>
                         <View style={{ flex: 1 }}></View>
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

@@ -28,7 +28,7 @@ function RegisterView2(props) {
       {errorMessage != '' && <Text
         style={{
           color: 'red',
-          fontFamily: fonts.OpenSansMedium,
+          fontFamily: fonts.MontserratMedium,
           fontSize: fontSizes.h4
         }}>
         Lỗi: {errorMessage}
@@ -153,7 +153,7 @@ function RegisterView2(props) {
 const styles = StyleSheet.create({
   welcomeText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1 * 1.2,
     marginVertical: 10
   },
@@ -162,38 +162,38 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   inputBox: {
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     height: 50,
     borderColor: colors.black,
-    borderRadius: 8,
+    borderRadius: 5,
     borderWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15
   },
   errorText: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h6,
     marginTop: 15,
     paddingHorizontal: 5
   },
   errorConfirmText: {
     color: 'red',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h6,
     paddingHorizontal: 5
   },
   primaryButton: {
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10
   },
   primaryButtonText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     textAlign: 'center'
   },
   backButton: {
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10,
     backgroundColor: 'white',
     borderWidth: 1,
@@ -202,23 +202,23 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     textAlign: 'center',
     color: colors.primary
   },
   termText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   secondaryButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 5,
     marginBottom: 20,
   },
   secondaryText: {
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     padding: 10,
     fontSize: fontSizes.h4,
     color: colors.primary,

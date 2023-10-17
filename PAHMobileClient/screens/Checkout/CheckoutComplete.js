@@ -50,7 +50,7 @@ function CheckoutComplete(props) {
                 }} />
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4,
                     marginHorizontal: 50,
                     textAlign: 'center',
@@ -59,7 +59,7 @@ function CheckoutComplete(props) {
                 }}>Đơn hàng của bạn đã được thanh toán thành công</Text>
                 <Text style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4,
                     marginHorizontal: 50,
                     textAlign: 'center',
@@ -79,7 +79,7 @@ function CheckoutComplete(props) {
                 }}>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h5
                     }}>Kiểm tra đơn hàng của bạn</Text>
                     <TouchableOpacity onPress={() => {
@@ -87,7 +87,7 @@ function CheckoutComplete(props) {
                     }}>
                         <Text style={{
                             color: colors.primary,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h5
                         }}> tại đây</Text>
                     </TouchableOpacity>
@@ -104,7 +104,7 @@ function CheckoutComplete(props) {
                 }} />
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4,
                     marginHorizontal: 50,
                     textAlign: 'center',
@@ -113,7 +113,7 @@ function CheckoutComplete(props) {
                 }}>Thanh toán đơn hàng không thành công</Text>
                 <Text style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4,
                     marginHorizontal: 50,
                     textAlign: 'center',
@@ -134,7 +134,7 @@ function CheckoutComplete(props) {
                     <TouchableOpacity onPress={() => goBack()}>
                         <Text style={{
                             color: colors.primary,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h5
                         }}>Quay lại</Text>
                     </TouchableOpacity>
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -179,14 +179,14 @@ const styles = StyleSheet.create({
     secondaryButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 10,
         marginHorizontal: 15,
         marginTop: 20
     },
     secondaryButtonText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary,
         textAlign: 'center'
     },

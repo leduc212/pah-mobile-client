@@ -115,7 +115,7 @@ function Seller(props) {
             }} />
             <Text style={{
               fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               color: 'black',
               textAlign: 'center',
               marginHorizontal: 35,
@@ -124,7 +124,7 @@ function Seller(props) {
             <TouchableOpacity onPress={() => getCurrentUserInfo()}>
               <Text style={{
                 fontSize: fontSizes.h5,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 color: colors.primary,
                 textAlign: 'center',
                 marginHorizontal: 35,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   iconButton: {
     backgroundColor: colors.grey,
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 5,
     padding: 15,
     marginHorizontal: 15
   },
@@ -198,22 +198,22 @@ const styles = StyleSheet.create({
   totalTextStyle: {
     fontSize: fontSizes.h1 * 2,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   subtotalTextStyle: {
     fontSize: fontSizes.h6,
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   statStyle: {
     fontSize: fontSizes.h1 * 1.5,
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   statTitleStyle: {
     fontSize: fontSizes.h6,
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
 });
 

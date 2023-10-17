@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     },
     menuText: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         marginLeft: 10
     }

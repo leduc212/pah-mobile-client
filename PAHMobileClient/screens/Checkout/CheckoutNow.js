@@ -364,7 +364,7 @@ function CheckoutNow(props) {
             }}>
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansBold,
+                    fontFamily: fonts.MontserratBold,
                     fontSize: fontSizes.h4,
                     marginVertical: 15
                 }}>Người bán: {product.seller.name}</Text>
@@ -388,17 +388,17 @@ function CheckoutNow(props) {
                             ellipsizeMode='tail'
                             style={{
                                 color: 'black',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h3
                             }}>{product.name}</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h2
                         }}>{numberWithCommas(product.price)} VNĐ</Text>
                         <Text style={{
                             color: colors.darkGreyText,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Số lượng: {quantity}</Text>
                     </View>
@@ -409,23 +409,23 @@ function CheckoutNow(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h4
                     }}>Vận chuyển</Text>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>Thông qua Giao hàng nhanh</Text>
                     <View style={{ gap: 5 }}>
                         {shippingDate != 0 && <Text style={{
                             color: colors.darkGreyText,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Giao dự kiến: {moment(shippingDate * 1000).format('dd, Do MMMM YYYY')}</Text>}
                         {shippingPrice != 0 && <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Phí vận chuyển: {numberWithCommas(shippingPrice)} VNĐ </Text>}
                     </View>
@@ -452,33 +452,33 @@ function CheckoutNow(props) {
                     }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h4,
                             flex: 1
                         }}>Vận chuyển tới</Text>
                         {shippingAddress.length > 0 ? <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
                                 color: 'black',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h4
                             }}
                             >{currentShippingAddress.recipientName}</Text>
                             <Text style={{
                                 color: 'black',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h4
                             }}
                             >{`${currentShippingAddress.street}, ${currentShippingAddress.ward}, ${currentShippingAddress.district}, ${currentShippingAddress.province}`}</Text>
                             <Text style={{
                                 color: 'black',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h4
                             }}
                             >{currentShippingAddress.recipientPhone}</Text>
                         </View> : <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
                                 color: 'red',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h4
                             }}
                             >Xin hãy thêm địa chỉ nhận hàng</Text>
@@ -498,14 +498,14 @@ function CheckoutNow(props) {
                     }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h4,
                             flex: 1
                         }}>Phương thức thanh toán</Text>
                         <View style={{ flex: 2, gap: 5 }}>
                             <Text style={{
                                 color: selectedPaymentMethod.id === 0 ? 'red' : 'black',
-                                fontFamily: fonts.OpenSansMedium,
+                                fontFamily: fonts.MontserratMedium,
                                 fontSize: fontSizes.h4
                             }}
                             >{selectedPaymentMethod.id === 0 ? 'Xin hãy chọn phương thức thanh toán' : selectedPaymentMethod.text}</Text>
@@ -527,12 +527,12 @@ function CheckoutNow(props) {
                 }}>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>Sản phẩm (1)</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>{numberWithCommas(product.price)} VNĐ</Text>
                 </View>
@@ -542,12 +542,12 @@ function CheckoutNow(props) {
                 }}>
                     <Text style={{
                         color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>Phí vận chuyển</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }}>{numberWithCommas(shippingPrice)} VNĐ</Text>
                 </View>
@@ -558,19 +558,19 @@ function CheckoutNow(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3
                     }}>Tổng giá thành</Text>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3
                     }}>{numberWithCommas(totalPrice())} VNĐ</Text>
                 </View>
             </View>
             <Text style={{
                 color: colors.darkGreyText,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 fontSize: fontSizes.h5,
                 marginVertical: 50,
                 marginHorizontal: 15
@@ -582,7 +582,7 @@ function CheckoutNow(props) {
 
         {/* Checkout button */}
         <TouchableOpacity style={{
-            borderRadius: 35,
+            borderRadius: 5,
             backgroundColor: validation() ? colors.primary : colors.grey,
             paddingVertical: 10,
             marginVertical: 5,
@@ -592,7 +592,7 @@ function CheckoutNow(props) {
             onPress={() => checkout()}>
             <Text style={{
                 fontSize: fontSizes.h3,
-                fontFamily: fonts.OpenSansBold,
+                fontFamily: fonts.MontserratBold,
                 color: validation() ? 'white' : colors.greyText,
                 textAlign: 'center'
             }}>Xác nhận thanh toán</Text>
@@ -666,7 +666,7 @@ function CheckoutNow(props) {
                         <Text style={{
                             color: colors.primary,
                             fontSize: fontSizes.h4,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             alignSelf: 'flex-end'
                         }}>Thêm địa chỉ mới</Text>
                     </TouchableOpacity>
@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },
@@ -780,13 +780,13 @@ const styles = StyleSheet.create({
     },
     descriptionText: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h3,
         alignSelf: 'center'
     },
     sectionTitle: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2
     },
     sortModalOptionContainer: {
@@ -812,12 +812,12 @@ const styles = StyleSheet.create({
     radioText: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium
+        fontFamily: fonts.MontserratMedium
     },
     radioTextSecondary: {
         color: colors.darkGreyText,
         fontSize: fontSizes.h4,
-        fontFamily: fonts.OpenSansMedium
+        fontFamily: fonts.MontserratMedium
     }
 });
 

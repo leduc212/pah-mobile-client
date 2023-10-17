@@ -82,7 +82,7 @@ function RegisterView1(props) {
 const styles = StyleSheet.create({
   welcomeText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1 * 1.2,
     marginVertical: 10
   },
@@ -91,29 +91,29 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   inputBox: {
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     height: 50,
     borderColor: colors.black,
-    borderRadius: 8,
+    borderRadius: 5,
     borderWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15
   },
   errorText: {
     color: 'red',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h6,
     marginTop: 2,
     paddingHorizontal: 5
   },
   primaryButton: {
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10,
     marginTop: 10
   },
   primaryButtonText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     textAlign: 'center'
   },
 });

@@ -125,13 +125,13 @@ function Home(props) {
         }>
             {/*  Search bar section */}
             <View style={{
-                height: 70,
+                marginVertical: 15,
                 paddingHorizontal: 15
             }}>
                 <View style={{
                     height: 50,
                     backgroundColor: colors.grey,
-                    borderRadius: 30,
+                    borderRadius: 5,
                     flexDirection: 'row',
                     alignItems: 'center',
                     paddingHorizontal: 15
@@ -148,7 +148,7 @@ function Home(props) {
                             size={20} color={'black'}
                         />
                         <Text style={{
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             color: 'black',
                             marginLeft: 15
                         }}
@@ -182,7 +182,7 @@ function Home(props) {
                     }} />
                     <Text style={{
                         fontSize: fontSizes.h4,
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         color: 'black',
                         textAlign: 'center',
                         marginHorizontal: 35,
@@ -191,7 +191,7 @@ function Home(props) {
                     <TouchableOpacity onPress={() => initializeDataHome()}>
                         <Text style={{
                             fontSize: fontSizes.h5,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             color: colors.primary,
                             textAlign: 'center',
                             marginHorizontal: 35,
@@ -203,19 +203,20 @@ function Home(props) {
                     {!authContext?.authState?.authenticated ? <View style={{
                         height: 150,
                         paddingTop: 10,
-                        paddingHorizontal: 25
+                        paddingHorizontal: 25,
+                        marginVertical: 10
                     }}>
                         <Text style={{
                             color: 'black',
                             fontSize: fontSizes.h3,
                             textAlign: 'center',
-                            fontFamily: fonts.OpenSansMedium
+                            fontFamily: fonts.MontserratMedium
                         }}>Hãy đăng nhập để trải nghiệm tối đa nền tảng của chúng tôi</Text>
                         <View style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            marginTop: 10,
+                            marginTop: 20,
                             gap: 10
                         }}>
                             <TouchableOpacity style={styles.loginButton}
@@ -233,10 +234,32 @@ function Home(props) {
                         </View>
                     </View> : <View></View>}
 
-                    <View>
+                    <View style={{marginTop: 10}}>
+                        {/*  Categories section */}
+                        <View style={{
+                            flex: 1,
+                            marginBottom: 30
+                        }}>
+                            <View style={styles.headerLayout}>
+                                <Text style={styles.headerText}>Khám phá các danh mục</Text>
+                            </View>
+                            {(Array.isArray(categories) && categories.length) ? <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={categories}
+                                renderItem={({ item, index }) => {
+                                    return <HomeCategoryCard item={item} index={index}
+                                        onPress={() => alert(`Press item name ${item.name}`)} />
+                                }}
+                                keyExtractor={eachCategory => eachCategory.id}
+                            /> : <View>
+                                <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
+                            </View>}
+                        </View>
+
                         {/*  Popular products section */}
                         <View style={{
-                            marginBottom: 20
+                            marginBottom: 30
                         }}>
                             <View style={styles.headerLayout}>
                                 <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
@@ -248,8 +271,8 @@ function Home(props) {
                                 horizontal={true}
                                 showsHorizontalScrollIndicator={false}
                                 data={popularProducts}
-                                renderItem={({ item }) => {
-                                    return <HomeItemCard item={item}
+                                renderItem={({ item, index }) => {
+                                    return <HomeItemCard item={item} index={index}
                                         onPress={() => navigate('ListingDetail', { product_id: item.id })} />
                                 }}
                                 keyExtractor={eachProduct => eachProduct.id}
@@ -263,7 +286,7 @@ function Home(props) {
                             marginBottom: 20
                         }}>
                             <View style={styles.headerLayout}>
-                                <Text style={styles.headerText}>Cuộc đấu giá đang diễn ra</Text>
+                                <Text style={styles.headerText}>Cuộc đấu giá sắp diễn ra</Text>
                                 <TouchableOpacity onPress={() => navigate('AuctionListing')}>
                                     <Text style={styles.headerSubText}>Xem tất cả</Text>
                                 </TouchableOpacity>
@@ -272,35 +295,13 @@ function Home(props) {
                                 horizontal={true}
                                 showsHorizontalScrollIndicator={false}
                                 data={ongoingAuctions}
-                                renderItem={({ item }) => {
-                                    return <HomeAuctionCard item={item}
+                                renderItem={({ item, index }) => {
+                                    return <HomeAuctionCard item={item} index={index}
                                         onPress={() => navigate('AuctionDetail', { auction_id: item.id })} />
                                 }}
                                 keyExtractor={eachAuction => eachAuction.id}
                             /> : <View>
                                 <Text style={styles.emptyText}>Không có cuộc đấu giá để hiển thị</Text>
-                            </View>}
-                        </View>
-
-                        {/*  Categories section */}
-                        <View style={{
-                            flex: 1,
-                            marginBottom: 20
-                        }}>
-                            <View style={styles.headerLayout}>
-                                <Text style={styles.headerText}>Khám phá các danh mục</Text>
-                            </View>
-                            {(Array.isArray(categories) && categories.length) ? <FlatList
-                                horizontal={true}
-                                showsHorizontalScrollIndicator={false}
-                                data={categories}
-                                renderItem={({ item }) => {
-                                    return <HomeCategoryCard item={item}
-                                        onPress={() => alert(`Press item name ${item.name}`)} />
-                                }}
-                                keyExtractor={eachCategory => eachCategory.id}
-                            /> : <View>
-                                <Text style={styles.emptyText}>Không có danh mục để hiển thị</Text>
                             </View>}
                         </View>
                     </View>
@@ -318,12 +319,12 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     loginButton: {
         borderWidth: 1.2,
         borderColor: colors.primary,
-        borderRadius: 30,
+        borderRadius: 5,
         paddingVertical: 15,
         flex: 1,
         flexDirection: 'row',
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     },
     loginText: {
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: colors.primary
     },
     titleContainer: {
@@ -352,24 +353,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10
+        marginBottom: 15
     },
     headerText: {
         color: 'black',
         fontSize: fontSizes.h2,
-        fontFamily: fonts.OpenSansBold
+        fontFamily: fonts.MontserratBold
     },
     headerSubText: {
         color: colors.greyText,
         fontSize: fontSizes.h5,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratRegular,
         textDecorationLine: 'underline'
     },
     emptyText: {
         color: colors.greyText,
         fontSize: fontSizes.h4,
         textAlign: 'center',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         marginVertical: 30
     }
 });

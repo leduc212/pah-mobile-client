@@ -9,18 +9,18 @@ import { colors, fontSizes, fonts, images } from '../../constants';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function ProductListingCard(props) {
-    const { product, onPress } = props;
+    const { product, onPress, index } = props;
     const { name, imageUrl = images.defaultAvatar, price } = product;
 
     return <View style={{
         paddingHorizontal: 15
     }}>
-        <View style={{
+        {index != 0 && <View style={{
             height: 1.2,
             backgroundColor: colors.darkGrey,
             marginTop: 10,
             marginBottom: 15
-        }}></View>
+        }}></View>}
         <TouchableOpacity style={{
             flexDirection: 'row'
         }}
@@ -29,9 +29,9 @@ function ProductListingCard(props) {
             <Image source={{ uri: imageUrl }}
                 style={{
                     resizeMode: 'cover',
-                    width: 150,
-                    height: 150,
-                    borderRadius: 25
+                    width: 140,
+                    height: 140,
+                    borderRadius: 5
                 }} />
             <View style={{
                 flex: 1,
@@ -42,24 +42,18 @@ function ProductListingCard(props) {
                     ellipsizeMode='tail'
                     style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
-                        fontSize: fontSizes.h3,
+                        fontFamily: fonts.MontserratMedium,
+                        fontSize: fontSizes.h4,
                         marginBottom: 5
                     }}>{name}</Text>
                 <Text
                     numberOfLines={2}
                     ellipsizeMode='tail'
                     style={{
-                        color: 'black',
-                        fontFamily: fonts.OpenSansBold,
-                        fontSize: fontSizes.h2
-                    }}>{numberWithCommas(price)} VNĐ</Text>
-                <Text
-                    style={{
-                        color: colors.darkGreyText,
-                        fontFamily: fonts.OpenSansMedium,
-                        fontSize: fontSizes.h5
-                    }}>Thành phố Hồ Chí Minh</Text>
+                        color: colors.primary,
+                        fontFamily: fonts.MontserratMedium,
+                        fontSize: fontSizes.h3
+                    }}>₫{numberWithCommas(price)}</Text>
             </View>
         </TouchableOpacity>
     </View>

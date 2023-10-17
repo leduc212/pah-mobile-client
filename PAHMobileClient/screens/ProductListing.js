@@ -124,7 +124,7 @@ function ProductListing(props) {
             <Text
               style={{
                 color: colors.primary,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 fontSize: fontSizes.h3,
                 alignSelf: 'center',
               }}>
@@ -234,7 +234,7 @@ function ProductListing(props) {
                       <Text
                         style={{
                           color: 'white',
-                          fontFamily: fonts.OpenSansMedium,
+                          fontFamily: fonts.MontserratMedium,
                           fontSize: fontSizes.h5,
                         }}>
                         Chụp hình sản phẩm
@@ -246,7 +246,7 @@ function ProductListing(props) {
                       <Text
                         style={{
                           color: 'white',
-                          fontFamily: fonts.OpenSansMedium,
+                          fontFamily: fonts.MontserratMedium,
                           fontSize: fontSizes.h5,
                         }}>
                         Lấy từ thư viện
@@ -270,7 +270,7 @@ function ProductListing(props) {
                 style={{
                   color: colors.black,
                   fontSize: fontSizes.h4,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                   marginTop: 10,
                   borderBottomWidth: enableTitle == true ? 1 : 0,
                 }}
@@ -331,7 +331,7 @@ function ProductListing(props) {
                     width: 100,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Tình trạng
                 </Text>
@@ -374,7 +374,7 @@ function ProductListing(props) {
                     width: 100,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Xuất xứ
                 </Text>
@@ -390,7 +390,7 @@ function ProductListing(props) {
                     marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}
                 />
               </View>
@@ -405,7 +405,7 @@ function ProductListing(props) {
                     width: 100,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Khối lượng
                 </Text>
@@ -422,14 +422,14 @@ function ProductListing(props) {
                     marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}
                 />
                 <Text
                   style={{
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   (g)
                 </Text>
@@ -445,7 +445,7 @@ function ProductListing(props) {
                     width: 100,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Kích thước
                 </Text>
@@ -462,14 +462,14 @@ function ProductListing(props) {
                     marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}
                 />
                 <Text
                   style={{
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   (mm)
                 </Text>
@@ -489,7 +489,7 @@ function ProductListing(props) {
                     width: 130,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Phương pháp
                 </Text>
@@ -505,7 +505,7 @@ function ProductListing(props) {
                     marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}
                 />
               </View>
@@ -520,7 +520,7 @@ function ProductListing(props) {
                     width: 130,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Bao gồm
                 </Text>
@@ -537,7 +537,7 @@ function ProductListing(props) {
                     marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}
                 />
               </View>
@@ -556,7 +556,7 @@ function ProductListing(props) {
                 style={{
                   color: colors.black,
                   fontSize: fontSizes.h4,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                   marginTop: 10,
                   borderBottomWidth: enableDescription == true ? 1 : 0,
                 }}
@@ -604,7 +604,7 @@ function ProductListing(props) {
                   marginTop: 20,
                   color: colors.black,
                   fontSize: fontSizes.h4,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                 }}>
                 Mua ngay
               </Text>
@@ -613,7 +613,7 @@ function ProductListing(props) {
                   style={{
                     color: colors.darkGreyText,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Giá
                 </Text>
@@ -621,7 +621,7 @@ function ProductListing(props) {
                   style={{
                     color: colors.darkGreyText,
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   VND {price}
                 </Text>
@@ -637,7 +637,7 @@ function ProductListing(props) {
               <Text
                 style={{
                   color: colors.black,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                   fontSize: fontSizes.h5,
                   marginBottom: 20,
                 }}>
@@ -647,7 +647,7 @@ function ProductListing(props) {
                 <Text
                   style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h5,
                   }}>
                   Khi nhấn{' '}
@@ -655,7 +655,7 @@ function ProductListing(props) {
                 <Text
                   style={{
                     color: colors.black,
-                    fontFamily: fonts.OpenSansBold,
+                    fontFamily: fonts.MontserratBold,
                     fontSize: fontSizes.h4,
                   }}>
                   Bắt đầu đăng bán
@@ -663,7 +663,7 @@ function ProductListing(props) {
                 <Text
                   style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h5,
                   }}>
                   , bạn đồng ý trả các khoản phí phụ
@@ -680,12 +680,12 @@ function ProductListing(props) {
                   alignItems: 'center',
                   marginVertical: 15,
                   padding: 10,
-                  borderRadius: 30,
+                  borderRadius: 5,
                 }}>
                 <Text
                   style={{
                     color: 'white',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h3,
                   }}>
                   Bắt đầu đăng bán
@@ -703,7 +703,7 @@ function ProductListing(props) {
                 {ready == true ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
                 <Text style={{
                   color: colors.darkGreyText,
-                  fontFamily: fonts.OpenSansMedium,
+                  fontFamily: fonts.MontserratMedium,
                   fontSize: fontSizes.h5,
                 }}>Tôi đồng ý với các điều khoản</Text>
               </TouchableOpacity>
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -751,12 +751,12 @@ const styles = StyleSheet.create({
   titleSection: {
     marginTop: 10,
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
   },
   detailTextSection: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   imageStyle: {
@@ -793,27 +793,27 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: colors.black,
     borderBottomWidth: 1,
-    borderRadius: 8,
+    borderRadius: 5,
     paddingHorizontal: 15,
   },
   placeholderStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   selectedTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   enableTextButtonStyle: {

@@ -181,7 +181,7 @@ function Cart(props) {
                     <IconFeather name='info' size={25} color={'white'} />
                     <Text style={{
                         color: 'white',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h5,
                         flex: 1
                     }}>Giỏ hàng của bạn chứa các sản phẩm từ hai hoặc nhiều người bán khác nhau. Do đó, các đơn hàng của bạn sẽ được tách ra theo người bán sau khi thanh toán giỏ hàng.</Text>
@@ -193,7 +193,7 @@ function Cart(props) {
                 }}>
                     <Text style={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3,
                         marginLeft: 15,
                         marginBottom: 10
@@ -210,25 +210,25 @@ function Cart(props) {
                     <View key={seller.id} style={{ marginBottom: 10 }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h3,
                             marginHorizontal: 15
                         }}>Người bán {seller.name}</Text>
                         <Text style={{
                             color: colors.darkGreyText,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h5,
                             marginHorizontal: 15,
                             marginTop: 5
                         }}>{`${seller.ward}, ${seller.district}, ${seller.province}`}</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4,
                             marginHorizontal: 15,
-                            marginTop: 5,
+                            marginTop: 15,
                             marginBottom: 10
-                        }}>{seller.shippingCost != 0 ? `${numberWithCommas(seller.shippingCost)} VNĐ phí giao hàng (thông qua GHN)` : 'Đăng nhập để xem phí giao hàng'}</Text>
+                        }}>{seller.shippingCost != 0 ? `₫${numberWithCommas(seller.shippingCost)} giao hàng` : 'Đăng nhập để xem phí giao hàng'}</Text>
                         {seller.products.map((cart_item) =>
                             <View key={cart_item.id}>
                                 <TouchableOpacity
@@ -254,7 +254,7 @@ function Cart(props) {
                                             ellipsizeMode='tail'
                                             style={{
                                                 color: 'black',
-                                                fontFamily: fonts.OpenSansMedium,
+                                                fontFamily: fonts.MontserratMedium,
                                                 fontSize: fontSizes.h4,
                                                 marginHorizontal: 5
                                             }}>{cart_item.name}</Text>
@@ -263,10 +263,10 @@ function Cart(props) {
                                             ellipsizeMode='tail'
                                             style={{
                                                 color: 'black',
-                                                fontFamily: fonts.OpenSansBold,
+                                                fontFamily: fonts.MontserratBold,
                                                 fontSize: fontSizes.h3,
                                                 marginHorizontal: 5
-                                            }}>{numberWithCommas(cart_item.price)} VNĐ</Text>
+                                            }}>₫{numberWithCommas(cart_item.price)}</Text>
                                     </View>
                                 </TouchableOpacity>
 
@@ -280,7 +280,7 @@ function Cart(props) {
                                 }}>
                                     <Text style={{
                                         color: colors.darkGreyText,
-                                        fontFamily: fonts.OpenSansMedium,
+                                        fontFamily: fonts.MontserratMedium,
                                         fontSize: fontSizes.h4
                                     }}>Số lượng: {cart_item.amount}</Text>
                                     <TouchableOpacity onPress={() => {
@@ -288,7 +288,7 @@ function Cart(props) {
                                     }}>
                                         <Text style={{
                                             color: colors.primary,
-                                            fontFamily: fonts.OpenSansMedium,
+                                            fontFamily: fonts.MontserratMedium,
                                             fontSize: fontSizes.h4
                                         }}>Xóa khỏi giỏ hàng</Text>
                                     </TouchableOpacity>
@@ -313,14 +313,14 @@ function Cart(props) {
                     }}>
                         <Text style={{
                             color: colors.darkGreyText,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Sản phẩm ({sumQuantity()})</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
-                        }}>{numberWithCommas(sumTotal())} VNĐ</Text>
+                        }}>₫{numberWithCommas(sumTotal())}</Text>
                     </View>
                     <View style={{
                         flexDirection: 'row',
@@ -330,14 +330,14 @@ function Cart(props) {
                     }}>
                         <Text style={{
                             color: colors.darkGreyText,
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Phí giao hàng</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
+                            fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
-                        }}>{totalShippingPrice != 0 ? `${numberWithCommas(totalShippingPrice)} VNĐ` : 'Đăng nhập để xem'}</Text>
+                        }}>{totalShippingPrice != 0 ? `₫${numberWithCommas(totalShippingPrice)}` : 'Đăng nhập để xem'}</Text>
                     </View>
                     <View style={{
                         height: 1,
@@ -351,14 +351,14 @@ function Cart(props) {
                     }}>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansMedium,
-                            fontSize: fontSizes.h4
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3
                         }}>Tổng</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
-                            fontSize: fontSizes.h4
-                        }}>{numberWithCommas(totalShippingPrice + sumTotal())} VNĐ</Text>
+                            fontFamily: fonts.MontserratBold,
+                            fontSize: fontSizes.h3
+                        }}>₫{numberWithCommas(totalShippingPrice + sumTotal())}</Text>
                     </View>
                 </View>
 
@@ -366,7 +366,7 @@ function Cart(props) {
                 <TouchableOpacity style={{
                     borderWidth: 1.2,
                     borderColor: colors.primary,
-                    borderRadius: 35,
+                    borderRadius: 5,
                     backgroundColor: colors.primary,
                     paddingVertical: 10,
                     margin: 20
@@ -380,7 +380,7 @@ function Cart(props) {
                     }}>
                     <Text style={{
                         fontSize: fontSizes.h3,
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         color: 'white',
                         textAlign: 'center'
                     }}>Tiến hành thanh toán</Text>
@@ -397,7 +397,7 @@ function Cart(props) {
                 }} />
                 <Text style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

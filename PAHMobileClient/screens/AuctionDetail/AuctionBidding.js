@@ -51,27 +51,27 @@ function AuctionBidding(props) {
       gap: 5
     }}>
       <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5,
         color: 'black'
       }}>Mức giá hiện tại: 8,550,000 VNĐ</Text>
       <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5,
         color: 'black'
       }}>Bước giá: 50,000 VNĐ</Text>
       <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5,
         color: 'black'
       }}>Lần đặt trước của bạn: 8,400,000 VNĐ</Text>
       <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5,
         color: 'black'
       }}>Số dư khả dụng cần để đặt: 200,000 VNĐ</Text>
       <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5,
         color: 'black'
       }}>Số dư khả dụng của bạn: 2,000,000 VNĐ</Text>
@@ -85,7 +85,7 @@ function AuctionBidding(props) {
       gap: 5
     }}>
       <Text style={{
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h2,
         color: 'black'
       }}>Số tiền đặt của bạn</Text>
@@ -100,18 +100,18 @@ function AuctionBidding(props) {
           onChangeText={(text) => setBidAmount(text)}
           autoFocus={true}
           style={{
-            fontFamily: fonts.OpenSansMedium,
+            fontFamily: fonts.MontserratMedium,
             fontSize: fontSizes.h1 * 2,
             color: 'black'
           }} />
         <Text style={{
-          fontFamily: fonts.OpenSansMedium,
+          fontFamily: fonts.MontserratMedium,
           fontSize: fontSizes.h1,
           color: 'black'
         }}>VNĐ</Text>
       </View>
       {!validationBidAmount() && <Text style={{
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         color: 'red'
       }}>Số tiền đặt tối thiểu là 8,600,000 VNĐ</Text>}
@@ -128,14 +128,14 @@ function AuctionBidding(props) {
       <TouchableOpacity
         disabled={!validationBidAmount()}
         style={{
-          borderRadius: 35,
+          borderRadius: 5,
           backgroundColor: validationBidAmount() ? colors.primary : colors.grey,
           paddingVertical: 10
         }}
         onPress={() => setConfirmModal(!confirmModal)}>
         <Text style={{
           fontSize: fontSizes.h3,
-          fontFamily: fonts.OpenSansBold,
+          fontFamily: fonts.MontserratBold,
           color: validationBidAmount() ? 'white' : colors.greyText,
           textAlign: 'center'
         }}>Đấu giá</Text>
@@ -188,20 +188,20 @@ function AuctionBidding(props) {
         }}>
           <Text style={{
             fontSize: fontSizes.h5,
-            fontFamily: fonts.OpenSansMedium,
+            fontFamily: fonts.MontserratMedium,
             color: 'black',
           }}>Khi bạn xác nhận giá đặt của mình, điều đó có nghĩa là bạn cam kết mua mặt hàng này nếu bạn là người thắng cuộc. Điều đó cũng có nghĩa là bạn đã đọc và đồng ý với Điều khoản của PAH.</Text>
           <TouchableOpacity style={{
             borderWidth: 1.2,
             borderColor: colors.primary,
-            borderRadius: 35,
+            borderRadius: 5,
             backgroundColor: colors.primary,
             paddingVertical: 10
           }}
             onPress={() => goBack()}>
             <Text style={{
               fontSize: fontSizes.h3,
-              fontFamily: fonts.OpenSansBold,
+              fontFamily: fonts.MontserratBold,
               color: 'white',
               textAlign: 'center'
             }}>Xác nhận đấu giá</Text>
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 12,
-    borderRadius: 50
+    borderRadius: 5
   },
   titleContainer: {
     height: 70,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   },
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     color: 'black',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h3,
     alignSelf: 'center'
   }

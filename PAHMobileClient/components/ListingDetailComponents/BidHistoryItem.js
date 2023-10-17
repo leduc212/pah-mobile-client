@@ -20,25 +20,25 @@ function BidHistoryItem(props) {
             <View style={{ flex: 5 }}>
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
-                }}>{numberWithCommas(bidAmount)} VNĐ</Text>
+                }}>₫{numberWithCommas(bidAmount)}</Text>
                 <Text style={{
                     color: colors.darkGreyText,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
                 }}>{bidderName}</Text>
             </View>
             <View style={{ flex: 4, flexDirection: 'row' }}>
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h4
                 }}>Đặt</Text>
                 <TimeLeft showText={false} closedTime={bidDate}
                     textStyle={{
                         color: 'black',
-                        fontFamily: fonts.OpenSansMedium,
+                        fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }} />
             </View>
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
     },
     feedbackLabel: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h5
     },
     feedbackContent: {
         color: 'black',
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h4,
         marginVertical: 15,
     }

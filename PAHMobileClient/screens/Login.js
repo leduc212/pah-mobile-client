@@ -158,7 +158,8 @@ function Login(props) {
             login()
           }}
           style={[{
-            backgroundColor: validationOk() ? colors.primary : colors.grey
+            backgroundColor: validationOk() ? colors.primary : colors.grey,
+            marginTop: 20
           }, styles.loginButton]}>
           <Text style={[{
             color: validationOk() ? 'white' : colors.greyText
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey
   },
   titleContainer: {
@@ -229,15 +230,16 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   },
   welcomeText: {
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1 * 1.2,
-    marginVertical: 10
+    marginTop: 10,
+    marginBottom: 20
   },
   errorContainer: {
     marginTop: 10,
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
     marginLeft: 10
   },
@@ -257,40 +259,40 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     height: 50,
     borderColor: colors.black,
-    borderRadius: 8,
+    borderRadius: 5,
     borderWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15
   },
   loginButton: {
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 15
   },
   loginText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     textAlign: 'center'
   },
   googleButton: {
     borderWidth: 1,
     marginTop: 20,
-    borderRadius: 35,
+    borderRadius: 5,
     backgroundColor: 'white',
     paddingVertical: 15,
     justifyContent: 'center'
   },
   googleText: {
     fontSize: fontSizes.h3,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     color: 'black',
     textAlign: 'center'
   },
   infoText: {
     alignSelf: 'center',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     color: colors.primary,
     fontSize: fontSizes.h5,
   }

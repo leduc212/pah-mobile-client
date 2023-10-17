@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center'
   },
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     color: 'black',
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h3
   }
 });

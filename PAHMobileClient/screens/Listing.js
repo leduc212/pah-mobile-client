@@ -340,11 +340,12 @@ function Listing(props) {
                 paddingVertical: 10,
                 paddingHorizontal: 15,
                 flexDirection: 'row',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                marginBottom: 20
             }}>
                 <Text style={{
                     color: 'black',
-                    fontFamily: fonts.OpenSansBold,
+                    fontFamily: fonts.MontserratMedium,
                     fontSize: fontSizes.h2
                 }}>Sản phẩm đăng bán ({productCount})</Text>
                 <TouchableOpacity style={{
@@ -357,7 +358,7 @@ function Listing(props) {
                     }}>
                     <Text style={{
                         color: colors.primary,
-                        fontFamily: fonts.OpenSansBold,
+                        fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h5,
                     }}>Bộ lọc</Text>
                     <IconFeather name='filter' size={16} color={colors.primary} />
@@ -369,10 +370,11 @@ function Listing(props) {
                     flex: 1,
                     marginBottom: 15
                 }}>
-                    {products.map((product) =>
-                        <ProductListingCard key={product.id} product={product} onPress={() => {
-                            navigate('ListingDetail', { product_id: product.id })
-                        }} />
+                    {products.map((product, index) =>
+                        <ProductListingCard key={product.id} product={product}
+                            index={index} onPress={() => {
+                                navigate('ListingDetail', { product_id: product.id })
+                            }} />
                     )}
                 </View>
             </View> : <View style={{
@@ -387,7 +389,7 @@ function Listing(props) {
                 }} />
                 <Text style={{
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: 'black',
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -430,7 +432,7 @@ function Listing(props) {
                     }}>
                         <TouchableOpacity style={{
                             marginRight: 10,
-                            borderRadius: 50
+                            borderRadius: 5
                         }}
                             onPress={() => {
                                 closeFilterModal()
@@ -439,14 +441,14 @@ function Listing(props) {
                         </TouchableOpacity>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.OpenSansBold,
+                            fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h1
                         }}
                         >Bộ lọc</Text>
                         <TouchableOpacity onPress={() => resetFilter()}>
                             <Text style={{
                                 color: colors.primary,
-                                fontFamily: fonts.OpenSansBold,
+                                fontFamily: fonts.MontserratBold,
                                 fontSize: fontSizes.h4
                             }}
                                 numberOfLines={1}
@@ -473,7 +475,7 @@ function Listing(props) {
                                             setSelectedSortOrder(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item.id == selectedSortOrder ? fonts.OpenSansBold : fonts.OpenSansMedium,
+                                            fontFamily: item.id == selectedSortOrder ? fonts.MontserratBold : fonts.MontserratMedium,
                                         }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -495,7 +497,7 @@ function Listing(props) {
                                             setSelectedCategory(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item.id == selectedCategory ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                            fontFamily: item.id == selectedCategory ? fonts.MontserratBold : fonts.MontserratMedium
                                         }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -517,7 +519,7 @@ function Listing(props) {
                                             setSelectedMaterial(item.id);
                                         }}>
                                         <Text style={[{
-                                            fontFamily: item.id == selectedMaterial ? fonts.OpenSansBold : fonts.OpenSansMedium
+                                            fontFamily: item.id == selectedMaterial ? fonts.MontserratBold : fonts.MontserratMedium
                                         }, styles.filterPillText]}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -575,7 +577,7 @@ const styles = StyleSheet.create({
     iconButton: {
         backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -587,7 +589,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center',
         flex: 1,
@@ -605,7 +607,7 @@ const styles = StyleSheet.create({
     },
     filterTitle: {
         fontSize: fontSizes.h4,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: 'black',
         marginLeft: 15,
         marginBottom: 15
@@ -642,24 +644,24 @@ const styles = StyleSheet.create({
         width: 120,
         paddingBottom: 0,
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: 'black'
     },
     priceLabel: {
         fontSize: fontSizes.h6,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: 'black',
         marginTop: 5
     },
     primaryButton: {
-        borderRadius: 35,
+        borderRadius: 5,
         paddingVertical: 10,
         marginHorizontal: 15,
         marginVertical: 10
     },
     primaryButtonText: {
         fontSize: fontSizes.h4,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         textAlign: 'center'
     },
     sortModal: {
@@ -670,7 +672,7 @@ const styles = StyleSheet.create({
     sortModalTitle: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         marginLeft: 20,
         marginVertical: 20
     },
@@ -697,14 +699,14 @@ const styles = StyleSheet.create({
     radioText: {
         color: 'black',
         fontSize: fontSizes.h3,
-        fontFamily: fonts.OpenSansMedium
+        fontFamily: fonts.MontserratMedium
     },
     filterNumber: {
         position: 'absolute',
         top: 0,
         right: 1,
         borderRadius: 20,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         color: 'white',
         fontSize: fontSizes.h6 / 1.5,
         backgroundColor: 'red',

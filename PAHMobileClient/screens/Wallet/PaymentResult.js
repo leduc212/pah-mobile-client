@@ -44,7 +44,7 @@ function PaymentResult(props) {
             }} />
             <Text style={{
                 fontSize: fontSizes.h3,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 color: 'black',
                 textAlign: 'center',
                 marginHorizontal: 35,
@@ -53,7 +53,7 @@ function PaymentResult(props) {
             <TouchableOpacity onPress={() => goBack()}>
                 <Text style={{
                     fontSize: fontSizes.h5,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                     color: colors.primary,
                     textAlign: 'center',
                     marginHorizontal: 35,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 12,
-        borderRadius: 50
+        borderRadius: 5
     },
     titleContainer: {
         height: 70,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'black',
-        fontFamily: fonts.OpenSansBold,
+        fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center'
     },

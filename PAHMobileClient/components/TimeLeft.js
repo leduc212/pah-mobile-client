@@ -29,7 +29,7 @@ function TimeLeft(props) {
 const styles = StyleSheet.create({
     itemDateLeft: {
         color: colors.darkGreyText,
-        fontFamily: fonts.OpenSansMedium,
+        fontFamily: fonts.MontserratMedium,
         fontSize: fontSizes.h6
     }
 })
