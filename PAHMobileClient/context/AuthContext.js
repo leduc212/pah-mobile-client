@@ -1,6 +1,5 @@
 import React, {createContext, useState} from 'react';
 import * as Keychain from 'react-native-keychain';
-import { roles } from '../constants';
 
 const AuthContext = createContext(null);
 const {Provider} = AuthContext;
@@ -9,8 +8,7 @@ const AuthProvider = ({children}) => {
   const [authState, setAuthState] = useState({
     accessToken: null,
     refreshToken: null,
-    authenticated: true,
-    role: roles.buyer
+    authenticated: false
   });
 
   const logout = async () => {
@@ -18,8 +16,7 @@ const AuthProvider = ({children}) => {
     setAuthState({
       accessToken: null,
       refreshToken: null,
-      authenticated: false,
-      role: roles.buyer
+      authenticated: false
     });
   };
 
