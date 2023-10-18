@@ -212,7 +212,10 @@ function AuctionDetail(props) {
                     <TouchableOpacity style={styles.primaryButton}
                         onPress={() => {
                             if (authContext?.authState?.authenticated) {
-                                navigate('AuctionBidding', { auction_id: auction.id })
+                                navigate('AuctionBidding', { auction_id: auction.id ,
+                                currentPrice:auction.currentPrice, 
+                                step:auction.step,
+                                })
                             }
                             else {
                                 navigate('Login')
