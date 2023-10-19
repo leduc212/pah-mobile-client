@@ -10,10 +10,15 @@ import TimeLeft from '../TimeLeft';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 function AuctionListingCard(props) {
     const { auction, onPress, index } = props;
-    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', startingPrice, endedAt } = auction;
+    const { title, imageUrl = 'https://www.actbus.net/fleetwiki/images/8/84/Noimage.jpg', startingPrice, endedAt } = auction;
 
     return <View style={{
-        paddingHorizontal: 15
+        paddingHorizontal: 15,
+        paddingVertical:5,
+        backgroundColor:colors.grey,
+        borderRadius:5,
+        marginBottom:5,
+        marginHorizontal:10
     }}>
         {index != 0 && <View style={{
             height: 1.2,
@@ -22,11 +27,12 @@ function AuctionListingCard(props) {
             marginBottom: 15
         }}></View>}
         <TouchableOpacity style={{
-            flexDirection: 'row'
+            flexDirection: 'row',
+            alignItems:'center'
         }}
             onPress={onPress}
         >
-            <Image source={{ uri: imageUrl }}
+            <Image source={{ uri:imageUrl }}
                 style={{
                     resizeMode: 'cover',
                     width: 140,

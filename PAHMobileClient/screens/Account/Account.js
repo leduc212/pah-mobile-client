@@ -219,7 +219,7 @@ function Account(props) {
                             {/* Bids and offers history */}
                             <AccountMenuItem iconName='book-open' text='Lịch sử đấu giá'
                                 onPress={() => {
-                                    navigate('Home')
+                                    navigate('BidderAuctionHistoryListing')
                                 }} />
                             {/* Seller's page */}
                             <AccountMenuItem iconName='tag' text='Trang người bán'
