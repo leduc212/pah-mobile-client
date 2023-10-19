@@ -22,7 +22,8 @@ import {
     Auction as AuctionRepository
 } from '../../repositories';
 
-function BidderAuctionHistoryListing(props) {
+function SellerAuctionHistoryListing(props) {
+    const{seller_id} = props.route.params;
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
@@ -50,7 +51,7 @@ function BidderAuctionHistoryListing(props) {
     function getAllAuction() {
         setIsLoading(true);
 
-        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus)
+        AuctionRepository.getAuctionsBySeller(axiosContext,seller_id,currentAuctionStatus)
             .then(response => {
                 setAuctions(response);
                 setIsLoading(false);
@@ -83,7 +84,7 @@ function BidderAuctionHistoryListing(props) {
             <Text style={styles.titleText}
                 numberOfLines={1}
                 ellipsizeMode='tail'
-            >Lịch sử đấu giá</Text>
+            >Các cuộc đấu giá</Text>
         </View>
 
         {/* Filter section */}
@@ -315,4 +316,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default BidderAuctionHistoryListing;
+export default SellerAuctionHistoryListing;

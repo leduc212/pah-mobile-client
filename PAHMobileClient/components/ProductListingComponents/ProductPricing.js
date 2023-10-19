@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -9,13 +9,23 @@ import {
   Switch,
   KeyboardAvoidingView,
 } from 'react-native';
-import { colors, fontSizes, fonts } from '../../constants';
+import {colors, fontSizes, fonts} from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 
 function ProductPricing(props) {
-  const { price, setPrice, type, setType, setPricingMode, startedAt, setStartedAt, endedAt, setEndedAt } = props;
+  const {
+    price,
+    setPrice,
+    type,
+    setType,
+    setPricingMode,
+    auctionTitle,
+    setAuctionTitle,
+    auctionStep,
+    setAuctionStep,
+  } = props;
   const [enableAuction, setEnableAuction] = useState(false);
   const [enableBuy, setEnableBuy] = useState(true);
 
@@ -72,7 +82,7 @@ function ProductPricing(props) {
               }}>
               <Switch
                 disabled={enableAuction == true}
-                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                trackColor={{false: '#767577', true: '#81b0ff'}}
                 thumbColor={
                   enableAuction ? colors.primary : colors.darkGreyText
                 }
@@ -109,7 +119,7 @@ function ProductPricing(props) {
               }}>
               <Switch
                 disabled={enableBuy == true}
-                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                trackColor={{false: '#767577', true: '#81b0ff'}}
                 thumbColor={enableBuy ? colors.primary : colors.darkGreyText}
                 onValueChange={() => {
                   setEnableAuction(false);
@@ -133,15 +143,48 @@ function ProductPricing(props) {
         {/* Section */}
         <View>
           <Text style={styles.titleSection}>Thông tin thêm</Text>
+          {type == 2 && (
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 10,
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  width: 120,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                }}>
+                Tựa đề
+              </Text>
+              <TextInput
+                value={auctionTitle}
+                onChangeText={text => {
+                  setAuctionTitle(text);
+                }}
+                placeholder="Nhập tại đây"
+                style={{
+                  width: 150,
+                  borderColor: colors.black,
+                  marginStart: 20,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                }}
+              />
+            </View>
+          )}
+
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 10,
               alignItems: 'center',
             }}>
             <Text
               style={{
-                width: 150,
+                width: 120,
                 color: colors.black,
                 fontSize: fontSizes.h4,
                 fontFamily: fonts.MontserratMedium,
@@ -156,13 +199,12 @@ function ProductPricing(props) {
               keyboardType="numeric"
               placeholder="Nhập tại đây"
               style={{
-                width: 130,
+                width: 120,
                 borderColor: colors.black,
                 marginStart: 20,
                 color: colors.black,
                 fontSize: fontSizes.h4,
                 fontFamily: fonts.MontserratMedium,
-                paddingStart: 0
               }}
             />
             <Text
@@ -175,91 +217,47 @@ function ProductPricing(props) {
             </Text>
           </View>
 
-          {type == 2 &&
-            <View>
-              <View
+          {type == 2 && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Text
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  width: 120,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
                 }}>
-                <Text
-                  style={{
-                    width: 150,
-                    color: colors.black,
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.MontserratMedium,
-                  }}>
-                  Ngày bắt đầu
-                </Text>
-                <TouchableOpacity onPress={() => {
-                  setOpenDatePickerStartedAt(true);
-                }}>
-                  <Text style={{
-                    borderColor: colors.black,
-                    color: colors.black,
-                    marginStart: 20,
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.MontserratMedium,
-                  }}>{startedAt == 0 ? 'Chọn ngày bắt đầu' : moment(startedAt).format('DD/MM/YYYY, HH:mm')}</Text>
-                </TouchableOpacity>
-                <DatePicker
-                  modal
-                  mode={'datetime'}
-                  open={openDatePickerStartedAt}
-                  date={new Date(startedAt)}
-                  minimumDate={new Date()}
-                  onConfirm={newDate => {
-                    setStartedAt(newDate);
-                    setOpenDatePickerStartedAt(false);
-                  }}
-                  onCancel={() => {
-                    setOpenDatePickerStartedAt(false);
-                  }}
-                />
-              </View>
-              <View
+                Bước giá
+              </Text>
+              <TextInput
+                value={auctionStep}
+                onChangeText={text => {
+                  setAuctionStep(text);
+                }}
+                keyboardType="numeric"
+                placeholder="Nhập tại đây"
                 style={{
-                  flexDirection: 'row',
-                  marginTop: 10,
-                  alignItems: 'center',
+                  width: 120,
+                  borderColor: colors.black,
+                  marginStart: 20,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
                 }}>
-                <Text
-                  style={{
-                    width: 150,
-                    color: colors.black,
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.MontserratMedium,
-                  }}>
-                  Ngày kết thúc
-                </Text>
-                <TouchableOpacity onPress={() => {
-                  setOpenDatePickerEndedAt(true);
-                }}>
-                  <Text style={{
-                    borderColor: colors.black,
-                    color: colors.black,
-                    marginStart: 20,
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.MontserratMedium,
-                  }}>{endedAt == 0 ? 'Chọn ngày kết thúc' : moment(endedAt).format('DD/MM/YYYY, HH:mm')}</Text>
-                </TouchableOpacity>
-                <DatePicker
-                  modal
-                  mode={'datetime'}
-                  open={openDatePickerEndedAt}
-                  date={new Date(endedAt)}
-                  minimumDate={new Date(startedAt)}
-                  onConfirm={newDate => {
-                    setEndedAt(newDate);
-                    setOpenDatePickerEndedAt(false);
-                  }}
-                  onCancel={() => {
-                    setOpenDatePickerEndedAt(false);
-                  }}
-                />
-              </View>
+                VNĐ
+              </Text>
             </View>
-          }
+          )}
         </View>
 
         {/* Accept button */}
@@ -364,6 +362,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
-
 });
 export default ProductPricing;
