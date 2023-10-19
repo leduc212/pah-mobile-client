@@ -5,13 +5,13 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import {  fontSizes, fonts, images, colors } from '../../constants';
+import { fontSizes, fonts, images, colors } from '../../constants';
 import TimeLeft from '../TimeLeft';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function HomeAuctionCard(props) {
     const { item, onPress, index } = props;
-    const { title, endedAt, currentPrice, imageUrl = images.defaultAvatar } = item;
+    const { title, registrationEnd, currentPrice, imageUrl = images.defaultAvatar } = item;
 
     return <TouchableOpacity
         onPress={onPress}
@@ -27,6 +27,7 @@ function HomeAuctionCard(props) {
         <Text numberOfLines={2}
             ellipsizeMode='tail'
             style={styles.itemPrice}>₫{numberWithCommas(currentPrice)}</Text>
+        {registrationEnd != undefined && <TimeLeft prefixText={'Đóng đăng ký trong'} width={160} closedTime={registrationEnd} />}
     </TouchableOpacity>
 }
 

@@ -16,7 +16,7 @@ async function getAuctionsHome(axiosContext) {
 }
 
 async function getAuctions(axiosContext, query) {
-  const {materialId = 0, categoryId = 0, orderBy = 0} = query;
+  const { materialId = 0, categoryId = 0, orderBy = 0 } = query;
   const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=5`;
 
   try {
@@ -53,6 +53,9 @@ async function getAuctionDetail(axiosContext, auction_id) {
     auction.step = responseAuction.step ?? 0;
     auction.startedAt = responseAuction.startedAt ?? '';
     auction.endedAt = responseAuction.endedAt ?? '';
+    auction.registrationStart = responseAuction.registrationStart ?? '';
+    auction.registrationEnd = responseAuction.registrationEnd ?? '';
+    auction.status = responseAuction.status ?? 0;
     auction.product = responseAuction.product ?? {};
     auction.imageUrls = responseAuction.imageUrls ?? [];
     auction.seller = responseAuction.seller ?? {};
@@ -65,7 +68,7 @@ async function getAuctionDetail(axiosContext, auction_id) {
   }
 }
 
-async function getAuctionsByBidder(axiosContext,status) {
+async function getAuctionsByBidder(axiosContext, status) {
   const auctionPath = `/auction/bidder?status=${status}`;
   try {
     let result = [];
@@ -82,6 +85,8 @@ async function getAuctionsByBidder(axiosContext,status) {
       auction.currentPrice = responseAuction.currentPrice ?? 0;
       auction.startedAt = responseAuction.startedAt ?? '';
       auction.endedAt = responseAuction.endedAt ?? '';
+      auction.registrationStart = responseAuction.registrationStart ?? '';
+      auction.registrationEnd = responseAuction.registrationEnd ?? '';
       auction.imageUrl = responseAuction.imageUrl ?? '';
 
       result.push(auction);
@@ -93,25 +98,25 @@ async function getAuctionsByBidder(axiosContext,status) {
 }
 
 async function checkRegistration(axiosContext, auction_id) {
-    const auctionPath = `/auction/register/check/${auction_id}`;
-    
-    try {
-        let responseData = await axiosContext.authAxios.get(auctionPath);
-        if (responseData.status != 200) {
-            throw responseData.message;
-        }
-        
-        let responseCheck = responseData.data.data;
-        return responseCheck;
-    } catch (error) {
-        throw error;
+  const auctionPath = `/auction/register/check/${auction_id}`;
+
+  try {
+    let responseData = await axiosContext.authAxios.get(auctionPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
     }
+
+    let responseCheck = responseData.data.data;
+    return responseCheck;
+  } catch (error) {
+    throw error;
+  }
 }
 
 export default {
-    getAuctionsHome,
-    getAuctions,
-    getAuctionDetail,
-    checkRegistration,
-    getAuctionsByBidder
+  getAuctionsHome,
+  getAuctions,
+  getAuctionDetail,
+  checkRegistration,
+  getAuctionsByBidder
 }

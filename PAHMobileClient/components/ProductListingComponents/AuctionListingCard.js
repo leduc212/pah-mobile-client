@@ -8,9 +8,11 @@ import {
 import { colors, fontSizes, fonts } from '../../constants';
 import TimeLeft from '../TimeLeft';
 import { numberWithCommas } from '../../utilities/PriceFormat';
+import moment from 'moment';
 function AuctionListingCard(props) {
     const { auction, onPress, index } = props;
-    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', startingPrice, registrationEnd } = auction;
+    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg',
+        startingPrice, registrationEnd, status, startedAt, endedAt, currentPrice } = auction;
 
     return <View style={{
         paddingHorizontal: 15
@@ -46,16 +48,67 @@ function AuctionListingCard(props) {
                         fontSize: fontSizes.h4,
                         marginBottom: 5
                     }}>{title}</Text>
-                <Text
-                    numberOfLines={2}
-                    ellipsizeMode='tail'
-                    style={{
-                        color: colors.primary,
-                        fontFamily: fonts.MontserratMedium,
-                        fontSize: fontSizes.h3,
-                        marginBottom: 5
-                    }}>₫{numberWithCommas(startingPrice)}</Text>
-                {registrationEnd != undefined && <TimeLeft prefixText={'Đóng đăng ký trong'} width={200} closedTime={registrationEnd} />}
+                {status == 4 && <View>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3
+                        }}>Giá khởi điểm</Text>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3,
+                            marginBottom: 5
+                        }}>₫{numberWithCommas(startingPrice)}</Text>
+                </View>}
+                {(status == 5 && moment(endedAt).isAfter(moment())) && <View>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3
+                        }}>Giá hiện tại</Text>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3,
+                            marginBottom: 5
+                        }}>₫{numberWithCommas(currentPrice)}</Text>
+                </View>}
+                {(status == 5 && moment(endedAt).isBefore(moment())) && <View>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3
+                        }}>Giá cuối cùng</Text>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode='tail'
+                        style={{
+                            color: colors.primary,
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h3,
+                            marginBottom: 5
+                        }}>₫{numberWithCommas(currentPrice)}</Text>
+                </View>}
+                {(status == 4 && moment(registrationEnd).isAfter(moment())) && <TimeLeft prefixText={'Đóng đăng ký trong'} width={200} closedTime={registrationEnd} />}
+                {(status == 4 && moment(registrationEnd).isBefore(moment())) && <TimeLeft prefixText={'Bắt đầu trong'} width={200} closedTime={startedAt} />}
+                {(status == 5 && moment(endedAt).isAfter(moment())) && <TimeLeft prefixText={'Kết thúc trong'} width={200} closedTime={endedAt} />}
+                {(status == 5 && moment(endedAt).isBefore(moment())) && <TimeLeft prefixText={'Đã kết thúc'} width={200} closedTime={endedAt} />}
             </View>
         </TouchableOpacity>
     </View>

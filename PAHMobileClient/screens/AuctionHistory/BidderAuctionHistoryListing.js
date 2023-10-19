@@ -41,23 +41,18 @@ function BidderAuctionHistoryListing(props) {
     // Data for auctions and filters
     const [auctions, setAuctions] = useState([]);
     // Auction status filter
-  const [auctionStatus, setAuctionStatus] = useState([4,5,6,7]);
-  const [currentAuctionStatus, setCurrentAuctionStatus] = useState(5);
+    const [auctionStatus, setAuctionStatus] = useState([4, 5, 6, 7]);
+    const [currentAuctionStatus, setCurrentAuctionStatus] = useState(4);
 
     //// FUNCTION AND USE EFFECT
 
     // Initialize data for categories, materials and auctions on screen start
-    function initializeDataListing() {
+    function getAllAuction() {
         setIsLoading(true);
 
-        // Get Auctions
-        const promiseAuction = AuctionRepository.getAuctionsByBidder(axiosContext,currentAuctionStatus)
+        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus)
             .then(response => {
                 setAuctions(response);
-            });
-
-        Promise.all([ promiseAuction])
-            .then((values) => {
                 setIsLoading(false);
             })
             .catch(error => {
@@ -66,73 +61,64 @@ function BidderAuctionHistoryListing(props) {
     }
 
     useEffect(() => {
-        initializeDataListing();
-    }, []);
-
+        getAllAuction();
+    }, [currentAuctionStatus]);
 
     // Scroll view refresh
     const onRefresh = () => {
         setRefreshing(true);
-        initializeDataListing();
+        getAllAuction();
         setRefreshing(false);
     };
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
         <View style={styles.titleContainer}>
-        <TouchableOpacity style={styles.iconButton}
-                    onPress={() => {
-                        goBack();
-                    }}>
-                    <IconFeather name='chevron-left' size={18} color={'black'} />
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}
+                onPress={() => {
+                    goBack();
+                }}>
+                <IconFeather name='chevron-left' size={30} color={'black'} />
+            </TouchableOpacity>
             <Text style={styles.titleText}
                 numberOfLines={1}
                 ellipsizeMode='tail'
             >Lịch sử đấu giá</Text>
-            <View style={styles.titleButtonContainer}>
-                <TouchableOpacity style={styles.iconButton}
-                    onPress={() => {
-                        navigate('Cart')
-                    }}>
-                    <IconFeather name='shopping-cart' size={18} color={'black'} />
-                </TouchableOpacity>
-            </View>
         </View>
 
         {/* Filter section */}
         <View>
-          <FlatList
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={auctionStatus}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 15,
-                    borderBottomWidth: item == currentAuctionStatus ? 2 : null,
-                    borderBottomColor:
-                      item == currentAuctionStatus ? colors.primary : null,
-                  }}
-                  onPress={() => {
-                    setCurrentAuctionStatus(item);
-                  }}>
-                  <Text
-                    style={{
-                      color:
-                        item == currentAuctionStatus ? colors.primary : 'black',
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h5,
-                    }}>
-                    {auctionStatusText(item)}
-                  </Text>
-                </TouchableOpacity>
-              );
-            }}
-            keyExtractor={status => status}
-          />
+            <FlatList
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={auctionStatus}
+                renderItem={({ item }) => {
+                    return (
+                        <TouchableOpacity
+                            style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 15,
+                                borderBottomWidth: item == currentAuctionStatus ? 2 : null,
+                                borderBottomColor:
+                                    item == currentAuctionStatus ? colors.primary : null,
+                            }}
+                            onPress={() => {
+                                setCurrentAuctionStatus(item);
+                            }}>
+                            <Text
+                                style={{
+                                    color:
+                                        item == currentAuctionStatus ? colors.primary : 'black',
+                                    fontFamily: fonts.MontserratMedium,
+                                    fontSize: fontSizes.h5,
+                                }}>
+                                {auctionStatusText(item)}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                }}
+                keyExtractor={status => status}
+            />
         </View>
 
         {/* Loading section */}
@@ -144,30 +130,16 @@ function BidderAuctionHistoryListing(props) {
         </View> : <ScrollView refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-            {/* Title (type of list: for sale/auction) section */}
-            <View style={{
-                paddingVertical: 10,
-                paddingHorizontal: 15,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 20
-            }}>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.MontserratMedium,
-                    fontSize: fontSizes.h2
-                }}>Đấu giá đã tham gia ({auctions.length})</Text>
-            </View>
-            {(Array.isArray(auctions) && auctions.length) ? <View>
+            {(Array.isArray(auctions) && auctions.length) ? <View style={{ marginTop: 20 }}>
                 <View style={{
                     flex: 1,
                     marginBottom: 15
                 }}>
                     {auctions.map((auction, index) =>
                         <AuctionListingCard key={auction.id} auction={auction}
-                        index={index} onPress={() => {
-                            navigate('AuctionDetail', { auction_id: auction.id })
-                        }} />
+                            index={index} onPress={() => {
+                                navigate('AuctionDetail', { auction_id: auction.id })
+                            }} />
                     )}
                 </View>
             </View> : <View style={{
@@ -187,7 +159,7 @@ function BidderAuctionHistoryListing(props) {
                     textAlign: 'center',
                     marginHorizontal: 35,
                     marginTop: 10
-                }}>Không thể tìm thấy cuộc đấu giá nào. Bạn hãy thử đặt lại bộ lọc xem sao!</Text>
+                }}>Bạn không có cuộc đấu giá nào có trạng thái này</Text>
             </View>}
         </ScrollView>}
 
@@ -200,14 +172,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        backgroundColor: colors.grey,
         padding: 12,
         borderRadius: 5
     },
     titleContainer: {
         height: 70,
         flexDirection: 'row',
-        paddingLeft: 15,
+        paddingLeft: 5,
         paddingRight: 10,
         justifyContent: 'space-between',
         alignItems: 'center'

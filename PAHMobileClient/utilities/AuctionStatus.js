@@ -3,7 +3,7 @@ export const auctionStatusText = (auctionStatus) => {
     let result = 'Đã kết thúc'
     switch (auctionStatus) {
         case 4:
-            result = 'Đang mở đăng ký'
+            result = 'Sắp diễn ra'
             break;
         case 5:
             result = 'Đang diễn ra'

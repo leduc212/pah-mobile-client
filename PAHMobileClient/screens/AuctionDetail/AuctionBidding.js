@@ -53,7 +53,7 @@ function AuctionBidding(props) {
   const validationBidAmount = () =>
     parseInt(bidAmount) >= auction.currentPrice + auction.step;
   const duration = differenceInSeconds(
-    new Date(auction.registrationEnd),
+    new Date(auction.endedAt),
     new Date(),
   );
 

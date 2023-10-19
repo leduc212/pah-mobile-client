@@ -114,6 +114,11 @@ function AuctionDetail(props) {
                     setUserAddress(response);
                     // Shipping cost calculate
                     getShippingCost(response, auction);
+                })
+                .catch(error => {
+                    // console.log('AddressError: ');
+                    // console.log(error.response.data);
+                    setIsLoading(false);
                 });
             const promiseCheck = await AuctionRepository.checkRegistration(axiosContext, auction_id)
                 .then(response => {
@@ -261,7 +266,15 @@ function AuctionDetail(props) {
 
                 {/* Pricing section */}
                 <View style={styles.priceContainer}>
-                    <Text style={styles.pricePrimary}>₫{numberWithCommas(auction.startingPrice)} giá khởi điểm</Text>
+                    {auction.status == 4 && <Text style={styles.pricePrimary}>
+                        Giá khởi điểm: ₫{numberWithCommas(auction.startingPrice)}
+                    </Text>}
+                    {(auction.status == 5 && moment(auction.endedAt).isAfter(moment())) && <Text style={styles.pricePrimary}>
+                        Giá hiện tại: ₫{numberWithCommas(auction.currentPrice)}
+                    </Text>}
+                    {(auction.status == 5 && moment(auction.endedAt).isBefore(moment())) && <Text style={styles.pricePrimary}>
+                        Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
+                    </Text>}
                     {!authContext?.authState?.authenticated ? <Text
                         style={styles.priceSecondary}
                     >Đăng nhập để xem cước phí vận chuyển</Text> : <View>
