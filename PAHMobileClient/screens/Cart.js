@@ -207,7 +207,7 @@ function Cart(props) {
                 {/* Cart list: items by seller */}
 
                 {cartGrouped.map((seller) =>
-                    <View key={seller.id} style={{ marginBottom: 10 }}>
+                    <View key={seller.sellerId} style={{ marginBottom: 10 }}>
                         <Text style={{
                             color: 'black',
                             fontFamily: fonts.MontserratBold,

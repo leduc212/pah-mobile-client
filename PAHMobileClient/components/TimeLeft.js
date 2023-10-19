@@ -8,10 +8,9 @@ import moment from 'moment';
 import "moment/min/locales";
 
 function TimeLeft(props) {
-    const { closedTime, width = 150, showText = true, textStyle = styles.itemDateLeft } = props;
+    const { closedTime, width = 150, showText = true, textStyle = styles.itemDateLeft, prefixText } = props;
     moment.locale('vi');
     const [timeLeft, setTimeLeft] = useState(moment(closedTime).fromNow());
-    const timeText = moment(closedTime).isBefore(moment()) ? 'Đã kết thúc' : 'Kết thúc trong';
 
     useEffect(() => {
         setInterval(() => {
@@ -23,7 +22,7 @@ function TimeLeft(props) {
         ellipsizeMode='tail'
         style={[textStyle, {
             width: width
-        }]}>{showText && timeText} {timeLeft}</Text>
+        }]}>{showText && prefixText} {timeLeft}</Text>
 }
 
 const styles = StyleSheet.create({

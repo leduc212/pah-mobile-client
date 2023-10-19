@@ -11,22 +11,27 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
+import { SignalRContext } from '../../context/SignalRContext';
 import { colors, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
 import Modal from 'react-native-modal';
 import {
-    ListingDetailInfoText,
-    TimeLeft
+    ListingDetailInfoText
 } from '../../components';
 import {
     Auction as AuctionRepository,
     Shipping as ShippingRepository,
-    Address as AddressRepository
+    Address as AddressRepository,
+    Bid as BidRepository,
+    Wallet as WalletRepository
 } from '../../repositories';
 import { conditionText } from '../../utilities/Condition';
 import moment from 'moment';
 import { numberWithCommas } from '../../utilities/PriceFormat';
+import CountDown from 'react-native-countdown-fixed';
+import { differenceInSeconds } from 'date-fns';
+import Toast from 'react-native-toast-message';
 
 function AuctionDetail(props) {
     //// AUTH AND NAVIGATION
@@ -36,6 +41,7 @@ function AuctionDetail(props) {
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
+    const signalRContext = useContext(SignalRContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -56,72 +62,143 @@ function AuctionDetail(props) {
     const [shippingPrice, setShippingPrice] = useState(0);
 
     // Modal data
-    const [sellerModalVisible, setSellerModalVisible] = useState(false);
     const [shippingModalVisible, setShippingModalVisible] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
     // Data for loading and refreshing
     const [isLoading, setIsLoading] = useState(true);
+    const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [userRegistered, setUserRegistered] = useState(false);
+
+    // Data for validating register duration and bidding duration
+    const isRegisterDuration = () => moment(auction.registrationStart).isBefore(moment()) &&
+        moment(auction.registrationEnd).isAfter(moment());
+
+    const isBiddingDuration = () => moment(auction.startedAt).isBefore(moment()) &&
+        moment(auction.endedAt).isAfter(moment());
+
+    // Countdown data
+    const durationRegistration = differenceInSeconds(
+        new Date(auction.registrationEnd),
+        new Date(),
+    );
+
+    const durationTillStart = differenceInSeconds(
+        new Date(auction.startedAt),
+        new Date(),
+    );
+
+    const durationTillEnd = differenceInSeconds(
+        new Date(auction.endedAt),
+        new Date(),
+    );
 
     //// FUNCTION
     // Get auction detail from current auction id
     function getAutionDetail() {
         setIsLoading(true);
-        
-        // If authenticated, get default address and shipping price
-        if (authContext?.authState?.authenticated) {
-            AuctionRepository.getAuctionDetail(axiosContext, auction_id)
-                .then(responseAuction => {
-                    setAuction(responseAuction)
+        AuctionRepository.getAuctionDetail(axiosContext, auction_id)
+            .then(response => {
+                setAuction(response);
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }
 
-                    AddressRepository.getAdrressCurrentUser(axiosContext)
-                        .then(responseAddress => {
-                            setUserAddress(responseAddress);
-                            // Shipping cost calculate
-                            getShippingCost(responseAddress, responseAuction);
-                        })
-                        .catch(error => {
-                            console.log(error);
-                            setIsLoading(false);
-                        });
-                })
-                .catch(error => {
-                    setIsLoading(false);
-                });
-        } else {
-            AuctionRepository.getAuctionDetail(axiosContext, auction_id)
+    useEffect(() => {
+        const calcShip = async () => {
+            const promiseAddress = await AddressRepository.getAdrressCurrentUser(axiosContext)
                 .then(response => {
-                    setAuction(response)
+                    setUserAddress(response);
+                    // Shipping cost calculate
+                    getShippingCost(response, auction);
+                });
+            const promiseCheck = await AuctionRepository.checkRegistration(axiosContext, auction_id)
+                .then(response => {
+                    setUserRegistered(response);
+                });
+
+            Promise.all([promiseAddress, promiseCheck])
+                .then((values) => {
                     setIsLoading(false);
                 })
                 .catch(error => {
                     setIsLoading(false);
                 });
         }
-    }
 
-    function getShippingCost(responseAddress, responseAuction) {
-        ShippingRepository.calculateShippingCost({
-            service_type_id: 2,
-            from_district_id: auction.seller.districtId,
-            from_ward_code: auction.seller.wardCode,
-            to_district_id: responseAddress.districtId,
-            to_ward_code: responseAddress.wardCode,
-            weight: responseAuction.product.weight
-        })
-            .then(responseShip => {
-                setShippingPrice(responseShip.total);
-                setIsLoading(false);
+        if (authContext?.authState?.authenticated) {
+            calcShip();
+        } else {
+            setIsLoading(false);
+        }
+
+    }, [auction])
+
+    async function getShippingCost(responseAddress, responseAuction) {
+        if (responseAuction.product.weight) {
+            await ShippingRepository.calculateShippingCost({
+                service_type_id: 2,
+                from_district_id: responseAuction.seller.districtId,
+                from_ward_code: responseAuction.seller.wardCode,
+                to_district_id: responseAddress.districtId,
+                to_ward_code: responseAddress.wardCode,
+                weight: responseAuction.product.weight
             })
-            .catch(error => {
-                console.log(error);
-                setIsLoading(false);
-            })
+                .then(responseShip => {
+                    setShippingPrice(responseShip.total);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log(error.response.data)
+                    setIsLoading(false);
+                })
+        }
     }
 
     useEffect(() => {
         getAutionDetail();
     }, []);
+
+    // Register to join auction
+    async function registerAuction() {
+        setIsRegisterLoading(true);
+        WalletRepository.getWalletCurrentUser(axiosContext)
+            .then(responseWallet => {
+                if (responseWallet.availableBalance > auction.entryFee + auction.startingPrice) {
+                    BidRepository.registerAuction(axiosContext, auction_id)
+                        .then(response => {
+                            setUserRegistered(true);
+                            setConfirmModalVisible(false);
+                            setIsRegisterLoading(false);
+                            signalRContext.connection?.invoke("JoinGroup", auction_id).catch(function (err) {
+                                return console.error(err.toString());
+                            });
+                        })
+                        .catch(err => {
+                            console.log(err.response)
+                            setIsRegisterLoading(false);
+                        })
+                } else {
+                    setIsRegisterLoading(false);
+                    setConfirmModalVisible(false);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Số dư trong tài khoản không đủ',
+                        position: 'bottom',
+                        autoHide: true,
+                        visibilityTime: 2000
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                setIsRegisterLoading(false);
+            })
+
+    }
 
     // Scroll view refresh
     const onRefresh = () => {
@@ -175,7 +252,7 @@ function AuctionDetail(props) {
             }>
                 {/* Images slider */}
                 <SliderBox images={auction.imageUrls}
-                    sliderBoxHeight={480}
+                    sliderBoxHeight={400}
                     dotColor={colors.primary}
                     inactiveDotColor='#90A4AE' />
 
@@ -194,35 +271,129 @@ function AuctionDetail(props) {
                         </View> : <Text style={styles.priceSecondary}
                         >Thêm địa chỉ mặc định để xem phí vận chuyển</Text>}
                     </View>}
-                    <TimeLeft textStyle={{
-                        fontFamily: fonts.MontserratMedium,
-                        color: 'black',
-                        fontSize: fontSizes.h3,
-                        marginTop: 15
-                    }} closedTime={auction.endedAt}
-                        width={500} />
                 </View>
 
-                {/* Bid */}
+                {/* Countdown and button section */}
+                <View>
+                    {/* During registration, valid time */}
+                    {(auction.status == 4 && isRegisterDuration()) && <View style={{
+                        paddingHorizontal: 15,
+                        gap: 10,
+                        marginBottom: 10,
+                    }}>
+                        <View style={{ alignItems: 'baseline', gap: 10, marginBottom: 15 }}>
+                            <Text style={{
+                                fontFamily: fonts.MontserratMedium,
+                                color: 'black',
+                                fontSize: fontSizes.h3,
+                                marginTop: 15
+                            }}>Thời gian đăng ký còn</Text>
+                            <CountDown
+                                size={18}
+                                until={durationRegistration}
+                                onFinish={() => alert('Đóng thời gian đăng ký')}
+                                digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
+                                timeLabels={{ m: null, s: null }}
+                                separatorStyle={{ color: colors.primary }}
+                                showSeparator
+                            />
+                        </View>
+
+                        {userRegistered ? <View style={styles.secondaryButton}>
+                            <Text style={styles.secondaryButtonText}>Bạn đã tham gia cuộc đấu giá này</Text>
+                        </View> : <TouchableOpacity style={styles.primaryButton}
+                            disabled={!isRegisterDuration()}
+                            onPress={() => {
+                                if (authContext?.authState?.authenticated) {
+                                    setConfirmModalVisible(!confirmModalVisible);
+                                }
+                                else {
+                                    navigate('Login')
+                                }
+                            }}>
+                            <Text style={styles.primaryButtonText}>Đăng ký đấu giá</Text>
+                        </TouchableOpacity>}
+                    </View>}
+
+                    {/* During registration, invalid time */}
+                    {(auction.status == 4 && !isRegisterDuration()) && <View style={{
+                        paddingHorizontal: 15,
+                        gap: 10,
+                        marginBottom: 10,
+                    }}>
+                        <View style={{ alignItems: 'baseline', gap: 10 }}>
+                            <Text style={{
+                                fontFamily: fonts.MontserratMedium,
+                                color: 'black',
+                                fontSize: fontSizes.h3,
+                                marginTop: 15
+                            }}>Bắt đầu trong</Text>
+                            <CountDown
+                                size={18}
+                                until={durationTillStart}
+                                onFinish={() => alert('Bắt đầu đấi giá')}
+                                digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
+                                timeLabels={{ m: null, s: null }}
+                                separatorStyle={{ color: colors.primary }}
+                                showSeparator
+                            />
+                        </View>
+                    </View>}
+
+                    {/* During bidding, valid time */}
+                    {(auction.status == 5 && isBiddingDuration()) && <View style={{
+                        paddingHorizontal: 15,
+                        gap: 10,
+                        marginBottom: 10,
+                    }}>
+                        <View style={{ alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
+                            <Text style={{
+                                fontFamily: fonts.MontserratMedium,
+                                color: 'black',
+                                fontSize: fontSizes.h3,
+                                marginTop: 15
+                            }}>Kết thúc trong</Text>
+                            <CountDown
+                                size={18}
+                                until={durationTillEnd}
+                                onFinish={() => alert('Kết thúc đấu giá')}
+                                digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
+                                timeLabels={{ m: null, s: null }}
+                                separatorStyle={{ color: colors.primary }}
+                                showSeparator
+                            />
+                        </View>
+                        <TouchableOpacity style={styles.primaryButton}
+                            disabled={!isBiddingDuration()}
+                            onPress={() => {
+                                navigate('AuctionBidding', {
+                                    auction_id: auction.id,
+                                    currentPrice: auction.currentPrice,
+                                    step: auction.step,
+                                })
+                            }}>
+                            <Text style={styles.primaryButtonText}>Vào phòng đấu giá</Text>
+                        </TouchableOpacity>
+                    </View>}
+                </View>
+
+                {/* Bidding section */}
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 10,
+                    marginVertical: 20
                 }}>
-                    <TouchableOpacity style={styles.primaryButton}
-                        onPress={() => {
-                            if (authContext?.authState?.authenticated) {
-                                navigate('AuctionBidding', { auction_id: auction.id ,
-                                currentPrice:auction.currentPrice, 
-                                step:auction.step,
-                                })
-                            }
-                            else {
-                                navigate('Login')
-                            }
-                        }}>
-                        <Text style={styles.primaryButtonText}>Tham gia đấu giá</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.sectionTitle}>Thông tin đấu giá</Text>
+                    <View style={{
+                        marginTop: 5,
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }}>
+                        <View style={{ gap: 10, flex: 1 }}>
+                            <ListingDetailInfoText label='Bắt đầu đấu giá' text={moment(auction.startedAt).format('DD/MM/YYYY HH:mm')} />
+                            <ListingDetailInfoText label='Kết thúc đấu giá' text={moment(auction.endedAt).format('DD/MM/YYYY, HH:mm')} />
+                        </View>
+                    </View>
                 </View>
 
                 {/* Item information section */}
@@ -268,29 +439,6 @@ function AuctionDetail(props) {
                             >{auction.product.description}</Text>
                             <Text style={styles.descriptionLink}
                             >Xem đầy đủ thông tin thêm</Text>
-                        </View>
-                        <IconFeather name='chevron-right' size={30} color='black' />
-                    </TouchableOpacity>
-                </View>
-
-                {/* Bidding section */}
-                <View style={{
-                    paddingHorizontal: 15,
-                    gap: 10,
-                    marginVertical: 20
-                }}>
-                    <Text style={styles.sectionTitle}>Thông tin đấu giá</Text>
-                    <TouchableOpacity style={{
-                        marginTop: 5,
-                        flexDirection: 'row',
-                        alignItems: 'center'
-                    }}
-                        onPress={() => navigate('BiddingHistory', { auction_id: auction.id })}>
-                        <View style={{ gap: 10, flex: 1 }}>
-                            <ListingDetailInfoText label='Thời gian còn lại' text={moment(auction.endedAt).fromNow()}
-                                secondText={moment(auction.endedAt).format('dd, Do MMMM YYYY, h:mm A')} />
-                            <ListingDetailInfoText label='Số lần đặt' text={auction.numberOfBids} />
-                            <ListingDetailInfoText label='Người tham gia' text={auction.numberOfBidders} />
                         </View>
                         <IconFeather name='chevron-right' size={30} color='black' />
                     </TouchableOpacity>
@@ -423,6 +571,97 @@ function AuctionDetail(props) {
                 </View>
             </View>
         </Modal>
+
+        {/* Confirm modal */}
+        <Modal
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            isVisible={confirmModalVisible}
+            onRequestClose={() => {
+                setConfirmModalVisible(!confirmModalVisible)
+            }}
+            style={{ margin: 0 }}>
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: 'white',
+                }}>
+                {/* Title */}
+                <View style={{
+                    height: 70,
+                    flexDirection: 'row',
+                    paddingLeft: 5,
+                    paddingRight: 10,
+                    alignItems: 'center'
+                }}>
+                    <TouchableOpacity
+                        style={{
+                            padding: 12,
+                            borderRadius: 5,
+                        }}
+                        onPress={() => {
+                            setConfirmModalVisible(!confirmModalVisible)
+                        }}>
+                        <IconFeather name="x" size={30} color={'black'} />
+                    </TouchableOpacity>
+                    <Text style={styles.titleText}>Xác nhận tham gia</Text>
+                </View>
+
+                {/* Bidding information */}
+                <View
+                    style={{
+                        gap: 10,
+                        marginHorizontal: 20,
+                        marginBottom: 30,
+                    }}>
+                    <ListingDetailInfoText label="Phí tham gia" text={auction.entryFee && `₫${numberWithCommas(auction.entryFee)}`} />
+                    <ListingDetailInfoText
+                        label="Số dư bị khóa"
+                        text={auction.startingPrice && `₫${numberWithCommas(auction.startingPrice)}`}
+                        secondText='Bạn cần có đủ số dư khả dụng trong tài khoản để tham gia đấu giá'
+                    />
+                </View>
+
+                {/* Confirm buttons */}
+                <View
+                    style={{
+                        paddingHorizontal: 20,
+                        gap: 10,
+                        marginBottom: 20,
+                        flex: 1,
+                        justifyContent: 'flex-end',
+                    }}>
+                    <Text
+                        style={{
+                            fontSize: fontSizes.h5,
+                            fontFamily: fonts.MontserratMedium,
+                            color: 'black',
+                        }}>
+                        Khi bạn xác nhận tham gia đấu giá, điều đó có nghĩa là bạn cam kết
+                        mua mặt hàng này nếu bạn là người thắng cuộc. Điều đó cũng có
+                        nghĩa là bạn đã đọc và đồng ý với Điều khoản của PAH.
+                    </Text>
+                    <TouchableOpacity
+                        disabled={isRegisterLoading}
+                        style={{
+                            borderRadius: 5,
+                            backgroundColor: isRegisterLoading ? colors.grey : colors.primary,
+                            paddingVertical: 10,
+                        }}
+                        onPress={() => registerAuction()}>
+                        <Text
+                            style={{
+                                fontSize: fontSizes.h3,
+                                fontFamily: fonts.MontserratBold,
+                                color: isRegisterLoading ? colors.greyText : 'white',
+                                textAlign: 'center',
+                            }}>
+                            Xác nhận tham gia
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
     </View>
 }
 
@@ -466,8 +705,6 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     primaryButton: {
-        borderWidth: 1.2,
-        borderColor: colors.primary,
         borderRadius: 5,
         backgroundColor: colors.primary,
         paddingVertical: 10
@@ -479,6 +716,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     secondaryButton: {
+        margin: 1.2,
         borderWidth: 1.2,
         borderColor: colors.primary,
         borderRadius: 5,

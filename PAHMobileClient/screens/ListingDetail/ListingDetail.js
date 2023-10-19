@@ -184,7 +184,7 @@ function ListingDetail(props) {
             }>
                 {/* Images slider */}
                 <SliderBox images={product.imageUrls}
-                    sliderBoxHeight={480}
+                    sliderBoxHeight={400}
                     dotColor={colors.primary}
                     inactiveDotColor='#90A4AE' />
 

@@ -392,7 +392,7 @@ function CheckoutCart(props) {
             {/* Product basic info section */}
             <View>
                 {cartGrouped.map((seller) =>
-                    <View key={seller.id}>
+                    <View key={seller.sellerId}>
                         <View style={{
                             paddingHorizontal: 15,
                             marginBottom: 10

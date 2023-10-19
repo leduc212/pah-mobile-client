@@ -32,7 +32,7 @@ function Home(props) {
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
-    const signalRContext = useContext(SignalRContext)
+    const signalRContext = useContext(SignalRContext);
 
     // Navigation
     const { navigation, route } = props;

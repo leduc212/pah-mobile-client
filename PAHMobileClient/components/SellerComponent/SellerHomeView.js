@@ -30,7 +30,7 @@ function SellerHomeView(props) {
           style={{
             fontSize: fontSizes.h4,
             color: 'white',
-            fontFamily: fonts.OpenSansBold,
+            fontFamily: fonts.MontserratBold,
           }}>
           Đăng bán sản phẩm
         </Text>
@@ -89,7 +89,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h5,
               color: colors.black,
-              fontFamily: fonts.OpenSansBold,
+              fontFamily: fonts.MontserratBold,
             }}>
             Ví PAH
           </Text>
@@ -97,7 +97,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h5,
               color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Số dư khả dụng: 11.000.000 VNĐ
           </Text>
@@ -116,7 +116,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h3,
               color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Hồ sơ người bán
           </Text>
@@ -141,7 +141,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h3,
               color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Sản phẩm đang bán
           </Text>
@@ -166,7 +166,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h3,
               color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Các cuộc đấu giá
           </Text>
@@ -194,7 +194,7 @@ function SellerHomeView(props) {
             style={{
               fontSize: fontSizes.h3,
               color: colors.black,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Đơn hàng
           </Text>
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   iconButton: {
     backgroundColor: colors.grey,
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 5,
     padding: 15,
     marginHorizontal:15
   },
@@ -259,22 +259,22 @@ const styles = StyleSheet.create({
   totalTextStyle: {
     fontSize: fontSizes.h1 * 1.5,
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   subtotalTextStyle: {
     fontSize: fontSizes.h6,
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   statStyle: {
     fontSize: fontSizes.h1 * 1.5,
     color: colors.primary,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
   statTitleStyle: {
     fontSize: fontSizes.h6,
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
   },
 });
 export default SellerHomeView;

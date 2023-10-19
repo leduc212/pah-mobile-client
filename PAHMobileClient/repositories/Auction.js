@@ -47,12 +47,15 @@ async function getAuctionDetail(axiosContext, auction_id) {
         auction.productId = responseAuction.productId ?? 0;
         auction.staffName = responseAuction.staffName ?? '';
         auction.title = responseAuction.title ?? '';
+        auction.status = responseAuction.status ?? 0;
         auction.entryFee = responseAuction.entryFee ?? 0;
         auction.startingPrice = responseAuction.startingPrice ?? 0;
         auction.currentPrice = responseAuction.currentPrice ?? 0;
         auction.step = responseAuction.step ?? 0;
         auction.startedAt = responseAuction.startedAt ?? '';
         auction.endedAt = responseAuction.endedAt ?? '';
+        auction.registrationStart = responseAuction.registrationStart ?? '';
+        auction.registrationEnd = responseAuction.registrationEnd ?? '';
         auction.product = responseAuction.product ?? {};
         auction.imageUrls = responseAuction.imageUrls ?? [];
         auction.seller = responseAuction.seller ?? {};
@@ -65,8 +68,25 @@ async function getAuctionDetail(axiosContext, auction_id) {
     }
 }
 
+async function checkRegistration(axiosContext, auction_id) {
+    const auctionPath = `/auction/register/check/${auction_id}`;
+    
+    try {
+        let responseData = await axiosContext.authAxios.get(auctionPath);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        
+        let responseCheck = responseData.data.data;
+        return responseCheck;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getAuctionsHome,
     getAuctions,
-    getAuctionDetail
+    getAuctionDetail,
+    checkRegistration
 }

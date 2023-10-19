@@ -165,9 +165,9 @@ function App(props) {
             signalRContext.connection.start()
                 .then(() => {
                     console.log('connect to chatHub successfully');
-                    signalRContext.connection?.invoke("SendMessage", 'duc', 'hahahhaahah').catch(function (err) {
-                        return console.error(err.toString());
-                    });
+                    // signalRContext.connection?.invoke("SendMessage", 'duc', 'hahahhaahah').catch(function (err) {
+                    //     return console.error(err.toString());
+                    // });
                 })
                 .catch(err => {
                     console.log('connect to hub fail');

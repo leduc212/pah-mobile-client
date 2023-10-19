@@ -19,6 +19,18 @@ async function getBidsByAuctionId(axiosContext, auction_id) {
     }
 }
 
+async function registerAuction(axiosContext, auction_id) {
+    const bidPath = `/bid/auction/register/${auction_id}`;
+
+    try {
+        let responseData = await axiosContext.authAxios.post(bidPath);
+        return responseData;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
-    getBidsByAuctionId
+    getBidsByAuctionId,
+    registerAuction
 }

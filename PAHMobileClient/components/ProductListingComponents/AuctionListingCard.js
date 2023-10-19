@@ -10,7 +10,7 @@ import TimeLeft from '../TimeLeft';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 function AuctionListingCard(props) {
     const { auction, onPress, index } = props;
-    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', startingPrice, endedAt } = auction;
+    const { title, imageUrl = 'https://media.loveitopcdn.com/25808/thumb/img09357-copy.jpg', startingPrice, registrationEnd } = auction;
 
     return <View style={{
         paddingHorizontal: 15
@@ -55,7 +55,7 @@ function AuctionListingCard(props) {
                         fontSize: fontSizes.h3,
                         marginBottom: 5
                     }}>₫{numberWithCommas(startingPrice)}</Text>
-                {endedAt != undefined && <TimeLeft width={200} closedTime={endedAt} />}
+                {registrationEnd != undefined && <TimeLeft prefixText={'Đóng đăng ký trong'} width={200} closedTime={registrationEnd} />}
             </View>
         </TouchableOpacity>
     </View>

@@ -35,7 +35,7 @@ function ProductPricing(props) {
           <Text
             style={{
               color: colors.primary,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               fontSize: fontSizes.h3,
               alignSelf: 'center',
             }}>
@@ -89,7 +89,7 @@ function ProductPricing(props) {
             style={{
               color: colors.darkGreyText,
               fontSize: fontSizes.h5,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Hãy đặt giá thầu và để người mua cạnh tranh cho sản phẩm của bạn
           </Text>
@@ -124,7 +124,7 @@ function ProductPricing(props) {
             style={{
               color: colors.darkGreyText,
               fontSize: fontSizes.h5,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
             }}>
             Người mua có thể mua ngay với giá này
           </Text>
@@ -144,7 +144,7 @@ function ProductPricing(props) {
                 width: 150,
                 color: colors.black,
                 fontSize: fontSizes.h4,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
               }}>
               {type == 1 ? 'Giá' : 'Giá khởi điểm'}
             </Text>
@@ -161,7 +161,7 @@ function ProductPricing(props) {
                 marginStart: 20,
                 color: colors.black,
                 fontSize: fontSizes.h4,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 paddingStart: 0
               }}
             />
@@ -169,7 +169,7 @@ function ProductPricing(props) {
               style={{
                 color: colors.black,
                 fontSize: fontSizes.h4,
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
               }}>
               VNĐ
             </Text>
@@ -187,7 +187,7 @@ function ProductPricing(props) {
                     width: 150,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Ngày bắt đầu
                 </Text>
@@ -199,7 +199,7 @@ function ProductPricing(props) {
                     color: colors.black,
                     marginStart: 20,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>{startedAt == 0 ? 'Chọn ngày bắt đầu' : moment(startedAt).format('DD/MM/YYYY, HH:mm')}</Text>
                 </TouchableOpacity>
                 <DatePicker
@@ -228,7 +228,7 @@ function ProductPricing(props) {
                     width: 150,
                     color: colors.black,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>
                   Ngày kết thúc
                 </Text>
@@ -240,7 +240,7 @@ function ProductPricing(props) {
                     color: colors.black,
                     marginStart: 20,
                     fontSize: fontSizes.h4,
-                    fontFamily: fonts.OpenSansMedium,
+                    fontFamily: fonts.MontserratMedium,
                   }}>{endedAt == 0 ? 'Chọn ngày kết thúc' : moment(endedAt).format('DD/MM/YYYY, HH:mm')}</Text>
                 </TouchableOpacity>
                 <DatePicker
@@ -277,12 +277,12 @@ function ProductPricing(props) {
               alignItems: 'center',
               marginVertical: 15,
               padding: 10,
-              borderRadius: 30,
+              borderRadius: 5,
             }}>
             <Text
               style={{
                 color: 'white',
-                fontFamily: fonts.OpenSansMedium,
+                fontFamily: fonts.MontserratMedium,
                 fontSize: fontSizes.h3,
               }}>
               Chấp nhận
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   titleContainer: {
     height: 70,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: 'black',
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
   },
@@ -329,39 +329,39 @@ const styles = StyleSheet.create({
   titleSection: {
     marginTop: 10,
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
   },
   detailTextSection: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   dropdown: {
     height: 50,
     borderColor: colors.black,
     borderBottomWidth: 1,
-    borderRadius: 8,
+    borderRadius: 5,
     paddingHorizontal: 15,
   },
   placeholderStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   selectedTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
 

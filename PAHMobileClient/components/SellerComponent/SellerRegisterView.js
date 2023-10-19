@@ -182,7 +182,7 @@ function SellerRegisterView(props) {
         <Text style={{
           fontSize: fontSizes.h3,
           color: colors.primary,
-          fontFamily: fonts.OpenSansBold,
+          fontFamily: fonts.MontserratBold,
           marginHorizontal: 10
         }}>{editable ? 'Đăng ký bán hàng ngay hôm nay!' : 'Hồ sơ của bạn đang được duyệt!'}</Text>
       </View>
@@ -212,7 +212,7 @@ function SellerRegisterView(props) {
                   <Text
                     style={{
                       color: 'white',
-                      fontFamily: fonts.OpenSansMedium,
+                      fontFamily: fonts.MontserratMedium,
                       fontSize: fontSizes.h5,
                     }}>
                     Chụp ảnh đại diện
@@ -224,7 +224,7 @@ function SellerRegisterView(props) {
                   <Text
                     style={{
                       color: 'white',
-                      fontFamily: fonts.OpenSansMedium,
+                      fontFamily: fonts.MontserratMedium,
                       fontSize: fontSizes.h5,
                     }}>
                     Chọn ảnh từ thư viện
@@ -247,7 +247,7 @@ function SellerRegisterView(props) {
             style={{
               color: colors.black,
               fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               marginTop: 10,
               borderBottomWidth: 1,
               borderColor: colors.darkGreyText,
@@ -266,7 +266,7 @@ function SellerRegisterView(props) {
             style={{
               color: colors.black,
               fontSize: fontSizes.h4,
-              fontFamily: fonts.OpenSansMedium,
+              fontFamily: fonts.MontserratMedium,
               marginTop: 10,
               borderBottomWidth: 1,
               borderColor: colors.darkGreyText,
@@ -384,7 +384,7 @@ function SellerRegisterView(props) {
             style={{
               fontSize: fontSizes.h4,
               color: 'white',
-              fontFamily: fonts.OpenSansMedium
+              fontFamily: fonts.MontserratMedium
             }}>
             Đăng ký
           </Text>
@@ -403,7 +403,7 @@ function SellerRegisterView(props) {
           {ready ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
           <Text style={{
             color: colors.darkGreyText,
-            fontFamily: fonts.OpenSansMedium,
+            fontFamily: fonts.MontserratMedium,
             fontSize: fontSizes.h5,
           }}>Tôi đồng ý với các điều khoản</Text>
         </TouchableOpacity>
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   iconButton: {
     backgroundColor: colors.grey,
     padding: 12,
-    borderRadius: 50,
+    borderRadius: 5,
   },
   sectionStyle: {
     borderBottomWidth: 2,
@@ -441,13 +441,13 @@ const styles = StyleSheet.create({
   titleSection: {
     marginTop: 10,
     color: colors.black,
-    fontFamily: fonts.OpenSansBold,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
     marginHorizontal: 10
   },
   detailTextSection: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
   },
   imageStyle: {
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
   registerButtonStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 5,
     padding: 15,
     marginHorizontal: 15,
     marginTop: 20
@@ -494,37 +494,37 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: colors.darkGreyText,
     borderBottomWidth: 1,
-    borderRadius: 8,
+    borderRadius: 5,
     marginTop: 10,
     paddingHorizontal: 5,
     marginHorizontal: 10
   },
   placeholderStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   selectedTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   itemTextStyle: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
   },
   inputBox: {
     color: colors.black,
-    fontFamily: fonts.OpenSansMedium,
+    fontFamily: fonts.MontserratMedium,
     height: 50,
     borderColor: colors.darkGreyText,
-    borderRadius: 8,
+    borderRadius: 5,
     borderBottomWidth: 1,
     fontSize: fontSizes.h4,
     marginTop: 10,

@@ -25,7 +25,6 @@ import {
   Auction as AuctionRepository,
   Bid as BidRepository,
 } from '../../repositories';
-import {current} from '@reduxjs/toolkit';
 
 function AuctionBidding(props) {
   // Get auction_id from routes
@@ -54,8 +53,8 @@ function AuctionBidding(props) {
   const validationBidAmount = () =>
     parseInt(bidAmount) >= auction.currentPrice + auction.step;
   const duration = differenceInSeconds(
-    new Date(auction.endedAt),
-    new Date(auction.startedAt),
+    new Date(auction.registrationEnd),
+    new Date(),
   );
 
   // Data for loading and refreshing

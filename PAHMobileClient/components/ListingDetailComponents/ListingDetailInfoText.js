@@ -10,7 +10,8 @@ function ListingDetailInfoText(props) {
     const { label, text, secondText, thirdText } = props;
 
     return <View style={{
-        flexDirection: 'row'
+        flexDirection: 'row',
+        gap: 5
     }}>
         <Text style={styles.productInformationLabel}>{label}</Text>
         <View style={{ flex: 3, gap: 5 }}>
