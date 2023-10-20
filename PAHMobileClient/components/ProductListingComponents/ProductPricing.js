@@ -9,10 +9,8 @@ import {
   Switch,
   KeyboardAvoidingView,
 } from 'react-native';
-import {colors, fontSizes, fonts} from '../../constants';
+import {colors, fontSizes, fonts, enumConstants} from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
-import DatePicker from 'react-native-date-picker';
-import moment from 'moment';
 
 function ProductPricing(props) {
   const {
@@ -26,12 +24,8 @@ function ProductPricing(props) {
     auctionStep,
     setAuctionStep,
   } = props;
-  const [enableAuction, setEnableAuction] = useState(false);
-  const [enableBuy, setEnableBuy] = useState(true);
-
-  // Datepicker
-  const [openDatePickerStartedAt, setOpenDatePickerStartedAt] = useState(false);
-  const [openDatePickerEndedAt, setOpenDatePickerEndedAt] = useState(false);
+  const [enableAuction, setEnableAuction] = useState(type == enumConstants.productType.Auction ? true : false);
+  const [enableBuy, setEnableBuy] = useState(type == enumConstants.productType.Auction ? false : true);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -148,7 +142,7 @@ function ProductPricing(props) {
               style={{
                 flexDirection: 'row',
                 marginTop: 10,
-                alignItems: 'center',
+                alignItems: 'center'
               }}>
               <Text
                 style={{

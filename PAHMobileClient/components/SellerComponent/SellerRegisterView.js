@@ -118,7 +118,7 @@ function SellerRegisterView(props) {
     setIsLoading(true);
     SellerRepository.getSellerCurrentUser(axiosContext)
       .then(response => {
-        if (response.status != 2) {
+        if (response.status != 2 && response.id!=0) {
           setStatus(response.status);
           setName(response.name);
           setPhone(response.phone);
@@ -177,7 +177,6 @@ function SellerRegisterView(props) {
 
     const url = await imageRef.getDownloadURL().catch((error) => { console.log(error) });
     setPhotoUrl(url);
-    console.log(url);
     return url;
   };
 
@@ -190,7 +189,7 @@ function SellerRegisterView(props) {
   // Create seller profile
   const registerSeller = async () => {
     setIsLoadingCreate(true)
-    const url = photo != null ? await uploadImage() : images.defaultAvatar;
+    const url = photo == null ? images.defaultAvatar : photo.includes('https') ? photoUrl : await uploadImage();
     const user = {
       name: name,
       phone: phone,

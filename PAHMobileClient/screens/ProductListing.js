@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,21 +10,30 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
-import {colors, fontSizes, fonts} from '../constants';
+import { colors, enumConstants, fontSizes, fonts } from '../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {Dropdown} from 'react-native-element-dropdown';
-import {ProductPricing} from '../components';
+import { Dropdown } from 'react-native-element-dropdown';
+import { ProductPricing } from '../components';
 import ImagePicker from 'react-native-image-crop-picker';
-import {AxiosContext} from '../context/AxiosContext';
-import {Category as CategoryRepository} from '../repositories';
+import { AxiosContext } from '../context/AxiosContext';
+import {
+  Category as CategoryRepository,
+  Product as ProductRepository,
+  Material as MaterialRepository
+} from '../repositories';
 import { numberWithCommas } from '../utilities/PriceFormat';
+import storage from '@react-native-firebase/storage';
+import Toast from 'react-native-toast-message';
 
 function ProductListing(props) {
   //// AUTH AND NAVIGATION
   // Auth Context
   const axiosContext = useContext(AxiosContext);
+
+  const { sellerId } = props.route.params;
 
   //Photos
   const [photoList, setPhotoList] = useState([]);
@@ -54,36 +63,38 @@ function ProductListing(props) {
       });
   };
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
   //product detail state
   const [categoryFocus, setCategoryFocus] = useState(false);
+  const [materialFocus, setMaterialFocus] = useState(false);
   const [conditionFocus, setConditionFocus] = useState(false);
   const [auctionTitle, setAuctionTitle] = useState('');
-  const [auctionStep, setAuctionStep] = useState(0);
+  const [auctionStep, setAuctionStep] = useState('0');
   const [name, setName] = useState('');
   const [category, setCategory] = useState({});
+  const [material, setMaterial] = useState({});
   const [description, setDescription] = useState('');
-  const [condition, setCondition] = useState(1);
+  const [condition, setCondition] = useState(0);
   const [origin, setOrigin] = useState('');
   const [weight, setWeight] = useState('');
   const [dimension, setDimension] = useState('');
   const [packageMethod, setPackageMethod] = useState('');
   const [packageContent, setPackageContent] = useState('');
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState('0');
   const [type, setType] = useState(1);
-  const [startedAt, setStartedAt] = useState(0);
-  const [endedAt, setEndedAt] = useState(0);
 
   //Data
+  const [isLoadingCreate, setIsLoadingCreate] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
+  const [materialData, setMaterialData] = useState([]);
   const conditionData = [
-    {label: 'Mới', value: '1'},
-    {label: 'Như mới', value: '2'},
-    {label: 'Tốt', value: '3'},
-    {label: 'Khá', value: '4'},
-    {label: 'Cũ', value: '5'},
+    { label: 'Mới', value: '1' },
+    { label: 'Như mới', value: '2' },
+    { label: 'Tốt', value: '3' },
+    { label: 'Khá', value: '4' },
+    { label: 'Cũ', value: '5' },
   ];
   //Input is enabled
   const [enableTitle, setEnableTitle] = useState(false);
@@ -92,6 +103,14 @@ function ProductListing(props) {
   const [ready, setReady] = useState(false);
   //Edit Pricing
   const [pricingMode, setPricingMode] = useState(false);
+
+  // Validating data
+  const validate = () => name.length > 0 && category.id && condition != 0
+    && origin.length > 0 && weight.length > 0 && dimension.length > 0 && photoList.length > 0
+    && packageContent.length > 0 && packageMethod.length > 0 && description.length > 0
+    && ((type == enumConstants.productType.ForSale && price.length > 0 && parseInt(price) > 0) ||
+      (type == enumConstants.productType.Auction && price.length > 0 && auctionTitle.length > 0
+        && parseInt(price) > 0 && auctionStep.length > 0 && parseInt(auctionStep) > 0)) && ready;
 
   //// FUNCTION
   // Get Categories
@@ -106,10 +125,89 @@ function ProductListing(props) {
       });
   }
 
+  // Get Materials
+  function getMaterials() {
+    // Get Categories
+    MaterialRepository.getMaterials(axiosContext)
+      .then(response => {
+        setMaterialData(response);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   // Init category
   useEffect(() => {
     getCategories();
+    getMaterials();
   }, []);
+
+  // Upload image
+  const uploadImage = async () => {
+    if (photoList.length == 0) {
+      console.log('No photo to upload');
+      return;
+    }
+
+    const photoUrls = [];
+
+    await Promise.all(photoList.map(async (photo) => {
+      const filename = new Date().getTime() + '_' + photo.path.substring(photo.path.lastIndexOf('/') + 1);
+      const uploadUri = Platform.OS === 'ios' ? photo.path.replace('file://', '') : photo.path;
+      const imageRef = storage().ref(`sellerProfilePicture/${filename}`);
+      await imageRef
+        .putFile(uploadUri, { contentType: 'image/jpg' })
+        .catch((error) => { console.log(error) });
+
+      const url = await imageRef.getDownloadURL().catch((error) => { console.log(error) });
+      photoUrls.push(url);
+    }))
+      .catch(err => { console.log(err) });
+    return photoUrls;
+  };
+
+  // Create new product
+  async function createProduct() {
+    setIsLoadingCreate(true);
+    const photoUrls = await uploadImage();
+    const productRequest = {
+      categoryId: category.id,
+      materialId: material.id,
+      sellerId: sellerId,
+      name: name,
+      description: description,
+      price: price,
+      dimension: dimension,
+      weight: weight,
+      origin: origin,
+      packageMethod: packageMethod,
+      packageContent: packageContent,
+      condition: condition,
+      type: type,
+      title: auctionTitle,
+      step: auctionStep,
+      imageUrlLists: photoUrls
+    }
+
+    ProductRepository.createProduct(axiosContext, productRequest)
+      .then(response => {
+        Toast.show({
+          type: 'success',
+          text1: type == enumConstants.productType.ForSale ? 'Đăng sản phẩm thành công' : 'Đăng đấu giá thành công',
+          text2: type == enumConstants.productType.Auction ? 'Sản phẩm đấu giá của bạn sẽ được duyệt nhanh chóng' : '',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 2000
+        });
+        goBack();
+        setIsLoadingCreate(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoadingCreate(false);
+      })
+  }
 
   return pricingMode ? (
     <ProductPricing
@@ -170,11 +268,11 @@ function ProductListing(props) {
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   data={photoList}
-                  renderItem={({item}) => {
+                  renderItem={({ item }) => {
                     return (
                       <View key={item.path}>
                         <Image
-                          source={{uri: item.path}}
+                          source={{ uri: item.path }}
                           style={{
                             width: 200,
                             height: 200,
@@ -207,7 +305,7 @@ function ProductListing(props) {
                       </View>
                     );
                   }}
-                  keyExtractor={eachProduct => eachProduct.id}
+                  keyExtractor={eachImage => eachImage.path}
                 />
                 <View
                   style={{
@@ -347,6 +445,30 @@ function ProductListing(props) {
               }}
             />
           </View>
+          {/* Material */}
+          <View style={styles.sectionStyle}>
+            <Text style={styles.titleSection}>Chất liệu</Text>
+            <Dropdown
+              style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              itemTextStyle={styles.itemTextStyle}
+              searchPlaceholder="Tìm chất liệu..."
+              placeholder={!materialFocus ? 'Chọn chất liệu' : '...'}
+              search
+              data={materialData}
+              labelField="name"
+              valueField="id"
+              onFocus={() => setMaterialFocus(true)}
+              onBlur={() => setMaterialFocus(false)}
+              value={category.id}
+              onChange={item => {
+                setMaterial(item);
+                setMaterialFocus(false);
+              }}
+            />
+          </View>
           {/* Detail */}
           <View style={styles.sectionStyle}>
             <Text style={styles.titleSection}>Chi tiết</Text>
@@ -355,6 +477,8 @@ function ProductListing(props) {
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -368,7 +492,7 @@ function ProductListing(props) {
               <Dropdown
                 style={{
                   height: 30,
-                  width: 130,
+                  width: 200,
                   borderColor: colors.black,
                   borderBottomWidth: 1,
                   paddingHorizontal: 10,
@@ -398,6 +522,8 @@ function ProductListing(props) {
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -414,13 +540,15 @@ function ProductListing(props) {
                   setOrigin(text);
                 }}
                 placeholder="Nhập tại đây"
+                multiline
                 style={{
-                  width: 130,
+                  width: 200,
                   borderColor: colors.black,
                   marginStart: 20,
                   color: colors.black,
-                  fontSize: fontSizes.h5,
+                  fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
+                  textAlign: 'right'
                 }}
               />
             </View>
@@ -429,6 +557,8 @@ function ProductListing(props) {
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -439,36 +569,41 @@ function ProductListing(props) {
                 }}>
                 Khối lượng
               </Text>
-              <TextInput
-                value={weight}
-                onChangeText={text => {
-                  setWeight(text);
-                }}
-                keyboardType="numeric"
-                placeholder="Nhập tại đây"
-                style={{
-                  width: 130,
-                  borderColor: colors.black,
-                  marginStart: 20,
-                  color: colors.black,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}
-              />
-              <Text
-                style={{
-                  color: colors.black,
-                  fontSize: fontSizes.h4,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                (g)
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  value={weight}
+                  onChangeText={text => {
+                    setWeight(text);
+                  }}
+                  keyboardType="numeric"
+                  placeholder="Nhập tại đây"
+                  style={{
+                    width: 130,
+                    borderColor: colors.black,
+                    marginStart: 20,
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                    textAlign: 'right'
+                  }}
+                />
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  (g)
+                </Text>
+              </View>
             </View>
             <View
               style={{
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -479,30 +614,32 @@ function ProductListing(props) {
                 }}>
                 Kích thước
               </Text>
-              <TextInput
-                value={dimension}
-                onChangeText={text => {
-                  setDimension(text);
-                }}
-                keyboardType="numeric"
-                placeholder="DàixRộngxCao"
-                style={{
-                  width: 130,
-                  borderColor: colors.black,
-                  marginStart: 20,
-                  color: colors.black,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}
-              />
-              <Text
-                style={{
-                  color: colors.black,
-                  fontSize: fontSizes.h4,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                (mm)
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  value={dimension}
+                  onChangeText={text => {
+                    setDimension(text);
+                  }}
+                  placeholder="DàixRộngxCao"
+                  style={{
+                    width: 130,
+                    borderColor: colors.black,
+                    marginStart: 20,
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                    textAlign: 'right'
+                  }}
+                />
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  (mm)
+                </Text>
+              </View>
             </View>
           </View>
           {/* Package detail */}
@@ -513,6 +650,8 @@ function ProductListing(props) {
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -525,17 +664,19 @@ function ProductListing(props) {
               </Text>
               <TextInput
                 value={packageMethod}
+                multiline
                 onChangeText={text => {
                   setPackageMethod(text);
                 }}
                 placeholder="Nhập tại đây"
                 style={{
-                  width: 130,
+                  width: 200,
                   borderColor: colors.black,
                   marginStart: 20,
                   color: colors.black,
-                  fontSize: fontSizes.h5,
+                  fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
+                  textAlign: 'right'
                 }}
               />
             </View>
@@ -544,6 +685,8 @@ function ProductListing(props) {
                 flexDirection: 'row',
                 marginTop: 10,
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                marginRight: 10
               }}>
               <Text
                 style={{
@@ -562,12 +705,13 @@ function ProductListing(props) {
                 }}
                 placeholder="Nhập tại đây"
                 style={{
-                  width: 130,
+                  width: 200,
                   borderColor: colors.black,
                   marginStart: 20,
                   color: colors.black,
-                  fontSize: fontSizes.h5,
+                  fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
+                  textAlign: 'right'
                 }}
               />
             </View>
@@ -628,101 +772,112 @@ function ProductListing(props) {
                 <IconFeather name="edit" size={20} color={colors.black} />
               </TouchableOpacity>
             </View>
-            {type == 1 ?<View>
-            <Text
-              style={{
-                marginTop: 20,
-                color: colors.black,
-                fontSize: fontSizes.h4,
-                fontFamily: fonts.MontserratMedium,
+            {type == 1 ? <View>
+              <Text
+                style={{
+                  marginTop: 20,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                  marginBottom: 20
+                }}>
+                Mua ngay
+              </Text>
+              <View style={{
+                flexDirection: 'row', justifyContent: 'space-between',
+                marginBottom: 10, marginRight: 10
               }}>
-              Mua ngay
-            </Text>
-            <View style={{flexDirection: 'row', gap: 100}}>
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  Giá
+                </Text>
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  ₫{numberWithCommas(price)}
+                </Text>
+              </View>
+            </View> : <View style={{ marginRight: 10 }}>
               <Text
                 style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
+                  marginTop: 20,
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
+                  marginBottom: 20
                 }}>
-                Giá
+                Đấu giá
               </Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                VND {price}
-              </Text>
-            </View>
-            </View>:<View>
-            <Text
-              style={{
-                marginTop: 20,
-                color: colors.black,
-                fontSize: fontSizes.h4,
-                fontFamily: fonts.MontserratMedium,
+              <View style={{
+                flexDirection: 'row', justifyContent: 'space-between',
+                marginBottom: 10, gap: 10
               }}>
-              Đấu giá
-            </Text>
-            <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                Tựa đề
-              </Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                {auctionTitle}
-              </Text>
-            </View>
-            <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                Giá khởi điểm
-              </Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                {numberWithCommas(price)} VND
-              </Text>
-            </View>
-            <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                Bước giá
-              </Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontSize: fontSizes.h5,
-                  fontFamily: fonts.MontserratMedium,
-                }}>
-                {numberWithCommas(auctionStep)} VND
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  Tựa đề
+                </Text>
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                    flexWrap: 'wrap',
+                    flex: 1,
+                    textAlign: 'right'
+                  }}>
+                  {auctionTitle}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  Giá khởi điểm
+                </Text>
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  ₫{numberWithCommas(price)}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                <Text
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  Bước giá
+                </Text>
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  ₫{numberWithCommas(auctionStep)}
+                </Text>
+              </View>
             </View>}
-            
-            
+
+
           </View>
           {/* Start listing */}
           <View
@@ -736,6 +891,7 @@ function ProductListing(props) {
                 color: colors.black,
                 fontFamily: fonts.MontserratMedium,
                 fontSize: fontSizes.h5,
+                marginTop: 10,
                 marginBottom: 20,
               }}>
               Đăng bán miễn phí
@@ -763,16 +919,16 @@ function ProductListing(props) {
                   fontFamily: fonts.MontserratMedium,
                   fontSize: fontSizes.h5,
                 }}>
-                , bạn đồng ý trả các khoản phí phụ
+                , bạn đồng ý với các điều khoản buôn bán và đấu giá trên nền tảng của chúng tôi.
               </Text>
             </Text>
             <TouchableOpacity
-              disabled={ready}
+              disabled={!validate()}
               onPress={() => {
-                alert('bắt đầu bán');
+                createProduct();
               }}
               style={{
-                backgroundColor: ready ? colors.darkGreyText : colors.primary,
+                backgroundColor: validate() ? colors.primary : colors.grey,
                 justifyContent: 'center',
                 alignItems: 'center',
                 marginVertical: 15,
@@ -781,7 +937,7 @@ function ProductListing(props) {
               }}>
               <Text
                 style={{
-                  color: 'white',
+                  color: validate() ? 'white' : colors.darkGreyText,
                   fontFamily: fonts.MontserratMedium,
                   fontSize: fontSizes.h3,
                 }}>
@@ -814,6 +970,18 @@ function ProductListing(props) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      {isLoadingCreate && <View style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.inactive
+      }}>
+        <ActivityIndicator size='large' color={colors.primary} />
+      </View>}
     </View>
   );
 }
@@ -909,16 +1077,19 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
+    textAlign: 'right'
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
+    textAlign: 'right'
   },
   itemTextStyle: {
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
+    textAlign: 'right'
   },
   enableTextButtonStyle: {
     marginTop: 10,

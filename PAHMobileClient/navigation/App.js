@@ -31,6 +31,9 @@ import {
     BuyerOrderDetail,
     SellerOrderList,
     SellerOrderDetail,
+    AuctionDetailSeller,
+    SellerProductListing,
+    ListingDetailSeller
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -167,9 +170,6 @@ function App(props) {
             signalRContext.connection.start()
                 .then(() => {
                     console.log('connect to chatHub successfully');
-                    // signalRContext.connection?.invoke("SendMessage", 'duc', 'hahahhaahah').catch(function (err) {
-                    //     return console.error(err.toString());
-                    // });
                 })
                 .catch(err => {
                     console.log('connect to hub fail');
@@ -229,6 +229,9 @@ function App(props) {
                             <Stack.Screen name={"ProductListing"} component={ProductListing} />
                             <Stack.Screen name={"BidderAuctionHistoryListing"} component={BidderAuctionHistoryListing} />
                             <Stack.Screen name={"SellerAuctionHistoryListing"} component={SellerAuctionHistoryListing} />
+                            <Stack.Screen name={"AuctionDetailSeller"} component={AuctionDetailSeller} />
+                            <Stack.Screen name={"SellerProductListing"} component={SellerProductListing} />
+                            <Stack.Screen name={"ListingDetailSeller"} component={ListingDetailSeller} />
                         </>
                     ) : (
                         <>

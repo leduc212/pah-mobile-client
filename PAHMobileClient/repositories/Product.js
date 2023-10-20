@@ -76,8 +76,31 @@ async function createProduct(axiosContext, productinfo) {
             throw responseData.message;
         }
         let responseProduct = responseData.data.data;
-        
+
         return responseProduct;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getProductsBySeller(axiosContext, seller_id) {
+    const productPath = `/product/seller/${seller_id}`;
+    try {
+        let result = [];
+        let responseData = await axiosContext.authAxios.get(productPath);
+        responseData.data.data.forEach(function (responseProduct) {
+            let product = {};
+
+            product.id = responseProduct.id ?? 0;
+            product.name = responseProduct.name ?? '';
+            product.price = responseProduct.price ?? 0;
+            product.ratings = responseProduct.ratings ?? 0;
+            product.sellerName = responseProduct.sellerName ?? '';
+            product.imageUrl = responseProduct.imageUrl ?? '';
+
+            result.push(product);
+        });
+        return result;
     } catch (error) {
         throw error;
     }
@@ -87,5 +110,6 @@ export default {
     getProductsHome,
     getProducts,
     getProductDetail,
-    createProduct
+    createProduct,
+    getProductsBySeller
 }

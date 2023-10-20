@@ -16,13 +16,13 @@ import { colors, fontSizes, images, fonts } from '../../constants';
 import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
-    AuctionListingCard
+    ProductListingCard
 } from '../../components';
 import {
-    Auction as AuctionRepository
+    Product as ProductRepository
 } from '../../repositories';
 
-function SellerAuctionHistoryListing(props) {
+function SellerProductListing(props) {
     const { seller_id } = props.route.params;
     //// AUTH AND NAVIGATION
     // Auth Context
@@ -40,20 +40,17 @@ function SellerAuctionHistoryListing(props) {
     const [refreshing, setRefreshing] = useState(false);
 
     // Data for auctions and filters
-    const [auctions, setAuctions] = useState([]);
-    // Auction status filter
-    const [auctionStatus, setAuctionStatus] = useState([4, 5, 0, 6, 2, 3]);
-    const [currentAuctionStatus, setCurrentAuctionStatus] = useState(4);
+    const [products, setProducts] = useState([]);
 
     //// FUNCTION AND USE EFFECT
 
     // Initialize data for categories, materials and auctions on screen start
-    function getAllAuction() {
+    function getAllProduct() {
         setIsLoading(true);
 
-        AuctionRepository.getAuctionsBySeller(axiosContext, seller_id, currentAuctionStatus)
+        ProductRepository.getProductsBySeller(axiosContext, seller_id)
             .then(response => {
-                setAuctions(response);
+                setProducts(response);
                 setIsLoading(false);
             })
             .catch(error => {
@@ -62,13 +59,13 @@ function SellerAuctionHistoryListing(props) {
     }
 
     useEffect(() => {
-        getAllAuction();
-    }, [currentAuctionStatus]);
+        getAllProduct();
+    }, []);
 
     // Scroll view refresh
     const onRefresh = () => {
         setRefreshing(true);
-        getAllAuction();
+        getAllProduct();
         setRefreshing(false);
     };
 
@@ -84,42 +81,7 @@ function SellerAuctionHistoryListing(props) {
             <Text style={styles.titleText}
                 numberOfLines={1}
                 ellipsizeMode='tail'
-            >Đấu giá của tôi</Text>
-        </View>
-
-        {/* Filter section */}
-        <View>
-            <FlatList
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                data={auctionStatus}
-                renderItem={({ item }) => {
-                    return (
-                        <TouchableOpacity
-                            style={{
-                                paddingVertical: 10,
-                                paddingHorizontal: 15,
-                                borderBottomWidth: item == currentAuctionStatus ? 2 : null,
-                                borderBottomColor:
-                                    item == currentAuctionStatus ? colors.primary : null,
-                            }}
-                            onPress={() => {
-                                setCurrentAuctionStatus(item);
-                            }}>
-                            <Text
-                                style={{
-                                    color:
-                                        item == currentAuctionStatus ? colors.primary : 'black',
-                                    fontFamily: fonts.MontserratMedium,
-                                    fontSize: fontSizes.h5,
-                                }}>
-                                {auctionStatusText(item)}
-                            </Text>
-                        </TouchableOpacity>
-                    );
-                }}
-                keyExtractor={status => status}
-            />
+            >Sản phẩm của tôi</Text>
         </View>
 
         {/* Loading section */}
@@ -131,15 +93,15 @@ function SellerAuctionHistoryListing(props) {
         </View> : <ScrollView refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-            {(Array.isArray(auctions) && auctions.length) ? <View style={{ marginTop: 20 }}>
+            {(Array.isArray(products) && products.length) ? <View style={{ marginTop: 20 }}>
                 <View style={{
                     flex: 1,
                     marginBottom: 15
                 }}>
-                    {auctions.map((auction, index) =>
-                        <AuctionListingCard key={auction.id} auction={auction}
+                    {products.map((product, index) =>
+                        <ProductListingCard key={product.id} product={product}
                             index={index} onPress={() => {
-                                navigate('AuctionDetailSeller', { auction_id: auction.id })
+                                navigate('ListingDetailSeller', { product_id: product.id })
                             }} />
                     )}
                 </View>
@@ -160,7 +122,7 @@ function SellerAuctionHistoryListing(props) {
                     textAlign: 'center',
                     marginHorizontal: 35,
                     marginTop: 10
-                }}>Bạn không có cuộc đấu giá nào có trạng thái này</Text>
+                }}>Bạn chưa có sản phẩm nào</Text>
             </View>}
         </ScrollView>}
 
@@ -316,4 +278,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default SellerAuctionHistoryListing;
+export default SellerProductListing;

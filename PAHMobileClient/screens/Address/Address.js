@@ -116,7 +116,7 @@ function Address(props) {
                       isDefaultParam: address.isDefault
                     })
                   }}
-                  key={address.street}
+                  key={address.id}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',

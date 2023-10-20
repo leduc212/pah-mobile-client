@@ -49,11 +49,11 @@ function AuctionListing(props) {
     const [sortOrders, setSortOrders] = useState([
         {
             id: 0,
-            name: 'Từ mới đến cũ'
+            name: 'Sắp diễn ra'
         },
         {
             id: 1,
-            name: 'Từ cũ đến mới'
+            name: 'Chưa diễn ra'
         },
         {
             id: 2,

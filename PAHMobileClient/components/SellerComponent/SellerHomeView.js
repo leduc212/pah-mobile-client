@@ -1,30 +1,27 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Text,
   View,
-  Image,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
+  StyleSheet
 } from 'react-native';
-import {colors, fontSizes, fonts, roles} from '../../constants';
+import { colors, fontSizes, fonts, roles } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconFoundation from 'react-native-vector-icons/Foundation';
 
 function SellerHomeView(props) {
-  const{user} = props
- // Navigation
- const {navigation, route} = props;
+  const { user } = props
+  // Navigation
+  const { navigation, route } = props;
 
- // Function of navigate to/back
- const {navigate, goBack} = navigation;
+  // Function of navigate to/back
+  const { navigate, goBack } = navigation;
   return (
     <View>
       {/* list item button */}
       <TouchableOpacity
         onPress={() => {
-          navigate('ProductListing');
+          navigate('ProductListing', { sellerId: user.id });
         }}
         style={styles.listItemButtonStyle}>
         <Text
@@ -130,6 +127,9 @@ function SellerHomeView(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity
+      onPress={() => {
+        navigate('SellerProductListing', { seller_id: user.id })
+      }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -155,9 +155,9 @@ function SellerHomeView(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity
-      onPress={()=>{
-        navigate('SellerAuctionHistoryListing',{seller_id:user.id})
-      }}
+        onPress={() => {
+          navigate('SellerAuctionHistoryListing', { seller_id: user.id })
+        }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -183,9 +183,9 @@ function SellerHomeView(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity
-      onPress={()=>{
-        navigate('SellerOrderList')
-      }}
+        onPress={() => {
+          navigate('SellerOrderList')
+        }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     padding: 15,
-    marginHorizontal:15
+    marginHorizontal: 15
   },
   totalMoneyStyle: {
     justifyContent: 'center',

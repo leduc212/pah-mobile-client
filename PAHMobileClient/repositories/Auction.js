@@ -1,5 +1,5 @@
 async function getAuctionsHome(axiosContext) {
-  const auctionPath = `/auction?status=5&PageSize=8&PageNumber=1`;
+  const auctionPath = `/auction?status=4&PageSize=8&PageNumber=1`;
   try {
     let result = {
       auctionList: {},
@@ -17,7 +17,7 @@ async function getAuctionsHome(axiosContext) {
 
 async function getAuctions(axiosContext, query) {
   const { materialId = 0, categoryId = 0, orderBy = 0 } = query;
-  const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=5`;
+  const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=4`;
 
   try {
     let result = {
