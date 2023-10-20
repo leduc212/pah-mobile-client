@@ -13,7 +13,9 @@ import { AxiosContext } from '../context/AxiosContext';
 import { colors, fontSizes, fonts, images } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { UnauthorizedAccountScreen, SellerHomeView, SellerRegisterView } from '../components';
-import { Account as AccountRepository } from '../repositories';
+import {
+  Account as AccountRepository
+} from '../repositories';
 import { useIsFocused } from '@react-navigation/native';
 
 function Seller(props) {
@@ -131,7 +133,7 @@ function Seller(props) {
                 marginTop: 20
               }}>Tải lại</Text>
             </TouchableOpacity>
-          </View> : <ScrollView
+          </View> : <View
             style={{
               flex: 1,
               paddingHorizontal: 5,
@@ -141,7 +143,7 @@ function Seller(props) {
             ) : (
               <SellerHomeView navigation={navigation} route={route} />
             )}
-          </ScrollView>}
+          </View>}
         </View>}
       </View>}
     </View>

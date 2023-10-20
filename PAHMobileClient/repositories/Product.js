@@ -68,8 +68,24 @@ async function getProductDetail(axiosContext, product_id) {
     }
 }
 
+async function createProduct(axiosContext, productinfo) {
+    const productPath = `/product`;
+    try {
+        let responseData = await axiosContext.authAxios.post(productPath, productinfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseProduct = responseData.data.data;
+        
+        return responseProduct;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getProductsHome,
     getProducts,
-    getProductDetail
+    getProductDetail,
+    createProduct
 }

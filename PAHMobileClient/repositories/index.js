@@ -10,6 +10,7 @@ import Bid from "./Bid";
 import Account from "./Account";
 import Wallet from "./Wallet";
 import Order from "./Order";
+import Seller from "./Seller";
 
 export {
     Category,
@@ -23,5 +24,6 @@ export {
     Bid,
     Account,
     Wallet,
-    Order
+    Order,
+    Seller
 }

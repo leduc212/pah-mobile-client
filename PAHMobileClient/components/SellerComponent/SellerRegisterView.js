@@ -7,16 +7,21 @@ import {
   StyleSheet,
   TextInput,
   PermissionsAndroid,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from 'react-native';
-import { colors, fontSizes, fonts } from '../../constants';
+import { colors, fontSizes, fonts, images } from '../../constants';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { Dropdown } from 'react-native-element-dropdown';
 import storage from '@react-native-firebase/storage';
 import { AxiosContext } from '../../context/AxiosContext';
-import { Address as AddressRepository } from '../../repositories';
+import {
+  Address as AddressRepository,
+  Seller as SellerRepository
+} from '../../repositories';
+import Toast from 'react-native-toast-message';
 
 function SellerRegisterView(props) {
   //// AXIOS CONTEXT
@@ -61,7 +66,8 @@ function SellerRegisterView(props) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [photo, setPhoto] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState('https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg');
+  const [photoUrl, setPhotoUrl] = useState(images.defaultAvatar);
+  const [status, setStatus] = useState(-1);
 
   // Address
   // Dropdown input state
@@ -87,10 +93,10 @@ function SellerRegisterView(props) {
 
   //Ready to register
   const [ready, setReady] = useState(false);
-  const [editable, setEditable] = useState(true);
 
   // Data for loading and refreshing
   const [isLoadingCreate, setIsLoadingCreate] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Validating
   const validate = () => name.length > 0 && phone.length > 0 && street.length > 0
@@ -107,9 +113,39 @@ function SellerRegisterView(props) {
       .catch(error => { })
   }
 
+  // Get seller
+  function getSeller() {
+    setIsLoading(true);
+    SellerRepository.getSellerCurrentUser(axiosContext)
+      .then(response => {
+        if (response.status != 2) {
+          setStatus(response.status);
+          setName(response.name);
+          setPhone(response.phone);
+          setPhoto(response.profilePicture);
+          setPhotoUrl(response.profilePicture);
+          setStreet(response.street);
+          setWard(response.ward);
+          setWardCode(response.wardCode);
+          setDistrict(response.district);
+          setDistrictId(response.districtId);
+          setProvince(response.province);
+          setProvinceId(response.provinceId);
+
+          getDistrictList(response.provinceId);
+          getWardList(response.districtId);
+        }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+      })
+  }
+
   // Get District list by province id
-  function getDistrictList(provinceId) {
-    AddressRepository.getDistrictListByProvinceId(provinceId)
+  async function getDistrictList(provinceId) {
+    await AddressRepository.getDistrictListByProvinceId(provinceId)
       .then(response => {
         setDistrictList(response);
       })
@@ -117,8 +153,8 @@ function SellerRegisterView(props) {
   }
 
   // Get ward list by district id
-  function getWardList(districtId) {
-    AddressRepository.getWardListByDistrictId(districtId)
+  async function getWardList(districtId) {
+    await AddressRepository.getWardListByDistrictId(districtId)
       .then(response => {
         setWardList(response);
       })
@@ -148,266 +184,292 @@ function SellerRegisterView(props) {
   // On init screen, get province list
   useEffect(() => {
     getProvinceList();
+    getSeller();
   }, [])
 
   // Create seller profile
   const registerSeller = async () => {
     setIsLoadingCreate(true)
-    const url = await uploadImage();
+    const url = photo != null ? await uploadImage() : images.defaultAvatar;
     const user = {
       name: name,
       phone: phone,
-      url: url,
-      street: street,
+      profilePicture: url,
+      recipientName: name,
+      recipientPhone: phone,
       province: province,
       provinceId: provinceId,
       district: district,
       districtId: districtId,
       ward: ward,
-      wardCode: wardCode
-    };
+      wardCode: wardCode,
+      street: street
+    }
 
-    setTimeout(() => {
-      setIsLoadingCreate(false);
-      setEditable(false);
-      alert(`name : ${user.name}, phone: ${user.phone}, url: ${user.url}, street: ${user.street},
-      province: ${user.province}, provinceId: ${user.provinceId}, district: ${user.district},
-      districtId: ${user.districtId}, ward: ${user.ward}, wardCode: ${user.wardCode}`);
-    }, 2000)
+    SellerRepository.createSeller(axiosContext, user)
+      .then(response => {
+        setStatus(1);
+        setIsLoadingCreate(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Hồ sơ người bán của bạn đã được gửi',
+          text2: 'Hãy đợi hồ sơ của bạn được duyệt để trở thành người bán chính thức!',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 2000
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoadingCreate(false);
+      })
   }
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={{
-          fontSize: fontSizes.h3,
-          color: colors.primary,
-          fontFamily: fonts.MontserratBold,
-          marginHorizontal: 10
-        }}>{editable ? 'Đăng ký bán hàng ngay hôm nay!' : 'Hồ sơ của bạn đang được duyệt!'}</Text>
-      </View>
-      <View>
-        {/* Avatar */}
-        <View style={styles.sectionStyle}>
-          <Text style={styles.titleSection}>Hình đại diện</Text>
-          {photo != null ? (
-            <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
-              <Image style={styles.imageStyle} source={{ uri: photo }} />
-              {editable && <TouchableOpacity
-                onPress={() => {
-                  setPhoto(null);
+      {isLoading ? <View style={{
+        flex: 1,
+        justifyContent: 'center'
+      }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View> :
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              color: colors.primary,
+              fontFamily: fonts.MontserratBold,
+              marginHorizontal: 10
+            }}>{status == -1 ? 'Đăng ký bán hàng ngay hôm nay!' : status == 1 ? 'Hồ sơ của bạn đang được duyệt!' : 'Hồ sơ của bạn đã bị từ chối, hãy nhập và thử lại'}</Text>
+          </View>
+          <View>
+            {/* Avatar */}
+            <View style={styles.sectionStyle}>
+              <Text style={styles.titleSection}>Hình đại diện</Text>
+              {photo != null ? (
+                <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
+                  <Image style={styles.imageStyle} source={{ uri: photo }} />
+                  {status != 1 && <TouchableOpacity
+                    onPress={() => {
+                      setPhoto(null);
+                      setPhotoUrl(images.defaultAvatar);
+                    }}
+                    style={{
+                      marginLeft: 'auto',
+                    }}>
+                    <IconAntDesign name="delete" size={20} color={'red'} />
+                  </TouchableOpacity>}
+                </View>
+              ) : (
+                <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
+                  <View style={styles.imageZone}>
+                    <TouchableOpacity
+                      style={styles.imageZoneButton}
+                      onPress={openCamera}>
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontFamily: fonts.MontserratMedium,
+                          fontSize: fontSizes.h5,
+                        }}>
+                        Chụp ảnh đại diện
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.imageZoneButton}
+                      onPress={openGallery}>
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontFamily: fonts.MontserratMedium,
+                          fontSize: fontSizes.h5,
+                        }}>
+                        Chọn ảnh từ thư viện
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </View>
+            {/* Name */}
+            <View style={styles.sectionStyle}>
+              <Text style={styles.titleSection}>Thông tin cơ bản</Text>
+              <TextInput
+                editable={status != 1}
+                placeholder="Nhập tên cửa hàng"
+                value={name}
+                onChangeText={text => {
+                  setName(text);
                 }}
                 style={{
-                  marginLeft: 'auto',
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                  marginTop: 10,
+                  borderBottomWidth: 1,
+                  borderColor: colors.darkGreyText,
+                  marginHorizontal: 15,
+                  paddingHorizontal: 0
+                }}
+              />
+              <TextInput
+                editable={status != 1}
+                placeholder="Nhập số điện thoại liên lạc"
+                keyboardType='phone-pad'
+                value={phone}
+                onChangeText={text => {
+                  setPhone(text);
+                }}
+                style={{
+                  color: colors.black,
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                  marginTop: 10,
+                  borderBottomWidth: 1,
+                  borderColor: colors.darkGreyText,
+                  marginHorizontal: 15,
+                  paddingHorizontal: 0
+                }}
+              />
+            </View>
+            {/* Address */}
+            <View style={styles.sectionStyle}>
+              <Text style={styles.titleSection}>Địa chỉ lấy hàng</Text>
+              <TextInput
+                editable={status != 1}
+                value={street}
+                onChangeText={text => {
+                  setStreet(text);
+                }}
+                style={styles.inputBox}
+                placeholder="Số nhà, tên đường"
+                placeholderTextColor={colors.darkGreyText}
+              />
+              <Dropdown
+                disable={provinceList.length == 0 || status == 1}
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                itemTextStyle={styles.itemTextStyle}
+                searchPlaceholder="Tìm thành phố..."
+                placeholder={!isProvinceFocus ? 'Chọn thành phố' : '...'}
+                search
+                data={provinceList}
+                labelField="provinceName"
+                valueField="provinceId"
+                dropdownPosition='top'
+                value={provinceId}
+                onFocus={() => setProvinceFocus(true)}
+                onBlur={() => setProvinceFocus(false)}
+                onChange={item => {
+                  setProvince(item.provinceName);
+                  setProvinceId(item.provinceId);
+                  setDistrictList([]);
+                  setDistrict(null);
+                  setDistrictId(null);
+
+                  setWardList([]);
+                  setWard(null);
+                  setWardCode(null);
+
+                  getDistrictList(item.provinceId);
+                  setProvinceFocus(false);
+                }}
+              />
+              <Dropdown
+                disable={districtList.length == 0 || status == 1}
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                itemTextStyle={styles.itemTextStyle}
+                searchPlaceholder="Tìm quận, huyện..."
+                placeholder={!isDistrictFocus ? 'Chọn quận/huyện' : '...'}
+                search
+                data={districtList}
+                labelField="districtName"
+                valueField="districtId"
+                onFocus={() => setDistrictFocus(true)}
+                onBlur={() => setDistrictFocus(false)}
+                dropdownPosition='top'
+                value={districtId}
+                onChange={item => {
+                  setDistrict(item.districtName);
+                  setDistrictId(item.districtId);
+
+                  setWardList([]);
+                  setWard(null);
+                  setWardCode(null);
+
+                  getWardList(item.districtId);
+
+                  setDistrictFocus(false);
+                }}
+              />
+              <Dropdown
+                disable={wardList.length == 0 || status == 1}
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                itemTextStyle={styles.itemTextStyle}
+                searchPlaceholder="Tìm phường, xã"
+                placeholder={!isWardFocus ? 'Chọn phường/xã' : '...'}
+                search
+                data={wardList}
+                labelField="wardName"
+                valueField="wardCode"
+                dropdownPosition='top'
+                value={wardCode}
+                onFocus={() => setWardFocus(true)}
+                onBlur={() => setWardFocus(false)}
+                onChange={item => {
+                  setWard(item.wardName);
+                  setWardCode(item.wardCode);
+                  setWardFocus(false);
+                }}
+              />
+            </View>
+          </View>
+          {/* Register button */}
+          {status != 1 && <View>
+            <TouchableOpacity
+              disabled={!validate()}
+              onPress={() => {
+                registerSeller();
+              }}
+              style={[styles.registerButtonStyle, { backgroundColor: validate() ? colors.primary : colors.darkGreyText }]}>
+              <Text
+                style={{
+                  fontSize: fontSizes.h4,
+                  color: 'white',
+                  fontFamily: fonts.MontserratMedium
                 }}>
-                <IconAntDesign name="delete" size={20} color={'red'} />
-              </TouchableOpacity>}
-            </View>
-          ) : (
-            <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
-              <View style={styles.imageZone}>
-                <TouchableOpacity
-                  style={styles.imageZoneButton}
-                  onPress={openCamera}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h5,
-                    }}>
-                    Chụp ảnh đại diện
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.imageZoneButton}
-                  onPress={openGallery}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h5,
-                    }}>
-                    Chọn ảnh từ thư viện
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </View>
-        {/* Name */}
-        <View style={styles.sectionStyle}>
-          <Text style={styles.titleSection}>Thông tin cơ bản</Text>
-          <TextInput
-            editable={editable}
-            placeholder="Nhập tên cửa hàng"
-            value={name}
-            onChangeText={text => {
-              setName(text);
-            }}
-            style={{
-              color: colors.black,
-              fontSize: fontSizes.h4,
-              fontFamily: fonts.MontserratMedium,
-              marginTop: 10,
-              borderBottomWidth: 1,
-              borderColor: colors.darkGreyText,
-              marginHorizontal: 15,
-              paddingHorizontal: 0
-            }}
-          />
-          <TextInput
-            editable={editable}
-            placeholder="Nhập số điện thoại liên lạc"
-            keyboardType='phone-pad'
-            value={phone}
-            onChangeText={text => {
-              setPhone(text);
-            }}
-            style={{
-              color: colors.black,
-              fontSize: fontSizes.h4,
-              fontFamily: fonts.MontserratMedium,
-              marginTop: 10,
-              borderBottomWidth: 1,
-              borderColor: colors.darkGreyText,
-              marginHorizontal: 15,
-              paddingHorizontal: 0
-            }}
-          />
-        </View>
-        {/* Address */}
-        <View style={styles.sectionStyle}>
-          <Text style={styles.titleSection}>Địa chỉ lấy hàng</Text>
-          <TextInput
-            editable={editable}
-            value={street}
-            onChangeText={text => {
-              setStreet(text);
-            }}
-            style={styles.inputBox}
-            placeholder="Số nhà, tên đường"
-            placeholderTextColor={colors.darkGreyText}
-          />
-          <Dropdown
-            disable={provinceList.length == 0 || !editable}
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            itemTextStyle={styles.itemTextStyle}
-            searchPlaceholder="Tìm thành phố..."
-            placeholder={!isProvinceFocus ? 'Chọn thành phố' : '...'}
-            search
-            data={provinceList}
-            labelField="provinceName"
-            valueField="provinceId"
-            dropdownPosition='top'
-            onFocus={() => setProvinceFocus(true)}
-            onBlur={() => setProvinceFocus(false)}
-            onChange={item => {
-              setProvince(item.provinceName);
-              setProvinceId(item.provinceId);
-              setDistrictList([]);
-              setDistrict(null);
-              setDistrictId(null);
-
-              setWardList([]);
-              setWard(null);
-              setWardCode(null);
-
-              getDistrictList(item.provinceId);
-              setProvinceFocus(false);
-            }}
-          />
-          <Dropdown
-            disable={districtList.length == 0 || !editable}
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            itemTextStyle={styles.itemTextStyle}
-            searchPlaceholder="Tìm quận, huyện..."
-            placeholder={!isDistrictFocus ? 'Chọn quận/huyện' : '...'}
-            search
-            data={districtList}
-            labelField="districtName"
-            valueField="districtId"
-            onFocus={() => setDistrictFocus(true)}
-            onBlur={() => setDistrictFocus(false)}
-            dropdownPosition='top'
-            onChange={item => {
-              setDistrict(item.districtName);
-              setDistrictId(item.districtId);
-
-              setWardList([]);
-              setWard(null);
-              setWardCode(null);
-
-              getWardList(item.districtId);
-
-              setDistrictFocus(false);
-            }}
-          />
-          <Dropdown
-            disable={wardList.length == 0 || !editable}
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            itemTextStyle={styles.itemTextStyle}
-            searchPlaceholder="Tìm phường, xã"
-            placeholder={!isWardFocus ? 'Chọn phường/xã' : '...'}
-            search
-            data={wardList}
-            labelField="wardName"
-            valueField="wardCode"
-            dropdownPosition='top'
-            onFocus={() => setWardFocus(true)}
-            onBlur={() => setWardFocus(false)}
-            onChange={item => {
-              setWard(item.wardName);
-              setWardCode(item.wardCode);
-              setWardFocus(false);
-            }}
-          />
-        </View>
-      </View>
-      {/* Register button */}
-      {editable && <View>
-        <TouchableOpacity
-          disabled={!validate()}
-          onPress={() => {
-            registerSeller();
-          }}
-          style={[styles.registerButtonStyle, { backgroundColor: validate() ? colors.primary : colors.darkGreyText }]}>
-          <Text
-            style={{
-              fontSize: fontSizes.h4,
-              color: 'white',
-              fontFamily: fonts.MontserratMedium
-            }}>
-            Đăng ký
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setReady(!ready);
-          }}
-          style={{
-            flexDirection: 'row',
-            marginVertical: 10,
-            gap: 10,
-            marginHorizontal: 10,
-            marginBottom: 15
-          }}>
-          {ready ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
-          <Text style={{
-            color: colors.darkGreyText,
-            fontFamily: fonts.MontserratMedium,
-            fontSize: fontSizes.h5,
-          }}>Tôi đồng ý với các điều khoản</Text>
-        </TouchableOpacity>
-      </View>}
+                {status == -1 ? 'Đăng ký' : 'Cập nhật thông tin'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setReady(!ready);
+              }}
+              style={{
+                flexDirection: 'row',
+                marginVertical: 10,
+                gap: 10,
+                marginHorizontal: 10,
+                marginBottom: 15
+              }}>
+              {ready ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
+              <Text style={{
+                color: colors.darkGreyText,
+                fontFamily: fonts.MontserratMedium,
+                fontSize: fontSizes.h5,
+              }}>Tôi đồng ý với các điều khoản</Text>
+            </TouchableOpacity>
+          </View>}
+        </ScrollView>
+      }
       {isLoadingCreate && <View style={{
         position: 'absolute',
         left: 0,
