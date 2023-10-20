@@ -15,6 +15,7 @@ import AddAddress from "./Address/AddAddress";
 import EditAccount from "./Account/EditAccount";
 import AuctionListing from "./AuctionListing";
 import BidderAuctionHistoryListing from "./AuctionHistory/BidderAuctionHistoryListing";
+import SellerAuctionHistoryListing from "./AuctionHistory/SellerAuctionHistoryListing";
 import AuctionDetail from "./AuctionDetail/AuctionDetail";
 import AuctionDescription from "./AuctionDetail/AuctionDescription";
 import AuctionBidding from "./AuctionDetail/AuctionBidding";
@@ -46,6 +47,7 @@ export {
     Profile,
     AuctionListing,
     BidderAuctionHistoryListing,
+    SellerAuctionHistoryListing,
     AuctionDetail,
     AuctionDescription,
     AuctionBidding,

@@ -15,6 +15,7 @@ import {
     AuctionDescription,
     AuctionBidding,
     BidderAuctionHistoryListing,
+    SellerAuctionHistoryListing,
     BiddingHistory,
     CheckoutNow,
     CheckoutCart,
@@ -227,6 +228,7 @@ function App(props) {
                             <Stack.Screen name={"SellerOrderDetail"} component={SellerOrderDetail} />
                             <Stack.Screen name={"ProductListing"} component={ProductListing} />
                             <Stack.Screen name={"BidderAuctionHistoryListing"} component={BidderAuctionHistoryListing} />
+                            <Stack.Screen name={"SellerAuctionHistoryListing"} component={SellerAuctionHistoryListing} />
                         </>
                     ) : (
                         <>

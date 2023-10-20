@@ -13,6 +13,7 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconFoundation from 'react-native-vector-icons/Foundation';
 
 function SellerHomeView(props) {
+  const{user} = props
  // Navigation
  const {navigation, route} = props;
 
@@ -154,6 +155,9 @@ function SellerHomeView(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity
+      onPress={()=>{
+        navigate('SellerAuctionHistoryListing',{seller_id:user.id})
+      }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',

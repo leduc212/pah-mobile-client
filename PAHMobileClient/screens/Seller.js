@@ -141,7 +141,7 @@ function Seller(props) {
             {user.role != 2 ? (
               <SellerRegisterView />
             ) : (
-              <SellerHomeView navigation={navigation} route={route} />
+              <SellerHomeView user={user} navigation={navigation} route={route} />
             )}
           </View>}
         </View>}
