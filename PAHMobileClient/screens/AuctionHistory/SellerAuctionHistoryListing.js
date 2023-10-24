@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
+import { SignalRContext } from '../../context/SignalRContext';
 import { colors, fontSizes, images, fonts } from '../../constants';
 import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -21,6 +22,7 @@ import {
 import {
     Auction as AuctionRepository
 } from '../../repositories';
+import { useIsFocused } from '@react-navigation/native';
 
 function SellerAuctionHistoryListing(props) {
     const { seller_id } = props.route.params;
@@ -28,6 +30,10 @@ function SellerAuctionHistoryListing(props) {
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
+    const signalRContext = useContext(SignalRContext);
+
+    // On focus
+    const isFocused = useIsFocused();
 
     // Navigation
     const { navigation, route } = props;
@@ -63,7 +69,18 @@ function SellerAuctionHistoryListing(props) {
 
     useEffect(() => {
         getAllAuction();
-    }, [currentAuctionStatus]);
+    }, [currentAuctionStatus, isFocused]);
+
+    useEffect(() => {
+        // On auction start
+        signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
+            getAllAuction();
+        });
+        // On auction End
+        signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+            getAllAuction();
+        });
+    }, []);
 
     // Scroll view refresh
     const onRefresh = () => {

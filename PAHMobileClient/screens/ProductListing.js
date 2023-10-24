@@ -462,7 +462,7 @@ function ProductListing(props) {
               valueField="id"
               onFocus={() => setMaterialFocus(true)}
               onBlur={() => setMaterialFocus(false)}
-              value={category.id}
+              value={material.id}
               onChange={item => {
                 setMaterial(item);
                 setMaterialFocus(false);
@@ -498,10 +498,10 @@ function ProductListing(props) {
                   paddingHorizontal: 10,
                   marginStart: 20,
                 }}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                itemTextStyle={styles.itemTextStyle}
+                placeholderStyle={[styles.placeholderStyle, {textAlign: 'right'}]}
+                selectedTextStyle={[styles.selectedTextStyle, {textAlign: 'right'}]}
+                inputSearchStyle={[styles.inputSearchStyle, {textAlign: 'right'}]}
+                itemTextStyle={[styles.itemTextStyle, {textAlign: 'right'}]}
                 searchPlaceholder="Tìm tình trạng..."
                 placeholder={!conditionFocus ? 'Chọn' : '...'}
                 search
@@ -1077,19 +1077,16 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
-    textAlign: 'right'
   },
   inputSearchStyle: {
     color: colors.darkGreyText,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
-    textAlign: 'right'
   },
   itemTextStyle: {
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
-    textAlign: 'right'
   },
   enableTextButtonStyle: {
     marginTop: 10,

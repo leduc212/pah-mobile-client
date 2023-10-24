@@ -12,7 +12,7 @@ import {
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
 import { SignalRContext } from '../../context/SignalRContext';
-import { colors, fontSizes, fonts, images } from '../../constants';
+import { colors, enumConstants, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
 import Modal from 'react-native-modal';
@@ -44,6 +44,8 @@ function AuctionDetail(props) {
     const axiosContext = useContext(AxiosContext);
     const signalRContext = useContext(SignalRContext);
 
+    // On focus
+    const isFocused = useIsFocused();
     // Navigation
     const { navigation, route } = props;
 
@@ -51,8 +53,6 @@ function AuctionDetail(props) {
     const { navigate, goBack } = navigation;
 
     //// DATA
-    // On focus
-    const isFocused = useIsFocused();
     // Data for auction detail
     const [auction, setAuction] = useState({
         seller: {},
@@ -119,8 +119,6 @@ function AuctionDetail(props) {
                     getShippingCost(response, auction);
                 })
                 .catch(error => {
-                    // console.log('AddressError: ');
-                    // console.log(error.response.data);
                     setIsLoading(false);
                 });
             const promiseCheck = await AuctionRepository.checkRegistration(axiosContext, auction_id)
@@ -170,6 +168,17 @@ function AuctionDetail(props) {
         getAutionDetail();
     }, [isFocused]);
 
+    useEffect(() => {
+        // On auction start
+        signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
+            getAutionDetail();
+        });
+        // On auction End
+        signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+            getAutionDetail();
+        });
+    }, []);
+
     // Register to join auction
     async function registerAuction() {
         setIsRegisterLoading(true);
@@ -181,13 +190,29 @@ function AuctionDetail(props) {
                             setUserRegistered(true);
                             setConfirmModalVisible(false);
                             setIsRegisterLoading(false);
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Bạn đã đăng ký tham gia đấu giá thành công!',
+                                position: 'bottom',
+                                autoHide: true,
+                                visibilityTime: 2000
+                            });
                             signalRContext.connection?.invoke("JoinGroup", auction_id).catch(function (err) {
                                 return console.error(err.toString());
                             });
                         })
                         .catch(err => {
-                            console.log(err.response)
                             setIsRegisterLoading(false);
+                            setConfirmModalVisible(false);
+                            if (err.response) {
+                                Toast.show({
+                                    type: 'error',
+                                    text1: `${err.response.data.Message}`,
+                                    position: 'bottom',
+                                    autoHide: true,
+                                    visibilityTime: 2000
+                                });
+                            }
                         })
                 } else {
                     setIsRegisterLoading(false);
@@ -278,6 +303,9 @@ function AuctionDetail(props) {
                     {(auction.status == 5 && moment(auction.endedAt).isBefore(moment())) && <Text style={styles.pricePrimary}>
                         Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
                     </Text>}
+                    {auction.status == enumConstants.auction.Ended && <Text style={styles.pricePrimary}>
+                        Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
+                    </Text>}
                     {!authContext?.authState?.authenticated ? <Text
                         style={styles.priceSecondary}
                     >Đăng nhập để xem cước phí vận chuyển</Text> : <View>
@@ -307,7 +335,7 @@ function AuctionDetail(props) {
                             <CountDown
                                 size={18}
                                 until={durationRegistration}
-                                onFinish={() => alert('Đóng thời gian đăng ký')}
+                                onFinish={() => getAutionDetail()}
                                 digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
                                 timeLabels={{ m: null, s: null }}
                                 separatorStyle={{ color: colors.primary }}
@@ -347,7 +375,6 @@ function AuctionDetail(props) {
                             <CountDown
                                 size={18}
                                 until={durationTillStart}
-                                onFinish={() => alert('Bắt đầu đấi giá')}
                                 digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
                                 timeLabels={{ m: null, s: null }}
                                 separatorStyle={{ color: colors.primary }}
@@ -372,7 +399,6 @@ function AuctionDetail(props) {
                             <CountDown
                                 size={18}
                                 until={durationTillEnd}
-                                onFinish={() => alert('Kết thúc đấu giá')}
                                 digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
                                 timeLabels={{ m: null, s: null }}
                                 separatorStyle={{ color: colors.primary }}

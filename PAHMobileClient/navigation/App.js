@@ -179,16 +179,43 @@ function App(props) {
 
         signalRContext?.connection?.on("ReceiveMessage", function (user, message) {
             console.log(`'${message}' - ${user}`);
-            Toast.show({
-                type: 'success',
-                text1: `UserID: ${user}`,
-                text2: `'${message}'`,
-                position: 'bottom',
-                autoHide: true,
-                visibilityTime: 2000
-            });
         });
 
+        signalRContext?.connection?.on("ReceiveNewBid", function (userName, auctionTitle) {
+            console.log(`${userName} Da dat bid moi trong cuoc dau gia '${auctionTitle}'`);
+            Toast.show({
+              type: 'success',
+              text1: `${auctionTitle}`,
+              text2: `${userName} đã trả giá cao nhất`,
+              position: 'top',
+              autoHide: true,
+              visibilityTime: 2000
+            });
+          });
+
+          signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
+            console.log(`'${auctionTitle}' da mo ra`);
+            Toast.show({
+              type: 'success',
+              text1: `${auctionTitle}`,
+              text2: `Cuộc đấu giá đã bắt đầu, hãy tham gia nào!`,
+              position: 'top',
+              autoHide: true,
+              visibilityTime: 2000
+            });
+          });
+
+          signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+            console.log(`'${auctionTitle}' da ket thuc`);
+            Toast.show({
+              type: 'success',
+              text1: `${auctionTitle}`,
+              text2: `Cuộc đấu giá đã kết thúc, hãy cùng xem người thắng cuộc nào!`,
+              position: 'top',
+              autoHide: true,
+              visibilityTime: 2000
+            });
+          });
 
     }, [signalRContext?.connection]);
 

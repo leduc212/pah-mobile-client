@@ -53,7 +53,6 @@ function AuctionDetailSeller(props) {
 
     // Data for loading and refreshing
     const [isLoading, setIsLoading] = useState(true);
-    const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
     // Data for validating register duration and bidding duration
@@ -99,6 +98,14 @@ function AuctionDetailSeller(props) {
 
     useEffect(() => {
         getAutionDetail();
+        // On auction start
+        signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
+            getAutionDetail();
+        });
+        // On auction End
+        signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+            getAutionDetail();
+        });
     }, []);
 
     // Scroll view refresh

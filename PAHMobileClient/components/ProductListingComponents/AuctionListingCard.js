@@ -5,7 +5,7 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
-import { colors, fontSizes, fonts } from '../../constants';
+import { colors, enumConstants, fontSizes, fonts } from '../../constants';
 import TimeLeft from '../TimeLeft';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 import moment from 'moment';
@@ -87,25 +87,48 @@ function AuctionListingCard(props) {
                             marginBottom: 5
                         }}>₫{numberWithCommas(currentPrice)}</Text>
                 </View>}
-                {(status == 5 && moment(endedAt).isBefore(moment())) && <View>
-                    <Text
-                        numberOfLines={2}
-                        ellipsizeMode='tail'
-                        style={{
-                            color: colors.primary,
-                            fontFamily: fonts.MontserratMedium,
-                            fontSize: fontSizes.h4
-                        }}>Giá cuối cùng</Text>
-                    <Text
-                        numberOfLines={2}
-                        ellipsizeMode='tail'
-                        style={{
-                            color: colors.primary,
-                            fontFamily: fonts.MontserratMedium,
-                            fontSize: fontSizes.h3,
-                            marginBottom: 5
-                        }}>₫{numberWithCommas(currentPrice)}</Text>
-                </View>}
+                {(status == 5 && moment(endedAt).isBefore(moment()))
+                    && <View>
+                        <Text
+                            numberOfLines={2}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: colors.primary,
+                                fontFamily: fonts.MontserratMedium,
+                                fontSize: fontSizes.h4
+                            }}>Giá cuối cùng</Text>
+                        <Text
+                            numberOfLines={2}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: colors.primary,
+                                fontFamily: fonts.MontserratMedium,
+                                fontSize: fontSizes.h3,
+                                marginBottom: 5
+                            }}>₫{numberWithCommas(currentPrice)}</Text>
+                    </View>}
+
+                {(status == enumConstants.auction.Ended)
+                    && <View>
+                        <Text
+                            numberOfLines={2}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: colors.primary,
+                                fontFamily: fonts.MontserratMedium,
+                                fontSize: fontSizes.h4
+                            }}>Giá cuối cùng</Text>
+                        <Text
+                            numberOfLines={2}
+                            ellipsizeMode='tail'
+                            style={{
+                                color: colors.primary,
+                                fontFamily: fonts.MontserratMedium,
+                                fontSize: fontSizes.h3,
+                                marginBottom: 5
+                            }}>₫{numberWithCommas(currentPrice)}</Text>
+                    </View>}
+
                 {status < 4 && <Text style={{
                     color: colors.darkGreyText,
                     fontFamily: fonts.MontserratMedium,
@@ -115,6 +138,12 @@ function AuctionListingCard(props) {
                 {(status == 4 && moment(registrationEnd).isBefore(moment())) && <TimeLeft prefixText={'Bắt đầu trong'} width={200} closedTime={startedAt} />}
                 {(status == 5 && moment(endedAt).isAfter(moment())) && <TimeLeft prefixText={'Kết thúc trong'} width={200} closedTime={endedAt} />}
                 {(status == 5 && moment(endedAt).isBefore(moment())) && <TimeLeft prefixText={'Đã kết thúc'} width={200} closedTime={endedAt} />}
+                {status == enumConstants.auction.Ended && auction.isWon && <Text style={{
+                    color: colors.darkGreyText,
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h6
+                }}>Bạn đã thắng cuộc đấu giá này</Text>}
+
             </View>
         </TouchableOpacity>
     </View>

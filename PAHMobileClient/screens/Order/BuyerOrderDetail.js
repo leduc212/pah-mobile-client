@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl
 } from 'react-native';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import { colors, fontSizes, images, fonts, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -99,7 +99,7 @@ function BuyerOrderDetail(props) {
       }>
         {/* Status and note */}
         <View style={{ backgroundColor: 'white', marginBottom: 10 }}>
-          {order.status == 5 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.WaitingSellerConfirm && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Chờ xác nhận</Text>
               <Text style={styles.noteText}>
@@ -118,7 +118,7 @@ function BuyerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 2 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.ReadyForPickup && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Chờ lấy hàng</Text>
               <Text style={styles.noteText}>
@@ -137,7 +137,7 @@ function BuyerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 3 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.Delivering && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đang vận chuyển</Text>
               <Text style={styles.noteText}>
@@ -156,7 +156,7 @@ function BuyerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 4 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.Delivered && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
               <Text style={styles.noteText}>
@@ -175,24 +175,25 @@ function BuyerOrderDetail(props) {
             </View>
           </View>}
 
-          {([10, 11, 12].includes(order.status)) && <View style={styles.statusSection}>
-            <View style={{ flex: 80 }}>
-              <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
-              <Text style={styles.noteText}>
-                Chi tiết tại mục 'Chi tiết đơn hủy'
-              </Text>
-            </View>
-            <View style={{ flex: 20, alignItems: 'center' }}>
-              <Image
-                source={images.walletImage}
-                style={{
-                  resizeMode: 'cover',
-                  width: 50,
-                  height: 50,
-                }}
-              />
-            </View>
-          </View>}
+          {([enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
+            .includes(order.status)) && <View style={styles.statusSection}>
+              <View style={{ flex: 80 }}>
+                <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
+                <Text style={styles.noteText}>
+                  Chi tiết tại mục 'Chi tiết đơn hủy'
+                </Text>
+              </View>
+              <View style={{ flex: 20, alignItems: 'center' }}>
+                <Image
+                  source={images.walletImage}
+                  style={{
+                    resizeMode: 'cover',
+                    width: 50,
+                    height: 50,
+                  }}
+                />
+              </View>
+            </View>}
 
           <View style={{ marginVertical: 15, marginLeft: 5, marginRight: 10 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
@@ -343,7 +344,7 @@ function BuyerOrderDetail(props) {
         </View>
 
         {/* Cancel button */}
-        {order.status == 5 && <View style={{
+        {order.status == enumConstants.orderStatus.WaitingSellerConfirm && <View style={{
           padding: 15,
           marginVertical: 10
         }}>
@@ -352,22 +353,23 @@ function BuyerOrderDetail(props) {
           </TouchableOpacity>
         </View>}
       </ScrollView>}
-      {[5, 2, 3].includes(order.status) && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          disabled={true}
-          style={{
-            borderRadius: 5,
-            paddingVertical: 10,
-            backgroundColor: colors.grey
-          }}>
-          <Text style={styles.buyAgainText}>Đang xử lý</Text>
-        </TouchableOpacity>
-      </View>}
-      {order.status == 4 && <View style={{
+      {[enumConstants.orderStatus.WaitingSellerConfirm, enumConstants.orderStatus.ReadyForPickup, enumConstants.orderStatus.Delivering]
+        .includes(order.status) && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            disabled={true}
+            style={{
+              borderRadius: 5,
+              paddingVertical: 10,
+              backgroundColor: colors.grey
+            }}>
+            <Text style={styles.buyAgainText}>Đang xử lý</Text>
+          </TouchableOpacity>
+        </View>}
+      {order.status == enumConstants.orderStatus.Delivered && <View style={{
         backgroundColor: 'white',
         paddingHorizontal: 15,
         paddingVertical: 10
@@ -386,44 +388,45 @@ function BuyerOrderDetail(props) {
           }}>Mua lại</Text>
         </TouchableOpacity>
       </View>}
-      {[10, 11, 12].includes(order.status) && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              borderRadius: 5,
-              paddingVertical: 10,
-              backgroundColor: colors.white,
-              borderWidth: 1,
-              borderColor: colors.primary
-            }}>
-            <Text style={{
-              fontSize: fontSizes.h3,
-              fontFamily: fonts.MontserratMedium,
-              textAlign: 'center',
-              color: colors.primary
-            }}>Chi tiết đơn hủy</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              borderRadius: 5,
-              paddingVertical: 10,
-              backgroundColor: colors.primary
-            }}>
-            <Text style={{
-              fontSize: fontSizes.h3,
-              fontFamily: fonts.MontserratMedium,
-              textAlign: 'center',
-              color: 'white'
-            }}>Mua lại</Text>
-          </TouchableOpacity>
-        </View>
-      </View>}
+      {[enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
+        .includes(order.status) && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                borderRadius: 5,
+                paddingVertical: 10,
+                backgroundColor: colors.white,
+                borderWidth: 1,
+                borderColor: colors.primary
+              }}>
+              <Text style={{
+                fontSize: fontSizes.h3,
+                fontFamily: fonts.MontserratMedium,
+                textAlign: 'center',
+                color: colors.primary
+              }}>Chi tiết đơn hủy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                borderRadius: 5,
+                paddingVertical: 10,
+                backgroundColor: colors.primary
+              }}>
+              <Text style={{
+                fontSize: fontSizes.h3,
+                fontFamily: fonts.MontserratMedium,
+                textAlign: 'center',
+                color: 'white'
+              }}>Mua lại</Text>
+            </TouchableOpacity>
+          </View>
+        </View>}
     </View >
   );
 }

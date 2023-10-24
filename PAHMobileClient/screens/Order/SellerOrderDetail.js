@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl
 } from 'react-native';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import { colors, fontSizes, images, fonts, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -110,7 +110,7 @@ function SellerOrderDetail(props) {
       }>
         {/* Status and note */}
         <View style={{ backgroundColor: 'white', marginBottom: 10 }}>
-          {order.status == 5 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.WaitingSellerConfirm && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Chờ xác nhận</Text>
               <Text style={styles.noteText}>
@@ -129,7 +129,7 @@ function SellerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 2 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.ReadyForPickup && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Chờ lấy hàng</Text>
               <Text style={styles.noteText}>
@@ -148,7 +148,7 @@ function SellerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 3 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.Delivering && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đang vận chuyển</Text>
               <Text style={styles.noteText}>
@@ -167,7 +167,7 @@ function SellerOrderDetail(props) {
             </View>
           </View>}
 
-          {order.status == 4 && <View style={styles.statusSection}>
+          {order.status == enumConstants.orderStatus.Delivered && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
               <Text style={styles.noteText}>
@@ -186,7 +186,8 @@ function SellerOrderDetail(props) {
             </View>
           </View>}
 
-          {([10, 11, 12].includes(order.status)) && <View style={styles.statusSection}>
+          {([enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
+            .includes(order.status)) && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
               <Text style={styles.noteText}>
@@ -344,7 +345,7 @@ function SellerOrderDetail(props) {
           </View>
         </View>
       </ScrollView>}
-      {order.status == 5 && <View style={{
+      {order.status == enumConstants.orderStatus.WaitingSellerConfirm && <View style={{
         backgroundColor: 'white',
         paddingHorizontal: 15,
         paddingVertical: 10
@@ -360,7 +361,7 @@ function SellerOrderDetail(props) {
               borderColor: colors.primary
             }}
             onPress={() => confirmOrder({
-              status: 12,
+              status: enumConstants.orderStatus.CancelledBySeller,
               message: "Gặp vấn đề trong khâu đóng gói hàng"
             })}>
             <Text style={{
@@ -378,7 +379,7 @@ function SellerOrderDetail(props) {
               backgroundColor: colors.primary
             }}
             onPress={() => confirmOrder({
-              status: 2,
+              status: enumConstants.orderStatus.ReadyForPickup,
               message: ""
             })}>
             <Text style={{
@@ -392,7 +393,7 @@ function SellerOrderDetail(props) {
       </View>}
 
       {
-        order.status == 2 && <View style={{
+        order.status == enumConstants.orderStatus.ReadyForPickup && <View style={{
           backgroundColor: 'white',
           paddingHorizontal: 15,
           paddingVertical: 10
@@ -404,7 +405,7 @@ function SellerOrderDetail(props) {
               backgroundColor: colors.primary
             }}
             onPress={() => confirmOrder({
-              status: 3,
+              status: enumConstants.orderStatus.Delivering,
               message: ""
             })}>
             <Text style={{
@@ -417,7 +418,7 @@ function SellerOrderDetail(props) {
         </View>
       }
       {
-        order.status == 3 && <View style={{
+        order.status == enumConstants.orderStatus.Delivering && <View style={{
           backgroundColor: 'white',
           paddingHorizontal: 15,
           paddingVertical: 10
@@ -434,7 +435,7 @@ function SellerOrderDetail(props) {
         </View>
       }
       {
-        order.status == 4 && <View style={{
+        order.status == enumConstants.orderStatus.Delivered && <View style={{
           backgroundColor: 'white',
           paddingHorizontal: 15,
           paddingVertical: 10
@@ -451,7 +452,7 @@ function SellerOrderDetail(props) {
         </View>
       }
       {
-        [10, 11, 12].includes(order.status) && <View style={{
+        [enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller].includes(order.status) && <View style={{
           backgroundColor: 'white',
           paddingHorizontal: 15,
           paddingVertical: 10

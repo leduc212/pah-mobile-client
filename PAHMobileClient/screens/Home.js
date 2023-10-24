@@ -15,7 +15,6 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
 import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
-import { SignalRContext } from '../context/SignalRContext';
 import {
     HomeItemCard,
     HomeCategoryCard,
@@ -32,7 +31,6 @@ function Home(props) {
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
-    const signalRContext = useContext(SignalRContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -157,10 +155,7 @@ function Home(props) {
                         >Tìm kiếm sản phẩm...</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        //navigate('Search')
-                        signalRContext.connection?.invoke("SendMessage", 'duc', 'Microphone pressed').catch(function (err) {
-                            return console.error(err.toString());
-                        });
+                        navigate('Search')
                     }}>
                         <IconSLI name='microphone'
                             size={20} color={'black'}

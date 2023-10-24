@@ -88,6 +88,7 @@ async function getAuctionsByBidder(axiosContext, status) {
       auction.registrationStart = responseAuction.registrationStart ?? '';
       auction.registrationEnd = responseAuction.registrationEnd ?? '';
       auction.imageUrl = responseAuction.imageUrl ?? '';
+      auction.isWon = responseAuction.isWon ?? false;
 
       result.push(auction);
     });

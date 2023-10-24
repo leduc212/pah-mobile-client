@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
+import { SignalRContext } from '../../context/SignalRContext';
 import { colors, fontSizes, images, fonts } from '../../constants';
 import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -21,15 +22,20 @@ import {
 import {
     Auction as AuctionRepository
 } from '../../repositories';
+import { useIsFocused } from '@react-navigation/native';
 
 function BidderAuctionHistoryListing(props) {
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
+    const signalRContext = useContext(SignalRContext);
 
     // Navigation
     const { navigation, route } = props;
+
+    // On focus
+    const isFocused = useIsFocused();
 
     // Function of navigate to/back
     const { navigate, goBack } = navigation;
@@ -52,6 +58,7 @@ function BidderAuctionHistoryListing(props) {
 
         AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus)
             .then(response => {
+                console.log(response);
                 setAuctions(response);
                 setIsLoading(false);
             })
@@ -62,7 +69,7 @@ function BidderAuctionHistoryListing(props) {
 
     useEffect(() => {
         getAllAuction();
-    }, [currentAuctionStatus]);
+    }, [currentAuctionStatus, isFocused]);
 
     // Scroll view refresh
     const onRefresh = () => {

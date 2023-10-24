@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,48 +10,54 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import {AuthContext} from '../../context/AuthContext';
-import {AxiosContext} from '../../context/AxiosContext';
-import {colors, fontSizes, fonts, images} from '../../constants';
+import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
+import { SignalRContext } from '../../context/SignalRContext';
+import { colors, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
-import Modal from 'react-native-modal';
-import {SliderBox} from 'react-native-image-slider-box';
-import {ListingDetailInfoText} from '../../components';
+import { SliderBox } from 'react-native-image-slider-box';
+import { ListingDetailInfoText } from '../../components';
 import CountDown from 'react-native-countdown-fixed';
-import {numberWithCommas} from '../../utilities/PriceFormat';
-import {differenceInSeconds} from 'date-fns';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import { differenceInSeconds } from 'date-fns';
 import {
   Auction as AuctionRepository,
   Bid as BidRepository,
 } from '../../repositories';
+import Toast from 'react-native-toast-message';
+import moment from 'moment';
 
 function AuctionBidding(props) {
   // Get auction_id from routes
-  const {auction_id, currentPrice, step} = props.route.params;
+  const { auction_id } = props.route.params;
 
   // Auth Context
   const authContext = useContext(AuthContext);
   const axiosContext = useContext(AxiosContext);
+  const signalRContext = useContext(SignalRContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   // Data
-  const [confirmModal, setConfirmModal] = useState(false);
   const [auction, setAuction] = useState({});
   const [bidHistory, setBidHistory] = useState([]);
-  const [bidAmount, setBidAmount] = useState(parseInt(currentPrice + step));
-  const [minBidAmount, setMinBidAmount] = useState(
-    parseInt(currentPrice + step),
-  );
+  const [bidAmount, setBidAmount] = useState(0);
+  const minBidAmount = () => auction.currentPrice + auction.step;
   const isAllEmpty = () => !(Array.isArray(bidHistory) && bidHistory.length);
+
   // validating
   const validationBidAmount = () =>
     parseInt(bidAmount) >= auction.currentPrice + auction.step;
+
+  const validateTime = () => moment(auction.endedAt).isAfter(moment());
+
+  const validateAll = () => validationBidAmount() && validateTime();
+
   const duration = differenceInSeconds(
     new Date(auction.endedAt),
     new Date(),
@@ -71,7 +77,6 @@ function AuctionBidding(props) {
 
   ////FUNCTION
   function getAuctionDetail() {
-    setIsLoading(true);
     const promiseAuctionDetail = AuctionRepository.getAuctionDetail(
       axiosContext,
       auction_id,
@@ -95,19 +100,53 @@ function AuctionBidding(props) {
       });
   }
 
-  function getBidAmount() {
-    setBidAmount(auction.currentPrice + auction.step);
-    setMinBidAmount(auction.currentPrice + auction.step);
-  }
+  useEffect(() => {
+    setIsLoading(true);
+    getAuctionDetail();
+
+    // On receive new bid
+    signalRContext?.connection?.on("ReceiveNewBid", function (userName, auctionTitle) {
+      getAuctionDetail();
+    });
+
+    // On auction End
+    signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+      goBack();
+    });
+  }, []);
 
   useEffect(() => {
-    getAuctionDetail();
-  }, []);
+    setBidAmount(auction.currentPrice + auction.step);
+  }, [auction]);
+
+  // Place bid function
+  function placeBid() {
+    BidRepository.placeBid(axiosContext, {
+      auctionId: auction_id,
+      bidAmount: bidAmount
+    })
+      .then(response => {
+        signalRContext?.connection?.invoke("PlaceBidSuccess", auction_id).catch(function (err) {
+          return console.error(err.toString());
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        if (error.response) {
+          Toast.show({
+            type: 'error',
+            text1: `${error.response.data.Message}`,
+            position: 'bottom',
+            autoHide: true,
+            visibilityTime: 2000
+          });
+        }
+      })
+  }
 
   // Scroll view refresh
   const onRefresh = () => {
     setRefreshing(true);
-    getBidAmount();
     getAuctionDetail();
     setRefreshing(false);
   };
@@ -116,21 +155,23 @@ function AuctionBidding(props) {
     <View style={styles.container}>
       {/* Fixed screen title: Cart */}
       <View style={styles.titleContainer}>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => {
-            goBack();
-          }}>
-          <IconFeather name="chevron-left" size={30} color={'black'} />
-        </TouchableOpacity>
-        <Text style={styles.titleText}>Đấu giá</Text>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => {
-            alert('go to wallet');
-          }}>
-          <IconAntDesign name="wallet" size={30} color={'black'} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity style={styles.backButton}
+            onPress={() => {
+              goBack()
+            }}>
+            <IconFeather name='arrow-left' size={30} color={'black'} />
+          </TouchableOpacity>
+          <Text style={styles.titleText}>Đấu giá trực tiếp</Text>
+        </View>
+        <View style={styles.titleButtonContainer}>
+          <TouchableOpacity style={styles.iconButton}
+            onPress={() => {
+              navigate('Wallet')
+            }}>
+            <IconAntDesign name='wallet' size={18} color={'black'} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {isLoading ? (
@@ -142,7 +183,7 @@ function AuctionBidding(props) {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           {auction.title ? (
             <ScrollView
               refreshControl={
@@ -152,7 +193,7 @@ function AuctionBidding(props) {
               <View>
                 <SliderBox
                   images={auction.imageUrls}
-                  sliderBoxHeight={480}
+                  sliderBoxHeight={400}
                   dotColor={colors.primary}
                   inactiveDotColor="#90A4AE"
                 />
@@ -161,23 +202,37 @@ function AuctionBidding(props) {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingHorizontal: 15,
+                    alignItems: 'flex-start',
+                    paddingLeft: 15,
+                    paddingRight: 20
                   }}>
                   <View>
-                    <Text style={styles.auctionDetailText}>Kết thúc trong</Text>
+                    <Text style={{
+                      fontFamily: fonts.MontserratMedium,
+                      color: 'black',
+                      fontSize: fontSizes.h3,
+                      marginBottom: 10
+                    }}>Kết thúc trong</Text>
                     <CountDown
-                      size={14}
+                      size={15}
                       until={duration}
-                      onFinish={() => alert('Finished')}
-                      digitStyle={{borderWidth: 2, borderColor: '#1CC625'}}
-                      timeLabels={{m: null, s: null}}
-                      separatorStyle={{color: '#1CC625'}}
+                      onFinish={() => {
+                        alert('Cuộc đấu giá đã kết thúc');
+                        goBack();
+                      }}
+                      digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
+                      timeLabels={{ m: null, s: null }}
+                      separatorStyle={{ color: colors.primary }}
                       showSeparator
                     />
                   </View>
                   <View>
-                    <Text style={styles.auctionDetailText}>Giá cao nhất</Text>
+                    <Text style={{
+                      fontFamily: fonts.MontserratMedium,
+                      color: 'black',
+                      fontSize: fontSizes.h3,
+                      marginBottom: 10
+                    }}>Giá cao nhất</Text>
                     <Text style={styles.auctionHighestBidText}>
                       ₫{numberWithCommas(auction.currentPrice)}
                     </Text>
@@ -186,7 +241,7 @@ function AuctionBidding(props) {
               </View>
 
               {/* Bidding History */}
-              <View style={{paddingHorizontal: 15, marginTop: 15}}>
+              <View style={{ paddingHorizontal: 15, marginTop: 15 }}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -196,14 +251,6 @@ function AuctionBidding(props) {
                   <Text style={styles.auctionHistoryTitle}>
                     Lịch sử đấu giá
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigate('BiddingHistory', {auction_id: auction.id});
-                    }}>
-                    <Text style={styles.auctionHistoryButtonText}>
-                      Xem tất cả
-                    </Text>
-                  </TouchableOpacity>
                 </View>
                 {isAllEmpty() ? (
                   <View style={styles.auctionBidderDetail}>
@@ -213,8 +260,10 @@ function AuctionBidding(props) {
                   </View>
                 ) : (
                   <View>
-                    {bidHistory.slice(0, 3).map(bid => (
-                      <View style={styles.auctionBidderDetail} key={bid.id}>
+                    {bidHistory.map((bid, index) => (
+                      <View style={[styles.auctionBidderDetail, {
+                        backgroundColor: index == 0 ? colors.darkGrey : colors.grey,
+                      }]} key={bid.id}>
                         <View
                           style={{
                             flexDirection: 'row',
@@ -227,12 +276,22 @@ function AuctionBidding(props) {
                             width={50}
                             borderRadius={5}
                             source={{
-                              uri: 'https://i.pinimg.com/564x/34/e0/7a/34e07adbd823772cde8247405733a0e2.jpg',
+                              uri: bid.bidder.profilePicture,
                             }}
                           />
-                          <Text style={styles.auctionBidderName}>
-                            {bid.bidderName}
-                          </Text>
+                          <View>
+                            <Text style={styles.auctionBidderName}>
+                              {bid.bidder.name}
+                            </Text>
+                            <Text style={{
+                              marginStart: 10,
+                              color: colors.greyText,
+                              fontFamily: fonts.MontserratMedium,
+                              fontSize: fontSizes.h6,
+                            }}>
+                              {bid.bidder.email}
+                            </Text>
+                          </View>
                         </View>
                         <Text style={styles.auctionBidderMoney}>
                           ₫{numberWithCommas(bid.bidAmount)}
@@ -241,100 +300,6 @@ function AuctionBidding(props) {
                     ))}
                   </View>
                 )}
-              </View>
-
-              {/* Bidding section */}
-              <View
-                style={{
-                  paddingVertical: 5,
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginHorizontal: 15,
-                  marginTop: 10,
-                  borderColor: colors.primary,
-                }}>
-                <Text
-                  style={{
-                    fontFamily: fonts.MontserratBold,
-                    fontSize: fontSizes.h4,
-                    color: colors.greyText,
-                    alignSelf: 'center',
-                  }}>
-                  Số tiền đặt của bạn
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 0,
-                    justifyContent: 'space-evenly',
-                  }}>
-                  <TouchableOpacity onPress={bidDecrement}>
-                    <IconAntDesign
-                      name="minussquare"
-                      size={30}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                  <Text
-                    style={{
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h2,
-                      color: 'black',
-                    }}>
-                    ₫{numberWithCommas(bidAmount)} VNĐ
-                  </Text>
-                  <TouchableOpacity onPress={bidIncrement}>
-                    <IconAntDesign
-                      name="plussquare"
-                      size={30}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-                {!validationBidAmount() && (
-                  <Text
-                    style={{
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h6,
-                      color: 'red',
-                      alignSelf: 'center',
-                    }}>
-                    Số tiền đặt tối thiểu là ₫{numberWithCommas(minBidAmount)}{' '}
-                    VNĐ
-                  </Text>
-                )}
-              </View>
-
-              {/* Bid buttons */}
-              <View
-                style={{
-                  paddingHorizontal: 15,
-                  marginBottom: 20,
-                  marginTop: 20,
-                  flex: 1,
-                  justifyContent: 'flex-end',
-                }}>
-                <TouchableOpacity
-                  disabled={!validationBidAmount()}
-                  style={{
-                    borderRadius: 5,
-                    backgroundColor: validationBidAmount()
-                      ? colors.primary
-                      : colors.darkGrey,
-                    paddingVertical: 10,
-                  }}
-                  onPress={() => setConfirmModal(!confirmModal)}>
-                  <Text
-                    style={{
-                      fontSize: fontSizes.h3,
-                      fontFamily: fonts.MontserratBold,
-                      color: validationBidAmount() ? 'white' : colors.greyText,
-                      textAlign: 'center',
-                    }}>
-                    Đấu giá
-                  </Text>
-                </TouchableOpacity>
               </View>
             </ScrollView>
           ) : (
@@ -377,95 +342,100 @@ function AuctionBidding(props) {
               </TouchableOpacity>
             </View>
           )}
-        </View>
-      )}
-
-      {/* Confirm modal */}
-      <Modal
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        isVisible={confirmModal}
-        onRequestClose={() => {
-          setConfirmModal(!confirmModal);
-        }}
-        style={{margin: 0}}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'white',
-          }}>
-          {/* Title */}
-          <View style={styles.titleContainer}>
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() => {
-                setConfirmModal(!confirmModal);
-              }}>
-              <IconFeather name="x" size={30} color={'black'} />
-            </TouchableOpacity>
-            <Text style={styles.titleText}>Xác nhận đấu giá</Text>
-          </View>
-
-          {/* Bidding information */}
+          {/* Bidding section */}
           <View
             style={{
-              gap: 10,
-              marginHorizontal: 20,
-              marginBottom: 30,
-            }}>
-            <ListingDetailInfoText label="Giá đặt mới" text="8,600,000 VNĐ" />
-            <ListingDetailInfoText
-              label="Thời gian còn lại"
-              text="2 ngày 13 giờ"
-            />
-            <ListingDetailInfoText
-              label="Số dư khả dụng bị trừ"
-              text="200,000 VNĐ"
-              secondText="Người tham gia cần có đủ số dư khả dụng trong ví PAH"
-            />
-          </View>
-
-          {/* Confirm buttons */}
-          <View
-            style={{
-              paddingHorizontal: 20,
-              gap: 10,
-              marginBottom: 20,
-              flex: 1,
-              justifyContent: 'flex-end',
+              paddingVertical: 5,
+              borderWidth: 2,
+              borderRadius: 5,
+              marginHorizontal: 15,
+              marginTop: 10,
+              borderColor: colors.primary,
             }}>
             <Text
               style={{
-                fontSize: fontSizes.h5,
-                fontFamily: fonts.MontserratMedium,
-                color: 'black',
+                fontFamily: fonts.MontserratBold,
+                fontSize: fontSizes.h4,
+                color: colors.greyText,
+                alignSelf: 'center',
               }}>
-              Khi bạn xác nhận giá đặt của mình, điều đó có nghĩa là bạn cam kết
-              mua mặt hàng này nếu bạn là người thắng cuộc. Điều đó cũng có
-              nghĩa là bạn đã đọc và đồng ý với Điều khoản của PAH.
+              Số tiền đặt của bạn
             </Text>
-            <TouchableOpacity
+            <View
               style={{
-                borderWidth: 1.2,
-                borderColor: colors.primary,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 0,
+                justifyContent: 'space-evenly',
+              }}>
+              <TouchableOpacity onPress={bidDecrement}
+                disabled={!validationBidAmount()}>
+                <IconAntDesign
+                  name="minussquare"
+                  size={30}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontFamily: fonts.MontserratMedium,
+                  fontSize: fontSizes.h2,
+                  color: 'black',
+                }}>
+                ₫{numberWithCommas(bidAmount)}
+              </Text>
+              <TouchableOpacity onPress={bidIncrement}>
+                <IconAntDesign
+                  name="plussquare"
+                  size={30}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
+            {!validateAll() && (
+              <Text
+                style={{
+                  fontFamily: fonts.MontserratMedium,
+                  fontSize: fontSizes.h6,
+                  color: 'red',
+                  alignSelf: 'center',
+                }}>
+                Số tiền đặt tối thiểu là ₫{numberWithCommas(minBidAmount())}
+              </Text>
+            )}
+          </View>
+
+          {/* Bid buttons */}
+          <View
+            style={{
+              paddingHorizontal: 15,
+              marginBottom: 20,
+              marginTop: 20,
+              justifyContent: 'flex-end',
+            }}>
+            <TouchableOpacity
+              disabled={!validateAll()}
+              style={{
                 borderRadius: 5,
-                backgroundColor: colors.primary,
+                backgroundColor: validateAll()
+                  ? colors.primary
+                  : colors.darkGrey,
                 paddingVertical: 10,
               }}
-              onPress={() => goBack()}>
+              onPress={() => placeBid()}>
               <Text
                 style={{
                   fontSize: fontSizes.h3,
                   fontFamily: fonts.MontserratBold,
-                  color: 'white',
+                  color: validateAll() ? 'white' : colors.greyText,
                   textAlign: 'center',
                 }}>
-                Xác nhận đấu giá
+                Đấu giá
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      )}
     </View>
   );
 }
@@ -475,9 +445,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  iconButton: {
+  backButton: {
     padding: 12,
-    borderRadius: 5,
+    borderRadius: 5
+  },
+  iconButton: {
+    backgroundColor: colors.grey,
+    padding: 12,
+    borderRadius: 5
   },
   titleContainer: {
     height: 70,
@@ -485,7 +460,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   titleText: {
     color: 'black',
@@ -522,8 +497,9 @@ const styles = StyleSheet.create({
   },
   auctionTitleText: {
     color: colors.black,
-    fontFamily: fonts.MontserratMedium,
-    fontSize: fontSizes.h4,
+    fontFamily: fonts.MontserratBold,
+    fontSize: fontSizes.h3,
+    marginVertical: 10,
     marginHorizontal: 15,
     paddingVertical: 5,
   },
@@ -535,7 +511,7 @@ const styles = StyleSheet.create({
   },
   auctionHighestBidText: {
     color: colors.primary,
-    fontFamily: fonts.MontserratMedium,
+    fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
   },
   auctionHistoryTitle: {
@@ -554,7 +530,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     padding: 5,
-    backgroundColor: colors.darkGrey,
     marginTop: 7,
   },
   auctionBidderName: {
@@ -564,10 +539,10 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h5,
   },
   auctionBidderMoney: {
-    marginStart: 10,
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
+    marginEnd: 5
   },
   biddingHistoryNote: {
     marginStart: 10,
