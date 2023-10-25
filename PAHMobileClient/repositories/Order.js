@@ -115,10 +115,42 @@ async function sellerConfirm(axiosContext, orderId, confirmInfo) {
   }
 }
 
+async function defaultShippingOrder(axiosContext, orderId) {
+  const orderPath = `/seller/order/deliver/${orderId}`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function orderComplete(axiosContext, orderId) {
+  const orderPath = `/buyer/order/done/${orderId}`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllOrderCurrentBuyer,
   getAllOrderCurrentSeller,
   getOrderDetail,
   checkout,
-  sellerConfirm
+  sellerConfirm,
+  defaultShippingOrder,
+  orderComplete
 };

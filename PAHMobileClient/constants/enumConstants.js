@@ -22,6 +22,7 @@ export default {
         ReadyForPickup: 2,
         Delivering: 3,
         Delivered: 4,
+        Done: 6,
         CancelApprovalPending: 10,
         CancelledBySeller: 12,
         CancelledByBuyer: 11,

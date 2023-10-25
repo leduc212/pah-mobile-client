@@ -216,10 +216,10 @@ function AuctionBidding(props) {
                     <CountDown
                       size={15}
                       until={duration}
-                      onFinish={() => {
-                        alert('Cuộc đấu giá đã kết thúc');
-                        goBack();
-                      }}
+                      // onFinish={() => {
+                      //   alert('Cuộc đấu giá đã kết thúc');
+                      //   goBack();
+                      // }}
                       digitStyle={{ borderWidth: 2, borderColor: colors.primary }}
                       timeLabels={{ m: null, s: null }}
                       separatorStyle={{ color: colors.primary }}

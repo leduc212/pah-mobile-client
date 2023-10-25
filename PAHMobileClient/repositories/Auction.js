@@ -61,6 +61,7 @@ async function getAuctionDetail(axiosContext, auction_id) {
     auction.seller = responseAuction.seller ?? {};
     auction.numberOfBids = responseAuction.numberOfBids ?? 0;
     auction.numberOfBidders = responseAuction.numberOfBidders ?? 0;
+    auction.winner = responseAuction.winner ?? {};
 
     return auction;
   } catch (error) {
@@ -143,11 +144,28 @@ async function checkRegistration(axiosContext, auction_id) {
   }
 }
 
+async function checkWinner(axiosContext, auction_id) {
+  const auctionPath = `/auction/win/check/current/${auction_id}`;
+
+  try {
+    let responseData = await axiosContext.authAxios.get(auctionPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+
+    let responseCheck = responseData.data.data;
+    return responseCheck;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAuctionsHome,
   getAuctions,
   getAuctionDetail,
   checkRegistration,
   getAuctionsByBidder,
-  getAuctionsBySeller
+  getAuctionsBySeller,
+  checkWinner
 }

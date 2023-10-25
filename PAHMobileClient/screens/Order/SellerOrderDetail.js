@@ -64,6 +64,17 @@ function SellerOrderDetail(props) {
       })
   }
 
+  // Order handle to shipping service
+  function defaultShippingApply() {
+    OrderRepository.defaultShippingOrder(axiosContext, orderId)
+      .then(response => {
+        getOrder();
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
+  }
+
   useEffect(() => {
     getOrder();
   }, []);
@@ -404,10 +415,7 @@ function SellerOrderDetail(props) {
               paddingVertical: 10,
               backgroundColor: colors.primary
             }}
-            onPress={() => confirmOrder({
-              status: enumConstants.orderStatus.Delivering,
-              message: ""
-            })}>
+            onPress={() => defaultShippingApply()}>
             <Text style={{
               fontSize: fontSizes.h3,
               fontFamily: fonts.MontserratMedium,

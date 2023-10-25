@@ -40,7 +40,7 @@ function BuyerOrderList(props) {
   const isAllEmpty = () => !(Array.isArray(orders) && orders.length);
 
   // Order status filter
-  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 10, 11, 12]);
+  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 6, 10, 11, 12]);
   const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
 
   //// FUNCTIONS
@@ -300,7 +300,7 @@ function BuyerOrderList(props) {
                           </TouchableOpacity>
                         )}
 
-                        {[4, 10, 11, 12].includes(order.status) && (
+                        {[4, 10, 11, 12, 6].includes(order.status) && (
                           <TouchableOpacity style={[styles.orderDetailButton, {
                             backgroundColor: colors.primary
                           }]}>

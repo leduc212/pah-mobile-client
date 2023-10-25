@@ -53,6 +53,16 @@ function BuyerOrderDetail(props) {
       });
   }
 
+  // Complete order
+  function orderComplete() {
+    OrderRepository.orderComplete(axiosContext, orderId)
+      .then(response => {
+        getOrder();
+      })
+      .catch(error => {
+      });
+  }
+
   useEffect(() => {
     getOrder();
   }, []);
@@ -157,6 +167,25 @@ function BuyerOrderDetail(props) {
           </View>}
 
           {order.status == enumConstants.orderStatus.Delivered && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Đơn hàng đã được giao thành công</Text>
+              <Text style={styles.noteText}>
+                Bạn hãy xác nhận việc nhận hàng. Nếu không xác nhận thì đơn hàng sẽ được đánh dấu là giao thành công trong vòng 48 giờ.
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          {order.status == enumConstants.orderStatus.Done && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
               <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
               <Text style={styles.noteText}>
@@ -379,7 +408,29 @@ function BuyerOrderDetail(props) {
             borderRadius: 5,
             paddingVertical: 10,
             backgroundColor: colors.primary
-          }}>
+          }}
+          onPress={() => orderComplete()}>
+          <Text style={{
+            fontSize: fontSizes.h3,
+            fontFamily: fonts.MontserratMedium,
+            textAlign: 'center',
+            color: 'white'
+          }}>Tôi đã nhận được hàng</Text>
+        </TouchableOpacity>
+      </View>}
+      {order.status == enumConstants.orderStatus.Done && order.orderItems[0].productType == 1
+       && <View style={{
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10
+      }}>
+        <TouchableOpacity
+          style={{
+            borderRadius: 5,
+            paddingVertical: 10,
+            backgroundColor: colors.primary
+          }}
+          onPress={() => {}}>
           <Text style={{
             fontSize: fontSizes.h3,
             fontFamily: fonts.MontserratMedium,

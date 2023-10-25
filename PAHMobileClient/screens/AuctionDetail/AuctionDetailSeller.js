@@ -12,7 +12,7 @@ import {
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
 import { SignalRContext } from '../../context/SignalRContext';
-import { colors, fontSizes, fonts, images } from '../../constants';
+import { colors, enumConstants, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { SliderBox } from "react-native-image-slider-box";
 import {
@@ -178,12 +178,15 @@ function AuctionDetailSeller(props) {
                     {(auction.status == 5 && moment(auction.endedAt).isBefore(moment())) && <Text style={styles.pricePrimary}>
                         Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
                     </Text>}
+                    {auction.status == enumConstants.auction.Ended && <Text style={styles.pricePrimary}>
+                        Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
+                    </Text>}
                 </View>
 
                 {/* Countdown and button section */}
                 <View>
                     {/* Auction is being verified*/}
-                    {[0,1,2].includes(auction.status) && <View style={{
+                    {[0, 1, 2].includes(auction.status) && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
@@ -200,8 +203,8 @@ function AuctionDetailSeller(props) {
                                 color: colors.darkGreyText,
                                 fontSize: fontSizes.h4,
                                 marginTop: 10
-                            }}>Cuộc đấu giá của bạn đang được duyệt. Nếu được duyệt thành công, nhân viên đấu giá sẽ giúp cập nhật thông tin 
-                            về cuộc đấu giá cho bạn.</Text>
+                            }}>Cuộc đấu giá của bạn đang được duyệt. Nếu được duyệt thành công, nhân viên đấu giá sẽ giúp cập nhật thông tin
+                                về cuộc đấu giá cho bạn.</Text>
                         </View>
                     </View>}
 
@@ -223,8 +226,8 @@ function AuctionDetailSeller(props) {
                                 color: colors.darkGreyText,
                                 fontSize: fontSizes.h4,
                                 marginTop: 10
-                            }}>Cuộc đấu giá của bạn đã bị từ chối. Hãy kiểm tra lại thông tin sản phẩm của bạn và tạo một cuốc đấu 
-                            giá mới</Text>
+                            }}>Cuộc đấu giá của bạn đã bị từ chối. Hãy kiểm tra lại thông tin sản phẩm của bạn và tạo một cuốc đấu
+                                giá mới</Text>
                         </View>
                     </View>}
 
@@ -340,18 +343,46 @@ function AuctionDetailSeller(props) {
                     </View>}
 
                     {/* Auction is ended */}
-                    {[6, 7].includes(auction.status)&& <View style={{
+                    {auction.status == enumConstants.auction.Ended && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
                     }}>
-                        <View style={{ alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
+
+                        <View style={{}}>
                             <Text style={{
                                 fontFamily: fonts.MontserratMedium,
                                 color: 'black',
                                 fontSize: fontSizes.h3,
                                 marginTop: 15
-                            }}>Cuộc đấu giá đã kết thúc</Text>
+                            }}>Người thắng cuộc</Text>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row',
+                            gap: 10,
+                            backgroundColor: colors.grey,
+                            padding: 10,
+                            borderRadius: 5
+                        }}>
+                            <Image source={{ uri: auction.winner.profilePicture }}
+                                style={{
+                                    resizeMode: 'cover',
+                                    width: 80,
+                                    height: 80,
+                                    borderRadius: 50
+                                }} />
+                            <View>
+                                <Text style={{
+                                    fontFamily: fonts.MontserratMedium,
+                                    color: 'black',
+                                    fontSize: fontSizes.h4,
+                                }}>{auction.winner.name}</Text>
+                                <Text style={{
+                                    fontFamily: fonts.MontserratMedium,
+                                    color: colors.darkGreyText,
+                                    fontSize: fontSizes.h4,
+                                }}>{auction.winner.email}</Text>
+                            </View>
                         </View>
                     </View>}
                 </View>

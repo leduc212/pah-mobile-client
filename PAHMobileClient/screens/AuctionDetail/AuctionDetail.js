@@ -57,7 +57,11 @@ function AuctionDetail(props) {
     const [auction, setAuction] = useState({
         seller: {},
         imageUrls: [],
-        product: {}
+        product: {},
+        winner: {
+            profilePicture: images.defaultAvatar
+        },
+        productId: 0
     });
 
     // Calculate data for shipping price
@@ -73,6 +77,7 @@ function AuctionDetail(props) {
     const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [userRegistered, setUserRegistered] = useState(false);
+    const [userWon, setUserWon] = useState(false);
 
     // Data for validating register duration and bidding duration
     const isRegisterDuration = () => moment(auction.registrationStart).isBefore(moment()) &&
@@ -121,12 +126,20 @@ function AuctionDetail(props) {
                 .catch(error => {
                     setIsLoading(false);
                 });
-            const promiseCheck = await AuctionRepository.checkRegistration(axiosContext, auction_id)
+            const promiseCheckRegistration = await AuctionRepository.checkRegistration(axiosContext, auction_id)
                 .then(response => {
                     setUserRegistered(response);
                 });
 
-            Promise.all([promiseAddress, promiseCheck])
+            const promiseCheckWinner = await AuctionRepository.checkWinner(axiosContext, auction_id)
+                .then(response => {
+                    setUserWon(response);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
+            Promise.all([promiseAddress, promiseCheckRegistration, promiseCheckWinner])
                 .then((values) => {
                     setIsLoading(false);
                 })
@@ -419,19 +432,67 @@ function AuctionDetail(props) {
                     </View>}
 
                     {/* Auction is ended */}
-                    {[6, 7].includes(auction.status) && <View style={{
+                    {auction.status == enumConstants.auction.Ended && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
                     }}>
-                        <View style={{ alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
-                            <Text style={{
-                                fontFamily: fonts.MontserratMedium,
-                                color: 'black',
-                                fontSize: fontSizes.h3,
-                                marginTop: 15
-                            }}>Cuộc đấu giá đã kết thúc</Text>
-                        </View>
+                        {userWon ? <>
+                            <View style={{ alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
+                                <Text style={{
+                                    fontFamily: fonts.MontserratMedium,
+                                    color: 'black',
+                                    fontSize: fontSizes.h3,
+                                    marginTop: 15
+                                }}>Bạn là người thắng cuộc đấu giá này</Text>
+                            </View>
+                            <TouchableOpacity style={styles.primaryButton}
+                                onPress={() => {
+                                    navigate('CheckoutNow', {
+                                        product_id: auction.productId,
+                                        isAuction: true,
+                                        currentPrice: auction.currentPrice
+                                    })
+                                }}>
+                                <Text style={styles.primaryButtonText}>Thanh toán vận chuyển</Text>
+                            </TouchableOpacity>
+                        </> : <>
+                            <View style={{}}>
+                                <Text style={{
+                                    fontFamily: fonts.MontserratMedium,
+                                    color: 'black',
+                                    fontSize: fontSizes.h3,
+                                    marginTop: 15
+                                }}>Người thắng cuộc</Text>
+                            </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                gap: 10,
+                                backgroundColor: colors.grey,
+                                padding: 10,
+                                borderRadius: 5
+                            }}>
+                                <Image source={{ uri: auction.winner.profilePicture }}
+                                    style={{
+                                        resizeMode: 'cover',
+                                        width: 80,
+                                        height: 80,
+                                        borderRadius: 50
+                                    }} />
+                                <View>
+                                    <Text style={{
+                                        fontFamily: fonts.MontserratMedium,
+                                        color: 'black',
+                                        fontSize: fontSizes.h4,
+                                    }}>{auction.winner.name}</Text>
+                                    <Text style={{
+                                        fontFamily: fonts.MontserratMedium,
+                                        color: colors.darkGreyText,
+                                        fontSize: fontSizes.h4,
+                                    }}>{auction.winner.email}</Text>
+                                </View>
+                            </View>
+                        </>}
                     </View>}
                 </View>
 

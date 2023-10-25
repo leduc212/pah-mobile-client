@@ -51,7 +51,7 @@ function CheckoutNow(props) {
     const isFocused = useIsFocused();
 
     // Get product_id from routes
-    const { product_id } = props.route.params;
+    const { product_id, isAuction = false, currentPrice = 0 } = props.route.params;
 
     // Data for product, payment methods and shipping address
     const [product, setProduct] = useState({
@@ -134,7 +134,7 @@ function CheckoutNow(props) {
                 setShippingAddress(responseAddress);
             })
             .catch(error => {
-            })
+            })            
     }, [isFocused]);
 
     function getShippingCost(responseAddress, responseProduct) {
@@ -163,7 +163,6 @@ function CheckoutNow(props) {
             to_ward_code: responseAddress.wardCode
         })
             .then(responseShip => {
-                console.log(responseShip.leadtime)
                 setShippingDate(responseShip.leadtime);
             })
             .catch(error => {
@@ -225,7 +224,6 @@ function CheckoutNow(props) {
     const [returncode, setReturnCode] = useState(0)
     useEffect(() => {
         getProductDetail();
-
         const subscription = payZaloBridgeEmitter.addListener(
             'EventPayZalo',
             (data) => {
@@ -395,7 +393,7 @@ function CheckoutNow(props) {
                             color: 'black',
                             fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h2
-                        }}>{numberWithCommas(product.price)} VNĐ</Text>
+                        }}>{isAuction ? `${numberWithCommas(currentPrice)} VNĐ` : `${numberWithCommas(product.price)} VNĐ` }</Text>
                         <Text style={{
                             color: colors.darkGreyText,
                             fontFamily: fonts.MontserratMedium,
@@ -534,7 +532,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
-                    }}>{numberWithCommas(product.price)} VNĐ</Text>
+                    }}>{isAuction ? 'Đã trả trước' : `${numberWithCommas(product.price)} VNĐ`}</Text>
                 </View>
                 <View style={{
                     flexDirection: 'row',
@@ -565,7 +563,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3
-                    }}>{numberWithCommas(totalPrice())} VNĐ</Text>
+                    }}>{isAuction ? `${numberWithCommas(shippingPrice)} VNĐ` : `${numberWithCommas(totalPrice())} VNĐ`}</Text>
                 </View>
             </View>
             <Text style={{

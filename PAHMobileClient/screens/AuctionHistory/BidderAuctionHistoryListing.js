@@ -58,7 +58,6 @@ function BidderAuctionHistoryListing(props) {
 
         AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus)
             .then(response => {
-                console.log(response);
                 setAuctions(response);
                 setIsLoading(false);
             })

@@ -14,6 +14,9 @@ export const orderStatusText = (orderStatus) => {
         case 5:
             result = 'Chờ xác nhận'
             break;
+        case 6:
+            result = 'Hoàn thành'
+            break;
         case 10:
             result = 'Bị từ chối'
             break;

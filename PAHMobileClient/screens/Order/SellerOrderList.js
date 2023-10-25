@@ -44,7 +44,7 @@ function SellerOrderList(props) {
   const isAllEmpty = () => !(Array.isArray(orders) && orders.length);
 
   // Order status filter
-  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 10, 11, 12]);
+  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 6, 10, 11, 12]);
   const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
 
   //// FUNCTIONS
