@@ -210,7 +210,7 @@ function AuctionDetail(props) {
                                 autoHide: true,
                                 visibilityTime: 2000
                             });
-                            signalRContext.connection?.invoke("JoinGroup", auction_id).catch(function (err) {
+                            signalRContext.connection?.invoke("JoinGroup", `AUCTION_${auction_id}`).catch(function (err) {
                                 return console.error(err.toString());
                             });
                         })
@@ -451,7 +451,8 @@ function AuctionDetail(props) {
                                     navigate('CheckoutNow', {
                                         product_id: auction.productId,
                                         isAuction: true,
-                                        currentPrice: auction.currentPrice
+                                        currentPrice: auction.currentPrice,
+                                        auction_id: auction_id
                                     })
                                 }}>
                                 <Text style={styles.primaryButtonText}>Thanh toán vận chuyển</Text>

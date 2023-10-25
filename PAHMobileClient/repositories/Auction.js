@@ -160,6 +160,21 @@ async function checkWinner(axiosContext, auction_id) {
   }
 }
 
+async function createOrder(axiosContext, orderInfo) {
+  const orderPath = `/auction/order/create`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath, orderInfo);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAuctionsHome,
   getAuctions,
@@ -167,5 +182,6 @@ export default {
   checkRegistration,
   getAuctionsByBidder,
   getAuctionsBySeller,
-  checkWinner
+  checkWinner,
+  createOrder
 }

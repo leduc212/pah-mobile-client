@@ -21,7 +21,8 @@ import {
     Address as AddressRepository,
     Shipping as ShippingRepository,
     Order as OrderRepository,
-    Wallet as WalletRepository
+    Wallet as WalletRepository,
+    Auction as AuctionRepository
 } from '../../repositories';
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
@@ -51,7 +52,7 @@ function CheckoutNow(props) {
     const isFocused = useIsFocused();
 
     // Get product_id from routes
-    const { product_id, isAuction = false, currentPrice = 0 } = props.route.params;
+    const { product_id, isAuction = false, currentPrice = 0, auction_id = 0 } = props.route.params;
 
     // Data for product, payment methods and shipping address
     const [product, setProduct] = useState({
@@ -66,16 +67,22 @@ function CheckoutNow(props) {
         id: 0,
         text: ''
     });
-    const [paymentMethods, setPaymentMethods] = useState([
-        {
-            id: 1,
-            text: 'Số dư ví PAH'
-        },
-        {
-            id: 2,
-            text: 'ZaloPay'
-        }
-    ]);
+    const [paymentMethods, setPaymentMethods] = useState(isAuction ?
+        [
+            {
+                id: 1,
+                text: 'Số dư ví PAH'
+            }
+        ] : [
+            {
+                id: 1,
+                text: 'Số dư ví PAH'
+            },
+            {
+                id: 2,
+                text: 'ZaloPay'
+            }
+        ]);
 
     const [shippingAddress, setShippingAddress] = useState([]);
     const [currentShippingAddress, setCurrentShippingAddress] = useState({});
@@ -134,7 +141,7 @@ function CheckoutNow(props) {
                 setShippingAddress(responseAddress);
             })
             .catch(error => {
-            })            
+            })
     }, [isFocused]);
 
     function getShippingCost(responseAddress, responseProduct) {
@@ -168,6 +175,42 @@ function CheckoutNow(props) {
             .catch(error => {
                 console.log(error.response.data);
             })
+    }
+
+    // Create auction order function
+    function createOrderAuction(){
+        WalletRepository.getWalletCurrentUser(axiosContext)
+            .then(response => {
+                if (shippingPrice < response.availableBalance) {
+                    AuctionRepository.createOrder(axiosContext, {
+                        auctionId: auction_id,
+                        shippingPrice: shippingPrice,
+                        addressId: currentShippingAddress.id
+                    }).then(response => {
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 1 });
+                    }).catch(err => {
+                        console.log(err.response);
+                        setIsLoadingPayment(false);
+                        navigation.pop();
+                        navigate('CheckoutComplete', { returnCode: 2 });
+                    })
+                }
+                else {
+                    setIsLoadingPayment(false);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Số dư trong tài khoản không đủ',
+                        position: 'bottom',
+                        autoHide: true,
+                        visibilityTime: 2000
+                    });
+                }
+            })
+            .catch(error => {
+                setIsLoadingPayment(false);
+            });
     }
 
     // Create order function
@@ -331,7 +374,11 @@ function CheckoutNow(props) {
         } else {
             // If method == COD || PAH_WALLET, create order and send to server (handle insufficient pah wallet available credits)
             setIsLoadingPayment(true);
-            createOrder();
+            if (isAuction) {
+                createOrderAuction();
+            } else {
+                createOrder();
+            }
         }
     }
 
@@ -393,7 +440,7 @@ function CheckoutNow(props) {
                             color: 'black',
                             fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h2
-                        }}>{isAuction ? `${numberWithCommas(currentPrice)} VNĐ` : `${numberWithCommas(product.price)} VNĐ` }</Text>
+                        }}>{isAuction ? `${numberWithCommas(currentPrice)} VNĐ` : `${numberWithCommas(product.price)} VNĐ`}</Text>
                         <Text style={{
                             color: colors.darkGreyText,
                             fontFamily: fonts.MontserratMedium,
