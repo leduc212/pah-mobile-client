@@ -35,8 +35,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         margin: 10,
-        resizeMode: 'cover',
-        borderRadius: 50
+        resizeMode: 'cover'
     },
     itemTitle: {
         marginTop: 5,
