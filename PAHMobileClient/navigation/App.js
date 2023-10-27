@@ -33,7 +33,8 @@ import {
     SellerOrderDetail,
     AuctionDetailSeller,
     SellerProductListing,
-    ListingDetailSeller
+    ListingDetailSeller,
+    TransactionHistory
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -259,6 +260,7 @@ function App(props) {
                             <Stack.Screen name={"AuctionDetailSeller"} component={AuctionDetailSeller} />
                             <Stack.Screen name={"SellerProductListing"} component={SellerProductListing} />
                             <Stack.Screen name={"ListingDetailSeller"} component={ListingDetailSeller} />
+                            <Stack.Screen name={"TransactionHistory"} component={TransactionHistory} />
                         </>
                     ) : (
                         <>

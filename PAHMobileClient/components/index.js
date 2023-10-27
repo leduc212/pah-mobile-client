@@ -15,6 +15,7 @@ import EditAddress from "./AddressComponent/EditAddress";
 import ProductPricing from "./ProductListingComponents/ProductPricing";
 import SellerRegisterView from "./SellerComponent/SellerRegisterView";
 import SellerHomeView from "./SellerComponent/SellerHomeView";
+import TransactionListingCard from "./TransactionComponent/TransactionListingCard";
 
 export {
     HomeItemCard,
@@ -33,5 +34,6 @@ export {
     EditAddress,
     ProductPricing,
     SellerHomeView,
-    SellerRegisterView
+    SellerRegisterView,
+    TransactionListingCard
 }

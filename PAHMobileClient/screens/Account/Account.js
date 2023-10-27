@@ -229,7 +229,7 @@ function Account(props) {
                             {/* Transaction history */}
                             <AccountMenuItem iconName='file-text' text='Lịch sử giao dịch'
                                 onPress={() => {
-                                    navigate('Home')
+                                    navigate('TransactionHistory')
                                 }} />
                             {/* Logout button */}
                             <AccountMenuItem iconName='log-out' text='Đăng xuất'
