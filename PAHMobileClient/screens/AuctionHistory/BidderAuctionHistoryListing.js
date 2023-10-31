@@ -13,7 +13,7 @@ import {
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
 import { SignalRContext } from '../../context/SignalRContext';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
 import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -43,22 +43,28 @@ function BidderAuctionHistoryListing(props) {
     // Loading and refreshing state
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [hasNext, setHasNext] = useState(true);
 
     // Data for auctions and filters
     const [auctions, setAuctions] = useState([]);
     // Auction status filter
     const [auctionStatus, setAuctionStatus] = useState([4, 5, 6, 7]);
     const [currentAuctionStatus, setCurrentAuctionStatus] = useState(4);
+    const [currentPage, setCurrentPage] = useState(1);
 
     //// FUNCTION AND USE EFFECT
 
     // Initialize data for categories, materials and auctions on screen start
     function getAllAuction() {
         setIsLoading(true);
-
-        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus)
+        setCurrentPage(1);
+        setHasNext(true);
+        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus, 1)
             .then(response => {
                 setAuctions(response);
+                if(response.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
                 setIsLoading(false);
             })
             .catch(error => {
@@ -76,6 +82,33 @@ function BidderAuctionHistoryListing(props) {
         getAllAuction();
         setRefreshing(false);
     };
+
+    // Pagination
+    const loadMoreItems = () => {
+        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus, currentPage + 1)
+            .then(response => {
+                setAuctions(auctions => [...auctions, ...response]);
+                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
+            })
+            .catch(error => { });
+        setCurrentPage(currentPage + 1);
+    }
+
+    // Pagination loader
+    const renderLoader = () => {
+        return (
+            <View style={{
+                alignItems: 'center',
+                marginBottom: 0,
+                paddingBottom: 50,
+                paddingTop: 15
+            }}>
+                {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+            </View>
+        )
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -133,23 +166,28 @@ function BidderAuctionHistoryListing(props) {
             justifyContent: 'center'
         }}>
             <ActivityIndicator size="large" color={colors.primary} />
-        </View> : <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+        </View> : <View>
             {(Array.isArray(auctions) && auctions.length) ? <View style={{ marginTop: 20 }}>
-                <View style={{
-                    flex: 1,
-                    marginBottom: 15
-                }}>
-                    {auctions.map((auction, index) =>
-                        <AuctionListingCard key={auction.id} auction={auction}
+                <View>
+                    <FlatList
+                        style={{
+                            marginBottom: 50
+                        }}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                        keyExtractor={item => item.id}
+                        data={auctions}
+                        renderItem={({ item, index }) => <AuctionListingCard key={item.id} auction={item}
                             index={index} onPress={() => {
-                                navigate('AuctionDetail', { auction_id: auction.id })
-                            }} />
-                    )}
+                                navigate('AuctionDetail', { auction_id: item.id })
+                            }} />}
+                        onEndReached={loadMoreItems}
+                        onEndReachedThreshold={0}
+                        ListFooterComponent={renderLoader}
+                    />
                 </View>
             </View> : <View style={{
-                flex: 1,
                 alignItems: 'center',
                 paddingTop: 150
             }}>
@@ -166,8 +204,18 @@ function BidderAuctionHistoryListing(props) {
                     marginHorizontal: 35,
                     marginTop: 10
                 }}>Bạn không có cuộc đấu giá nào có trạng thái này</Text>
+                <TouchableOpacity onPress={() => getAllAuction()}>
+                    <Text style={{
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                        color: colors.primary,
+                        textAlign: 'center',
+                        marginHorizontal: 35,
+                        marginTop: 10
+                    }}>Tải lại</Text>
+                </TouchableOpacity>
             </View>}
-        </ScrollView>}
+        </View>}
 
     </View>
 }

@@ -1,3 +1,5 @@
+import { pageParameters } from "../constants";
+
 async function getProductsHome(axiosContext) {
     const productPath = `/product?type=1&PageSize=8&PageNumber=1`;
     try {
@@ -16,8 +18,8 @@ async function getProductsHome(axiosContext) {
 
 async function getProducts(axiosContext, query) {
     const { nameSearch = '', materialId = 0, categoryId = 0,
-        type = 1, priceMin = 0, priceMax = 0, orderBy = 0 } = query
-    const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&priceMax=${priceMax}&orderBy=${orderBy}`;
+        type = 1, priceMin = 0, priceMax = 0, orderBy = 0, pageNumber = 1 } = query
+    const productPath = `/product?nameSearch=${nameSearch}&materialId=${materialId}&categoryId=${categoryId}&type=${type}&priceMin=${priceMin}&priceMax=${priceMax}&orderBy=${orderBy}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
 
     try {
         let result = {
@@ -83,8 +85,8 @@ async function createProduct(axiosContext, productinfo) {
     }
 }
 
-async function getProductsBySeller(axiosContext, seller_id) {
-    const productPath = `/product/seller/${seller_id}`;
+async function getProductsBySeller(axiosContext, seller_id, pageNumber = 1) {
+    const productPath = `/product/seller/${seller_id}?PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
     try {
         let result = [];
         let responseData = await axiosContext.authAxios.get(productPath);

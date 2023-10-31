@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   Text,
@@ -16,6 +16,11 @@ import { AxiosContext } from '../context/AxiosContext';
 import { Auth as AuthRepository } from '../repositories';
 import * as Keychain from 'react-native-keychain';
 import Toast from 'react-native-toast-message';
+import {
+  GoogleSignin,
+  statusCodes,
+} from 'react-native-google-signin';
+import config from '../config';
 
 function Login(props) {
   // Auth Context
@@ -37,6 +42,9 @@ function Login(props) {
   const [showPassword, setShowPassword] = useState(false);
   const validationOk = () => email.length > 0 && password.length > 0;
   const [isLoginLoading, setIsLoginLoading] = useState(false);
+
+  // Google login
+  const [userInfo, setUserInfo] = useState(null);
 
   // login function
   async function login() {
@@ -73,6 +81,79 @@ function Login(props) {
         setErrorMessage(error.response.data.message);
       });
   }
+
+  // Google login function
+  async function loginWithGoogle() {
+    setIsLoginLoading(true);
+    setErrorMessage('');
+    try {
+      await GoogleSignin.hasPlayServices({
+        // Check if device has Google Play Services installed
+        // Always resolves to true on iOS
+        showPlayServicesUpdateDialog: true,
+      });
+      const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo);
+
+      // Call login with google api
+      await AuthRepository.loginWithGoogle(axiosContext, {
+        email: userInfo.user.email,
+        name: userInfo.user.name,
+        profilePicture: userInfo.user.photo })
+        .then(response => {
+          const { accessToken, refreshToken } = response;
+
+          authContext.setAuthState({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            authenticated: true,
+          });
+
+          Keychain.setGenericPassword(
+            'token',
+            JSON.stringify({
+              accessToken,
+              refreshToken,
+            }),
+          );
+
+          Toast.show({
+            type: 'success',
+            text1: 'Đăng nhập thành công',
+            position: 'bottom',
+            autoHide: true,
+            visibilityTime: 2000
+          });
+        })
+        .catch(error => {
+          setIsLoginLoading(false);
+          setErrorMessage(error.message);
+        });
+    } catch (error) {
+      console.log('Message', JSON.stringify(error));
+      setIsLoginLoading(false);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User Cancelled the Login Flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Signing In');
+      } else if (
+        error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
+      ) {
+        alert('Hãy tải và cập nhật Play Services lên phiên bản mới nhất');
+      } else {
+        alert(error.message);
+      }
+    }
+  }
+
+  // Use Effect
+  useEffect(() => {
+    // Initial configuration
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      webClientId: config.FIREBASE_CLIENT_ID,
+    });
+  })
 
   return (
     <KeyboardAvoidingView style={styles.container}
@@ -168,7 +249,9 @@ function Login(props) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.googleButton}
-          onPress={() => navigate('Account')} >
+          onPress={() => {
+            loginWithGoogle()
+          }} >
           <Icon style={{
             position: 'absolute',
             left: 15,

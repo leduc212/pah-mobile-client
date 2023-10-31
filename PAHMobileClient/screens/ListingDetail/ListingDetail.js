@@ -207,7 +207,7 @@ function ListingDetail(props) {
                 </View>
 
                 {/* Buy and add to cart buttons */}
-                <View style={{
+                {product.type == 1 && <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
                     marginVertical: 10,
@@ -232,11 +232,11 @@ function ListingDetail(props) {
                                 position: 'bottom',
                                 autoHide: true,
                                 visibilityTime: 2000
-                              });
+                            });
                         }}>
                         <Text style={styles.secondaryButtonText}>Thêm vào giỏ hàng</Text>
                     </TouchableOpacity>
-                </View>
+                </View>}
 
                 {/* Item information section */}
                 <View style={{
@@ -292,7 +292,7 @@ function ListingDetail(props) {
                     gap: 10,
                     marginVertical: 20
                 }}>
-                    <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
+                    <Text style={styles.sectionTitle}>Vận chuyển và thanh toán</Text>
                     <TouchableOpacity style={{
                         marginTop: 5,
                         flexDirection: 'row',
@@ -303,8 +303,6 @@ function ListingDetail(props) {
                             <ListingDetailInfoText label='Giao hàng'
                                 text={'Từ ' + `${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`}
                                 secondText='Thông qua Giao hàng nhanh' />
-                            <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                                secondText='Người mua trả phí vận chuyển' />
                             <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                         </View>
                         <IconFeather name='chevron-right' size={30} color='black' />
@@ -315,7 +313,7 @@ function ListingDetail(props) {
                 <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginVertical: 20
+                    marginVertical: 15
                 }}>
                     <Text style={styles.sectionTitle}>Về người bán</Text>
                     <View style={{ gap: 10, marginTop: 5 }}>
@@ -345,10 +343,10 @@ function ListingDetail(props) {
                 </View>
 
                 {/* Product feedback section */}
-                <View style={{
+                {product.type == 1 && <View style={{
                     paddingHorizontal: 15,
                     gap: 10,
-                    marginTop: 20,
+                    marginTop: 10,
                     marginBottom: 100
                 }}>
                     <Text style={styles.sectionTitle}>Phản hồi về sản phẩm</Text>
@@ -367,7 +365,7 @@ function ListingDetail(props) {
                             <Text style={styles.emptyText}>Không có phản hồi về sản phẩm này</Text>
                         </View>}
                     </View>
-                </View>
+                </View>}
             </ScrollView> : <View style={{
                 alignItems: 'center',
                 paddingTop: 150
@@ -416,7 +414,7 @@ function ListingDetail(props) {
                     }}></TouchableOpacity>
                 <View style={styles.modalContainer}>
                     {/* Shipping modal title */}
-                    <Text style={styles.modalTitle}>Giao hàng, đổi trả và thanh toán</Text>
+                    <Text style={styles.modalTitle}>Giao hàng và thanh toán</Text>
 
                     {/* Shipping information */}
                     <View style={{
@@ -428,8 +426,6 @@ function ListingDetail(props) {
                         <ListingDetailInfoText label='Giao đến' text={userAddress.province ?
                             `${userAddress.ward}, ${userAddress.district}, ${userAddress.province}` :
                             'Cài đặt địa chỉ mặc định để thấy cước vận chuyển'} />
-                        <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                            secondText='Người mua trả phí vận chuyển' />
                         <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                     </View>
                 </View>

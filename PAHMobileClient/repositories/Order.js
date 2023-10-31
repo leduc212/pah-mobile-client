@@ -1,5 +1,7 @@
-async function getAllOrderCurrentBuyer(axiosContext, status) {
-  const orderPath = `/buyer/order?Status=${status}`;
+import { pageParameters } from "../constants";
+
+async function getAllOrderCurrentBuyer(axiosContext, status, pageNumber = 1) {
+  const orderPath = `/buyer/order?Status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);
@@ -27,8 +29,8 @@ async function getAllOrderCurrentBuyer(axiosContext, status) {
   }
 }
 
-async function getAllOrderCurrentSeller(axiosContext, status) {
-  const orderPath = `/seller/order?Status=${status}`;
+async function getAllOrderCurrentSeller(axiosContext, status, pageNumber = 1) {
+  const orderPath = `/seller/order?Status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);

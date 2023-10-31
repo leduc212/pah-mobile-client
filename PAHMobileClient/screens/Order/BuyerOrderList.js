@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconFA5 from 'react-native-vector-icons/FontAwesome5';
 import { AxiosContext } from '../../context/AxiosContext';
@@ -37,19 +37,26 @@ function BuyerOrderList(props) {
   // Loading state data
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasNext, setHasNext] = useState(true);
   const isAllEmpty = () => !(Array.isArray(orders) && orders.length);
 
   // Order status filter
   const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 6, 10, 11, 12]);
   const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
 
   //// FUNCTIONS
   // Get all orders
   function getAllOrder() {
     setIsLoading(true);
-    OrderRepository.getAllOrderCurrentBuyer(axiosContext, currentOrderStatus)
+    setCurrentPage(1);
+    setHasNext(true);
+    OrderRepository.getAllOrderCurrentBuyer(axiosContext, currentOrderStatus, 1)
       .then(response => {
         setOrders(response);
+        if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+          setHasNext(false)
+        }
         setIsLoading(false);
       })
       .catch(error => {
@@ -66,6 +73,34 @@ function BuyerOrderList(props) {
     getAllOrder();
     setRefreshing(false);
   };
+
+  // Pagination
+  const loadMoreItems = () => {
+    OrderRepository.getAllOrderCurrentBuyer(axiosContext, currentOrderStatus, currentPage + 1)
+      .then(response => {
+        setOrders(orders => [...orders, ...response]);
+        if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+          setHasNext(false)
+        }
+      })
+      .catch(error => { });
+    setCurrentPage(currentPage + 1);
+  }
+
+  // Pagination loader
+  const renderLoader = () => {
+    return (
+      <View style={{
+        alignItems: 'center',
+        marginBottom: 0,
+        paddingBottom: 50,
+        paddingTop: 15
+      }}>
+        {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+      </View>
+    )
+  }
+  
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -174,26 +209,27 @@ function BuyerOrderList(props) {
               </View>
             ) : (
               <View style={{ backgroundColor: colors.grey, flex: 1 }}>
-                <ScrollView
+                <View
                   style={{
                     paddingVertical: 5,
-                  }}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                    />
-                  }>
-                  {orders.map(order => (
-                    <TouchableOpacity
+                  }}>
+                  <FlatList
+                    style={{
+                      marginBottom: 50
+                    }}
+                    refreshControl={
+                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                    keyExtractor={item => item.id}
+                    data={orders}
+                    renderItem={({ item }) => <TouchableOpacity
                       style={{
                         marginBottom: 5,
                         backgroundColor: 'white',
                         padding: 0,
                       }}
-                      key={order.id}
                       onPress={() => {
-                        navigate('BuyerOrderDetail', { orderId: order.id });
+                        navigate('BuyerOrderDetail', { orderId: item.id });
                       }}>
                       <View
                         style={{
@@ -212,7 +248,7 @@ function BuyerOrderList(props) {
                           }}>
                           <IconFA5 name='store-alt' size={15} color='black' />
                           <Text style={styles.sellerNameText}>
-                            {order.seller.name}
+                            {item.seller.name}
                           </Text>
                           <View
                             style={{
@@ -221,7 +257,7 @@ function BuyerOrderList(props) {
                               marginLeft: 'auto',
                             }}>
                             <Text style={styles.orderStatus}>
-                              {orderStatusText(order.status)}
+                              {orderStatusText(item.status)}
                             </Text>
                           </View>
                         </View>
@@ -232,12 +268,12 @@ function BuyerOrderList(props) {
                             width={80}
                             height={80}
                             borderRadius={10}
-                            source={{ uri: order.orderItems[0].imageUrl }}
+                            source={{ uri: item.orderItems[0].imageUrl }}
                           />
                         </View>
                         <View style={styles.itemDetailSection}>
                           <Text numberOfLines={1} style={styles.itemTitleText}>
-                            Đơn hàng #{order.id}
+                            Đơn hàng #{item.id}
                           </Text>
                           <View
                             style={{
@@ -247,15 +283,15 @@ function BuyerOrderList(props) {
                               marginBottom: 10
                             }}>
                             <Text style={styles.itemDescriptionText}>
-                              {order.orderItems[0].productName}
+                              {item.orderItems[0].productName}
                             </Text>
                             <Text style={styles.itemQuantityText}>
-                              x{order.orderItems[0].quantity}
+                              x{item.orderItems[0].quantity}
                             </Text>
                           </View>
                           <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.itemMoneyText}>
-                              đ {numberWithCommas(order.orderItems[0].price)}
+                              đ {numberWithCommas(item.orderItems[0].price)}
                             </Text>
                           </View>
                         </View>
@@ -268,16 +304,16 @@ function BuyerOrderList(props) {
                             justifyContent: 'space-between',
                           }}>
                           <Text style={styles.orderTotalMoneyText}>
-                            {order.orderItems.length} sản phẩm
+                            {item.orderItems.length} sản phẩm
                           </Text>
                           <Text style={styles.orderTotalMoneyText}>
                             Tổng thanh toán:
-                            <Text style={styles.itemMoneyText}> đ {numberWithCommas(order.totalAmount + order.shippingCost)}</Text>
+                            <Text style={styles.itemMoneyText}> đ {numberWithCommas(item.totalAmount + item.shippingCost)}</Text>
                           </Text>
                         </View>
                       </View>
                       <View style={styles.orderFooter}>
-                        <Text style={styles.orderDateText}>Ngày đặt: {moment(order.orderDate).format('DD/MM/YYYY')}</Text>
+                        <Text style={styles.orderDateText}>Ngày đặt: {moment(item.orderDate).format('DD/MM/YYYY')}</Text>
                       </View>
                       <View
                         style={{
@@ -288,7 +324,7 @@ function BuyerOrderList(props) {
                           paddingHorizontal: 15,
                           paddingBottom: 15
                         }}>
-                        {[5, 2, 3].includes(order.status) && (
+                        {[5, 2, 3].includes(item.status) && (
                           <TouchableOpacity
                             disabled={true}
                             style={[styles.orderDetailButton, {
@@ -300,7 +336,7 @@ function BuyerOrderList(props) {
                           </TouchableOpacity>
                         )}
 
-                        {[4, 10, 11, 12, 6].includes(order.status) && (
+                        {[4, 10, 11, 12, 6].includes(item.status) && (
                           <TouchableOpacity style={[styles.orderDetailButton, {
                             backgroundColor: colors.primary
                           }]}>
@@ -310,9 +346,12 @@ function BuyerOrderList(props) {
                           </TouchableOpacity>
                         )}
                       </View>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
+                    </TouchableOpacity>}
+                    onEndReached={loadMoreItems}
+                    onEndReachedThreshold={0}
+                    ListFooterComponent={renderLoader}
+                  />
+                </View>
               </View>
             )}
           </View>

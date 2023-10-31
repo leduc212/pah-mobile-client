@@ -25,6 +25,7 @@ import {
     Auction as AuctionRepository
 } from '../../repositories';
 import moment from 'moment';
+import "moment/min/locales";
 import CryptoJS from 'crypto-js';
 import { useIsFocused } from '@react-navigation/native';
 import config from '../../config';
@@ -36,6 +37,7 @@ const { PayZaloBridge } = NativeModules;
 const payZaloBridgeEmitter = new NativeEventEmitter(PayZaloBridge);
 
 function CheckoutNow(props) {
+    moment.locale('vi');
     //// AUTH AND NAVIGATION
     // Auth Context
     const authContext = useContext(AuthContext);
@@ -63,10 +65,14 @@ function CheckoutNow(props) {
     });
     const [quantity, setQuantity] = useState(1);
 
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({
-        id: 0,
-        text: ''
-    });
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(isAuction ?
+        {
+            id: 1,
+            text: 'Số dư ví PAH'
+        } : {
+            id: 0,
+            text: ''
+        });
     const [paymentMethods, setPaymentMethods] = useState(isAuction ?
         [
             {
@@ -178,7 +184,7 @@ function CheckoutNow(props) {
     }
 
     // Create auction order function
-    function createOrderAuction(){
+    function createOrderAuction() {
         WalletRepository.getWalletCurrentUser(axiosContext)
             .then(response => {
                 if (shippingPrice < response.availableBalance) {
@@ -440,7 +446,7 @@ function CheckoutNow(props) {
                             color: 'black',
                             fontFamily: fonts.MontserratBold,
                             fontSize: fontSizes.h2
-                        }}>{isAuction ? `${numberWithCommas(currentPrice)} VNĐ` : `${numberWithCommas(product.price)} VNĐ`}</Text>
+                        }}>{isAuction ? `Sản phẩm đấu giá` : `₫${numberWithCommas(product.price)}`}</Text>
                         <Text style={{
                             color: colors.darkGreyText,
                             fontFamily: fonts.MontserratMedium,
@@ -468,11 +474,11 @@ function CheckoutNow(props) {
                             fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
                         }}>Giao dự kiến: {moment(shippingDate * 1000).format('dd, Do MMMM YYYY')}</Text>}
-                        {shippingPrice != 0 && <Text style={{
+                        {shippingPrice != 0 && !isAuction && <Text style={{
                             color: 'black',
                             fontFamily: fonts.MontserratMedium,
                             fontSize: fontSizes.h4
-                        }}>Phí vận chuyển: {numberWithCommas(shippingPrice)} VNĐ </Text>}
+                        }}>Phí vận chuyển: ₫{numberWithCommas(shippingPrice)} </Text>}
                     </View>
                 </View>
             </View>
@@ -531,7 +537,7 @@ function CheckoutNow(props) {
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                {!isAuction && <TouchableOpacity style={{
                     marginTop: 5,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -557,12 +563,12 @@ function CheckoutNow(props) {
                         </View>
                     </View>
                     <IconFeather name='chevron-right' size={30} color='black' />
-                </TouchableOpacity>
+                </TouchableOpacity>}
             </View>
             <View style={styles.separator}></View>
 
             {/* Price section */}
-            <View style={{
+            {!isAuction && <View style={{
                 paddingHorizontal: 15,
                 marginVertical: 10
             }}>
@@ -579,7 +585,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
-                    }}>{isAuction ? 'Đã trả trước' : `${numberWithCommas(product.price)} VNĐ`}</Text>
+                    }}>{isAuction ? 'Đã trả trước' : `₫${numberWithCommas(product.price)}`}</Text>
                 </View>
                 <View style={{
                     flexDirection: 'row',
@@ -594,7 +600,7 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
-                    }}>{numberWithCommas(shippingPrice)} VNĐ</Text>
+                    }}>₫{numberWithCommas(shippingPrice)}</Text>
                 </View>
                 <View style={styles.separator}></View>
                 <View style={{
@@ -610,14 +616,14 @@ function CheckoutNow(props) {
                         color: 'black',
                         fontFamily: fonts.MontserratBold,
                         fontSize: fontSizes.h3
-                    }}>{isAuction ? `${numberWithCommas(shippingPrice)} VNĐ` : `${numberWithCommas(totalPrice())} VNĐ`}</Text>
+                    }}>{isAuction ? `₫${numberWithCommas(shippingPrice)}` : `₫${numberWithCommas(totalPrice())}`}</Text>
                 </View>
-            </View>
+            </View>}
             <Text style={{
                 color: colors.darkGreyText,
                 fontFamily: fonts.MontserratMedium,
                 fontSize: fontSizes.h5,
-                marginVertical: 50,
+                marginVertical: 20,
                 marginHorizontal: 15
             }}>
                 Bằng cách xác nhận đơn đặt hàng của bạn, bạn đồng ý với các điều khoản và điều kiện Vận chuyển của PAH.
@@ -640,7 +646,7 @@ function CheckoutNow(props) {
                 fontFamily: fonts.MontserratBold,
                 color: validation() ? 'white' : colors.greyText,
                 textAlign: 'center'
-            }}>Xác nhận thanh toán</Text>
+            }}>Xác nhận đặt hàng</Text>
         </TouchableOpacity>
 
         {/* Address modal */}

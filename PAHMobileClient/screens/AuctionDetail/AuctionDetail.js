@@ -455,7 +455,7 @@ function AuctionDetail(props) {
                                         auction_id: auction_id
                                     })
                                 }}>
-                                <Text style={styles.primaryButtonText}>Thanh toán vận chuyển</Text>
+                                <Text style={styles.primaryButtonText}>Chọn địa chỉ nhận hàng</Text>
                             </TouchableOpacity>
                         </> : <>
                             <View style={{}}>

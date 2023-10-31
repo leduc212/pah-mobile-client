@@ -19,6 +19,11 @@ import {
 import { Account as AccountRepository } from '../../repositories';
 import Toast from 'react-native-toast-message';
 import { useIsFocused } from '@react-navigation/native';
+import {
+    GoogleSignin,
+    statusCodes,
+} from 'react-native-google-signin';
+import config from '../../config';
 
 function Account(props) {
     //// AUTH AND NAVIGATION
@@ -48,8 +53,11 @@ function Account(props) {
 
     //// FUNCTION
     // Test logout function
-    function logout() {
+    async function logout() {
+        await GoogleSignin.revokeAccess().catch((err) => { });
+        await GoogleSignin.signOut((err) => { });
         authContext?.logout();
+
         Toast.show({
             type: 'success',
             text1: 'Đăng xuất thành công',
@@ -78,6 +86,11 @@ function Account(props) {
         if (authContext?.authState?.authenticated) {
             setIsLoading(true);
             getCurrentUserInfo();
+            // Initial configuration
+            GoogleSignin.configure({
+                scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+                webClientId: config.FIREBASE_CLIENT_ID,
+            });
         }
     }, [])
 

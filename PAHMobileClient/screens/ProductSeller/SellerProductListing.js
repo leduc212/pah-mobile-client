@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
-import { colors, fontSizes, images, fonts } from '../../constants';
+import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
 import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -38,19 +38,26 @@ function SellerProductListing(props) {
     // Loading and refreshing state
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [hasNext, setHasNext] = useState(true);
 
     // Data for auctions and filters
     const [products, setProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     //// FUNCTION AND USE EFFECT
 
     // Initialize data for categories, materials and auctions on screen start
     function getAllProduct() {
         setIsLoading(true);
+        setCurrentPage(1);
+        setHasNext(true);
 
-        ProductRepository.getProductsBySeller(axiosContext, seller_id)
+        ProductRepository.getProductsBySeller(axiosContext, seller_id, 1)
             .then(response => {
                 setProducts(response);
+                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setIsLoading(false);
             })
             .catch(error => {
@@ -68,6 +75,32 @@ function SellerProductListing(props) {
         getAllProduct();
         setRefreshing(false);
     };
+
+    // Pagination
+    const loadMoreItems = () => {
+        ProductRepository.getProductsBySeller(axiosContext, seller_id, currentPage + 1)
+            .then(response => {
+                setProducts(products => [...products, ...response]);
+                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
+            })
+            .catch(error => { });
+        setCurrentPage(currentPage + 1);
+    }
+
+    // Pagination loader
+    const renderLoader = () => {
+        return (
+            <View style={{
+                alignItems: 'center',
+                paddingBottom: 50,
+                paddingTop: 15
+            }}>
+                {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+            </View>
+        )
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -90,20 +123,28 @@ function SellerProductListing(props) {
             justifyContent: 'center'
         }}>
             <ActivityIndicator size="large" color={colors.primary} />
-        </View> : <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+        </View> : <View>
             {(Array.isArray(products) && products.length) ? <View style={{ marginTop: 20 }}>
                 <View style={{
-                    flex: 1,
                     marginBottom: 15
                 }}>
-                    {products.map((product, index) =>
-                        <ProductListingCard key={product.id} product={product}
+                    <FlatList
+                        style={{
+                            marginBottom: 50
+                        }}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                        keyExtractor={item => item.id}
+                        data={products}
+                        renderItem={({ item, index }) => <ProductListingCard key={item.id} product={item}
                             index={index} onPress={() => {
-                                navigate('ListingDetailSeller', { product_id: product.id })
-                            }} />
-                    )}
+                                navigate('ListingDetailSeller', { product_id: item.id })
+                            }} />}
+                        onEndReached={loadMoreItems}
+                        onEndReachedThreshold={0}
+                        ListFooterComponent={renderLoader}
+                    />
                 </View>
             </View> : <View style={{
                 flex: 1,
@@ -124,7 +165,7 @@ function SellerProductListing(props) {
                     marginTop: 10
                 }}>Bạn chưa có sản phẩm nào</Text>
             </View>}
-        </ScrollView>}
+        </View>}
 
     </View>
 }

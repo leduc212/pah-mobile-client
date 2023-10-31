@@ -50,6 +50,12 @@ function AuctionBidding(props) {
   const minBidAmount = () => auction.currentPrice + auction.step;
   const isAllEmpty = () => !(Array.isArray(bidHistory) && bidHistory.length);
 
+  // Countdown id
+  const [seed, setSeed] = useState(1);
+  const reset = () => {
+    setSeed(Math.random());
+  }
+
   // validating
   const validationBidAmount = () =>
     parseInt(bidAmount) >= auction.currentPrice + auction.step;
@@ -58,7 +64,7 @@ function AuctionBidding(props) {
 
   const validateAll = () => validationBidAmount() && validateTime();
 
-  const duration = differenceInSeconds(
+  const duration = () => differenceInSeconds(
     new Date(auction.endedAt),
     new Date(),
   );
@@ -82,6 +88,7 @@ function AuctionBidding(props) {
       auction_id,
     ).then(response => {
       setAuction(response);
+      reset();
     });
 
     const promiseBidHistory = BidRepository.getBidsByAuctionId(
@@ -214,8 +221,9 @@ function AuctionBidding(props) {
                       marginBottom: 10
                     }}>Kết thúc trong</Text>
                     <CountDown
+                      key={seed}
                       size={15}
-                      until={duration}
+                      until={duration()}
                       // onFinish={() => {
                       //   alert('Cuộc đấu giá đã kết thúc');
                       //   goBack();

@@ -217,6 +217,18 @@ function App(props) {
             });
           });
 
+          signalRContext?.connection?.on("ReceiveAuctionAboutToEnd", function (auctionTitle) {
+            console.log(`'${auctionTitle}' sap ket thuc`);
+            Toast.show({
+              type: 'success',
+              text1: `${auctionTitle}`,
+              text2: `Cuộc đấu giá chuẩn bị kết thúc!`,
+              position: 'top',
+              autoHide: true,
+              visibilityTime: 2000
+            });
+          });
+
     }, [signalRContext?.connection]);
 
     return (

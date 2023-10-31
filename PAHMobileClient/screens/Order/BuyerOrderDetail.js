@@ -277,7 +277,8 @@ function BuyerOrderDetail(props) {
             </TouchableOpacity>
           </View>
           {order.orderItems.map(orderItem =>
-            <View style={styles.itemSection} key={orderItem.productId}>
+            <TouchableOpacity style={styles.itemSection} key={orderItem.productId}
+              onPress={() => navigate('ListingDetail', { product_id: orderItem.productId })}>
               <View style={styles.itemImageZone}>
                 <Image
                   width={70}
@@ -301,37 +302,40 @@ function BuyerOrderDetail(props) {
                   <Text style={styles.itemQuantityText}>x{orderItem.quantity}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.itemMoneyText}>đ {numberWithCommas(orderItem.price)}</Text>
+                  <Text style={styles.itemMoneyText}>{order.orderItems[0].productType == 2 ?
+                    'Sản phẩm đấu giá' : `đ${numberWithCommas(orderItem.price)}`
+                  }</Text>
                 </View>
               </View>
-            </View>)}
+            </TouchableOpacity>)}
 
           <View style={styles.orderDetailFooter}>
-            <View
+            {order.orderItems[0].productType == 1 && <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.orderMoneyText}>Tổng tiền hàng</Text>
-              <Text style={styles.orderMoneyText}>đ {numberWithCommas(order.totalAmount)}</Text>
-            </View>
+              <Text style={styles.orderMoneyText}>đ{numberWithCommas(order.totalAmount)}</Text>
+            </View>}
             <View
               style={{
-                marginBottom: 10,
+                marginBottom: order.orderItems[0].productType == 1 ? 10 : null,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.orderMoneyText}>Phí vận chuyển</Text>
-              <Text style={styles.orderMoneyText}>đ {numberWithCommas(order.shippingCost)}</Text>
+              <Text style={styles.orderMoneyText}>{order.orderItems[0].productType == 1 ?
+                `đ${numberWithCommas(order.shippingCost)}` : 'Người bán trả'}</Text>
             </View>
-            <View
+            {order.orderItems[0].productType == 1 && <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.orderTotalMoneyText}>Thành tiền</Text>
-              <Text style={styles.orderTotalMoneyText}>đ {numberWithCommas(order.totalAmount + order.shippingCost)}</Text>
-            </View>
+              <Text style={styles.orderTotalMoneyText}>đ{numberWithCommas(order.totalAmount + order.shippingCost)}</Text>
+            </View>}
           </View>
         </View>
         {/* Payment method */}
@@ -419,26 +423,26 @@ function BuyerOrderDetail(props) {
         </TouchableOpacity>
       </View>}
       {order.status == enumConstants.orderStatus.Done && order.orderItems[0].productType == 1
-       && <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10
-      }}>
-        <TouchableOpacity
-          style={{
-            borderRadius: 5,
-            paddingVertical: 10,
-            backgroundColor: colors.primary
-          }}
-          onPress={() => {}}>
-          <Text style={{
-            fontSize: fontSizes.h3,
-            fontFamily: fonts.MontserratMedium,
-            textAlign: 'center',
-            color: 'white'
-          }}>Mua lại</Text>
-        </TouchableOpacity>
-      </View>}
+        && <View style={{
+          backgroundColor: 'white',
+          paddingHorizontal: 15,
+          paddingVertical: 10
+        }}>
+          <TouchableOpacity
+            style={{
+              borderRadius: 5,
+              paddingVertical: 10,
+              backgroundColor: colors.primary
+            }}
+            onPress={() => { }}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.MontserratMedium,
+              textAlign: 'center',
+              color: 'white'
+            }}>Mua lại</Text>
+          </TouchableOpacity>
+        </View>}
       {[enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
         .includes(order.status) && <View style={{
           backgroundColor: 'white',

@@ -1,3 +1,5 @@
+import { pageParameters } from "../constants";
+
 async function getAuctionsHome(axiosContext) {
   const auctionPath = `/auction?status=4&PageSize=8&PageNumber=1`;
   try {
@@ -16,8 +18,8 @@ async function getAuctionsHome(axiosContext) {
 }
 
 async function getAuctions(axiosContext, query) {
-  const { materialId = 0, categoryId = 0, orderBy = 0 } = query;
-  const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=4`;
+  const { materialId = 0, categoryId = 0, orderBy = 0, pageNumber = 1 } = query;
+  const auctionPath = `/auction?materialId=${materialId}&categoryId=${categoryId}&orderBy=${orderBy}&status=4&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
 
   try {
     let result = {
@@ -69,8 +71,8 @@ async function getAuctionDetail(axiosContext, auction_id) {
   }
 }
 
-async function getAuctionsByBidder(axiosContext, status) {
-  const auctionPath = `/auction/bidder?status=${status}`;
+async function getAuctionsByBidder(axiosContext, status, pageNumber = 1) {
+  const auctionPath = `/auction/bidder?status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(auctionPath);
@@ -99,8 +101,8 @@ async function getAuctionsByBidder(axiosContext, status) {
   }
 }
 
-async function getAuctionsBySeller(axiosContext,seller_id, status) {
-  const auctionPath = `/auction/seller/${seller_id}?status=${status}`;
+async function getAuctionsBySeller(axiosContext,seller_id, status, pageNumber = 1) {
+  const auctionPath = `/auction/seller/${seller_id}?status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(auctionPath);

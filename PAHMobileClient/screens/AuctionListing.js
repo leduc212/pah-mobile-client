@@ -7,12 +7,13 @@ import {
     ScrollView,
     Image,
     ActivityIndicator,
-    RefreshControl
+    RefreshControl,
+    FlatList
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
-import { colors, fontSizes, images, fonts } from '../constants';
+import { colors, fontSizes, images, fonts, pageParameters } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     AuctionListingCard
@@ -42,6 +43,7 @@ function AuctionListing(props) {
     // Loading and refreshing state
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [hasNext, setHasNext] = useState(true);
 
     // Data for auctions and filters
     const [auctions, setAuctions] = useState([]);
@@ -72,6 +74,7 @@ function AuctionListing(props) {
     const [materials, setMaterials] = useState([]);
     const [currentMaterial, setCurrentMaterial] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Data for filter count
     const filterCount = () => {
@@ -92,12 +95,14 @@ function AuctionListing(props) {
         setCurrentCategory(0);
         setCurrentSortOrder(0);
         setCurrentMaterial(0);
+        setCurrentPage(1);
+        setHasNext(true);
     }
 
     // Initialize data for categories, materials and auctions on screen start
     function initializeDataListing() {
         setIsLoading(true);
-
+        setCurrentPage(1);
         // Get Categories
         const promiseCategory = CategoryRepository.getCategories(axiosContext)
             .then(response => {
@@ -125,6 +130,9 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
+                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
                 setAuctionCount(response.count);
             });
 
@@ -154,6 +162,7 @@ function AuctionListing(props) {
         setCurrentCategory(selectedCategory);
         setCurrentSortOrder(selectedSortOrder);
         setCurrentMaterial(selectedMaterial);
+        setCurrentPage(1);
 
         // Get auctions
         setIsLoading(true);
@@ -163,6 +172,9 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
+                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
                 setAuctionCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
@@ -184,6 +196,9 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
+                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
                 setAuctionCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
@@ -196,12 +211,17 @@ function AuctionListing(props) {
     // Get filtered auctions function
     function filteredAuctions() {
         setIsLoading(true);
+        setCurrentPage(1);
+        setHasNext(true);
         AuctionRepository.getAuctions(axiosContext,
             {
                 materialId: selectedMaterial, categoryId: selectedCategory, orderBy: selectedSortOrder
             })
             .then(response => {
                 setAuctions(response.auctionList);
+                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
                 setAuctionCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
@@ -215,6 +235,37 @@ function AuctionListing(props) {
         filteredAuctions();
         setRefreshing(false);
     };
+
+    // Pagination
+    const loadMoreItems = () => {
+        AuctionRepository.getAuctions(axiosContext,
+            {
+                materialId: selectedMaterial, categoryId: selectedCategory,
+                orderBy: selectedSortOrder, pageNumber: currentPage + 1
+            })
+            .then(response => {
+                setAuctions(auctions => [...auctions, ...response.auctionList]);
+                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                    setHasNext(false)
+                }
+                setAuctionCount(response.count);
+            }).catch(error => { });
+        setCurrentPage(currentPage + 1);
+    }
+
+    // Pagination loader
+    const renderLoader = () =>{
+        return (
+            <View style={{
+                alignItems: 'center',
+                marginBottom: 100,
+                paddingBottom: 50,
+                paddingTop: 15
+            }}>
+                {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+            </View>
+        )
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -238,9 +289,7 @@ function AuctionListing(props) {
             justifyContent: 'center'
         }}>
             <ActivityIndicator size="large" color={colors.primary} />
-        </View> : <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+        </View> : <View>
             {/* Title (type of list: for sale/auction) section */}
             <View style={{
                 paddingVertical: 10,
@@ -272,19 +321,26 @@ function AuctionListing(props) {
                 </TouchableOpacity>
             </View>
             {(Array.isArray(auctions) && auctions.length) ? <View>
-                <View style={{
-                    flex: 1,
-                    marginBottom: 15
-                }}>
-                    {auctions.map((auction, index) =>
-                        <AuctionListingCard key={auction.id} auction={auction}
-                        index={index} onPress={() => {
-                            navigate('AuctionDetail', { auction_id: auction.id })
-                        }} />
-                    )}
+                <View>
+                    <FlatList
+                        style={{
+                            marginBottom: 50
+                        }}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                        keyExtractor={item => item.id}
+                        data={auctions}
+                        renderItem={({ item, index }) => <AuctionListingCard key={item.id} auction={item}
+                            index={index} onPress={() => {
+                                navigate('AuctionDetail', { auction_id: item.id })
+                            }} />}
+                        onEndReached={loadMoreItems}
+                        onEndReachedThreshold={0}
+                        ListFooterComponent={renderLoader}
+                    />
                 </View>
             </View> : <View style={{
-                flex: 1,
                 alignItems: 'center',
                 paddingTop: 150
             }}>
@@ -300,9 +356,20 @@ function AuctionListing(props) {
                     textAlign: 'center',
                     marginHorizontal: 35,
                     marginTop: 10
-                }}>Không thể tìm thấy cuộc đấu giá nào. Bạn hãy thử đặt lại bộ lọc xem sao!</Text>
+                }}>Không thể tìm thấy cuộc đấu giá nào</Text>
+                <TouchableOpacity
+                    onPress={() => filteredAuctions()}>
+                    <Text style={{
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                        color: colors.primary,
+                        textAlign: 'center',
+                        marginHorizontal: 35,
+                        marginTop: 10
+                    }}>Tải lại</Text>
+                </TouchableOpacity>
             </View>}
-        </ScrollView>}
+        </View>}
 
         {/* Filter Modal */}
         <Modal

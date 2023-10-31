@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Text,
     View,
@@ -8,12 +8,13 @@ import {
     Image,
     TextInput,
     ActivityIndicator,
-    RefreshControl
+    RefreshControl,
+    FlatList
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
-import { colors, fontSizes, images, fonts } from '../constants';
+import { colors, fontSizes, images, fonts, pageParameters } from '../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     ProductListingCard
@@ -48,6 +49,7 @@ function Listing(props) {
     // Loading and refreshing state
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [hasNext, setHasNext] = useState(true);
 
     // Data for products and filters
     const [products, setProducts] = useState([]);
@@ -82,6 +84,7 @@ function Listing(props) {
     const [selectedPriceMin, setSelectedPriceMin] = useState('');
     const [currentPriceMax, setCurrentPriceMax] = useState('');
     const [selectedPriceMax, setSelectedPriceMax] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Data for filter count
     const filterCount = () => {
@@ -108,6 +111,8 @@ function Listing(props) {
         setCurrentMaterial(0);
         setCurrentPriceMin('');
         setCurrentPriceMax('');
+        setCurrentPage(1);
+        setHasNext(true);
     }
 
     // Get search param on screen focus
@@ -118,7 +123,6 @@ function Listing(props) {
                 setSearchTextFilter(searchText);
                 setScreenTitle(searchText != '' ? searchText : 'Tất cả sản phẩm');
                 setFilterDefault();
-
                 // Get Products
                 setIsLoading(true);
                 ProductRepository.getProducts(axiosContext,
@@ -129,6 +133,9 @@ function Listing(props) {
                     })
                     .then(response => {
                         setProducts(response.productList);
+                        if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                            setHasNext(false)
+                        }
                         setProductCount(response.count);
                         setIsLoading(false);
                     }).catch(error => {
@@ -142,7 +149,7 @@ function Listing(props) {
     // Initialize data for categories, materials and products on screen start
     function initializeDataListing() {
         setIsLoading(true);
-
+        setCurrentPage(1);
         // Get Categories
         const promiseCategory = CategoryRepository.getCategories(axiosContext)
             .then(response => {
@@ -172,6 +179,9 @@ function Listing(props) {
             })
             .then(response => {
                 setProducts(response.productList);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setProductCount(response.count);
             });
 
@@ -200,6 +210,9 @@ function Listing(props) {
             })
             .then(response => {
                 setProducts(response.productList);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setProductCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
@@ -224,7 +237,7 @@ function Listing(props) {
         setCurrentMaterial(selectedMaterial);
         setCurrentPriceMin(selectedPriceMin);
         setCurrentPriceMax(selectedPriceMax);
-
+        setCurrentPage(1);
         // Get Products
         setIsLoading(true);
         ProductRepository.getProducts(axiosContext,
@@ -235,6 +248,9 @@ function Listing(props) {
             })
             .then(response => {
                 setProducts(response.productList);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setProductCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
@@ -247,7 +263,6 @@ function Listing(props) {
     // Reset filter function
     function resetFilter() {
         setFilterDefault();
-
         // Get Products
         setIsLoading(true);
         ProductRepository.getProducts(axiosContext,
@@ -258,6 +273,9 @@ function Listing(props) {
             })
             .then(response => {
                 setProducts(response.productList);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setProductCount(response.count);
                 setIsLoading(false);
                 setFilterModalVisible(!filterModalVisible);
@@ -270,6 +288,8 @@ function Listing(props) {
     // Get filtered products function
     function filteredProducts() {
         setIsLoading(true);
+        setCurrentPage(1);
+        setHasNext(true);
         ProductRepository.getProducts(axiosContext,
             {
                 nameSearch: searchTextFilter, materialId: selectedMaterial,
@@ -278,6 +298,9 @@ function Listing(props) {
             })
             .then(response => {
                 setProducts(response.productList);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
                 setProductCount(response.count);
                 setIsLoading(false);
             }).catch(error => {
@@ -291,6 +314,39 @@ function Listing(props) {
         filteredProducts();
         setRefreshing(false);
     };
+
+    // Pagination
+    const loadMoreItems = () => {
+        ProductRepository.getProducts(axiosContext,
+            {
+                nameSearch: searchTextFilter, materialId: selectedMaterial,
+                categoryId: selectedCategory, orderBy: selectedSortOrder,
+                priceMin: selectedPriceMin, priceMax: selectedPriceMax,
+                pageNumber: currentPage + 1
+            })
+            .then(response => {
+                setProducts(products => [...products, ...response.productList]);
+                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                    setHasNext(false)
+                }
+                setProductCount(response.count);
+            }).catch(error => { });
+        setCurrentPage(currentPage + 1);
+    }
+
+    // Pagination loader
+    const renderLoader = () => {
+        return (
+            <View style={{
+                alignItems: 'center',
+                marginBottom: 100,
+                paddingBottom: 50,
+                paddingTop: 15
+            }}>
+                {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+            </View>
+        )
+    }
 
     return <View style={styles.container}>
         {/* Fixed screen title: logo and cart and search icon */}
@@ -332,9 +388,7 @@ function Listing(props) {
             justifyContent: 'center'
         }}>
             <ActivityIndicator size="large" color={colors.primary} />
-        </View> : <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+        </View> : <View>
             {/* Title (type of list: for sale/auction) section */}
             <View style={{
                 paddingVertical: 10,
@@ -366,19 +420,26 @@ function Listing(props) {
                 </TouchableOpacity>
             </View>
             {(Array.isArray(products) && products.length) ? <View>
-                <View style={{
-                    flex: 1,
-                    marginBottom: 15
-                }}>
-                    {products.map((product, index) =>
-                        <ProductListingCard key={product.id} product={product}
+                <View>
+                    <FlatList
+                        style={{
+                            marginBottom: 50
+                        }}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                        keyExtractor={item => item.id}
+                        data={products}
+                        renderItem={({ item, index }) => <ProductListingCard key={item.id} product={item}
                             index={index} onPress={() => {
-                                navigate('ListingDetail', { product_id: product.id })
-                            }} />
-                    )}
+                                navigate('ListingDetail', { product_id: item.id })
+                            }} />}
+                        onEndReached={loadMoreItems}
+                        onEndReachedThreshold={0}
+                        ListFooterComponent={renderLoader}
+                    />
                 </View>
             </View> : <View style={{
-                flex: 1,
                 alignItems: 'center',
                 paddingTop: 150
             }}>
@@ -394,9 +455,20 @@ function Listing(props) {
                     textAlign: 'center',
                     marginHorizontal: 35,
                     marginTop: 10
-                }}>Không thể tìm thấy sản phẩm nào. Bạn hãy thử tìm kiếm với từ khóa khác xem sao!</Text>
+                }}>Không thể tìm thấy sản phẩm nào</Text>
+                <TouchableOpacity
+                    onPress={() => filteredProducts()}>
+                    <Text style={{
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                        color: colors.primary,
+                        textAlign: 'center',
+                        marginHorizontal: 35,
+                        marginTop: 10
+                    }}>Tải lại</Text>
+                </TouchableOpacity>
             </View>}
-        </ScrollView>}
+        </View>}
 
         {/* Filter Modal */}
         <Modal

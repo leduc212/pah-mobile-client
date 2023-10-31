@@ -16,6 +16,24 @@ async function login(axiosContext, userInfo) {
     }
 }
 
+async function loginWithGoogle(axiosContext, userInfo) {
+    const loginPath = `/login/google`;
+    try {
+        let responseData = await axiosContext.publicAxios.post(loginPath, userInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+        let user = {};
+        user.accessToken = responseUser.accessToken  ?? '';
+        user.refreshToken = responseUser.refreshToken ?? '';
+        
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function register(axiosContext, userInfo) {
     const registerPath = `/register`;
     try {
@@ -33,5 +51,6 @@ async function register(axiosContext, userInfo) {
 
 export default {
     login,
-    register
+    register,
+    loginWithGoogle
 }

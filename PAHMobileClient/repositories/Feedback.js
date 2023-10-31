@@ -1,5 +1,5 @@
 async function getFeedbacksByProductId(axiosContext, product_id) {
-    const feedbackPath = `/feedback/product?productId=${product_id}`;
+    const feedbackPath = `/feedback/product?productId=${product_id}&PageSize=50`;
 
     try {
         let result = [];
