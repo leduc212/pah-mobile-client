@@ -348,7 +348,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   usernameSectionStyle: {
-    width: 0,
     flexGrow: 1,
     alignItems: 'flex-start',
     justifyContent: 'center',
@@ -372,7 +371,6 @@ const styles = StyleSheet.create({
   saveButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
     borderRadius: 35,
     paddingVertical: 10,
   },
@@ -404,7 +402,6 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 10,
     alignItems: 'center',
-    gap: 20,
     backgroundColor: 'white'
   },
   titleText: {

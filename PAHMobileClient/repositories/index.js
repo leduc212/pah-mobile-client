@@ -11,6 +11,7 @@ import Account from "./Account";
 import Wallet from "./Wallet";
 import Order from "./Order";
 import Seller from "./Seller";
+import Transaction from "./Transaction";
 
 export {
     Category,
@@ -25,5 +26,6 @@ export {
     Account,
     Wallet,
     Order,
-    Seller
+    Seller,
+    Transaction
 }
