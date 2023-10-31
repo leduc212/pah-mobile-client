@@ -10,15 +10,15 @@ import {
   RefreshControl,
   FlatList,
 } from 'react-native';
-import {AuthContext} from '../context/AuthContext';
-import {AxiosContext} from '../context/AxiosContext';
-import {SignalRContext} from '../context/SignalRContext';
-import {colors, fontSizes, images, fonts} from '../constants';
-import {transactionTypeText} from '../utilities/TransactionType';
+import {AuthContext} from '../../context/AuthContext';
+import {AxiosContext} from '../../context/AxiosContext';
+import {SignalRContext} from '../../context/SignalRContext';
+import {colors, fontSizes, images, fonts} from '../../constants';
+import {transactionTypeText} from '../../utilities/TransactionType';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {Transaction as TransactionRepository} from '../repositories';
+import {Transaction as TransactionRepository} from '../../repositories';
 import {useIsFocused} from '@react-navigation/native';
-import {TransactionListingCard} from '../components';
+import {TransactionListingCard} from '../../components';
 
 function TransactionHistory(props) {
   //// AUTH AND NAVIGATION
@@ -51,13 +51,12 @@ function TransactionHistory(props) {
   // Initialize data for categories, materials and auctions on screen start
   function getAllTransactions() {
     setIsLoading(true);
-
     TransactionRepository.getTransactionsByCurrentUser(
       axiosContext,
       currentTransactionType,
     )
       .then(response => {
-        setAuctions(response);
+        setTransactions(response);
         setIsLoading(false);
       })
       .catch(error => {
@@ -153,7 +152,7 @@ function TransactionHistory(props) {
                     transaction={transaction}
                     index={index}
                     onPress={() => {
-                      alert('do something');
+                     navigate('TransactionDetail',{transaction_id: transaction.id});
                     }}
                   />
                 ))}

@@ -34,7 +34,8 @@ import SellerOrderDetail from "./Order/SellerOrderDetail";
 import AuctionDetailSeller from "./AuctionDetail/AuctionDetailSeller";
 import SellerProductListing from "./ProductSeller/SellerProductListing";
 import ListingDetailSeller from "./ListingDetail/ListingDetailSeller";
-import TransactionHistory from "./TransactionHistory";
+import TransactionHistory from "./Transaction/TransactionHistory";
+import TransactionDetail from "./Transaction/TransactionDetail";
 
 export {
     Account,
@@ -73,5 +74,6 @@ export {
     AuctionDetailSeller,
     SellerProductListing,
     ListingDetailSeller,
-    TransactionHistory
+    TransactionHistory,
+    TransactionDetail
 }
