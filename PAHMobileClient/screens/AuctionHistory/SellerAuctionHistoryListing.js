@@ -98,15 +98,17 @@ function SellerAuctionHistoryListing(props) {
 
     // Pagination
     const loadMoreItems = () => {
-        AuctionRepository.getAuctionsBySeller(axiosContext, seller_id, currentAuctionStatus, currentPage + 1)
-            .then(response => {
-                setAuctions(auctions => [...auctions, ...response]);
-                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
-                    setHasNext(false)
-                }
-            })
-            .catch(error => { });
-        setCurrentPage(currentPage + 1);
+        if (hasNext) {
+            AuctionRepository.getAuctionsBySeller(axiosContext, seller_id, currentAuctionStatus, currentPage + 1)
+                .then(response => {
+                    setAuctions(auctions => [...auctions, ...response]);
+                    if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                        setHasNext(false)
+                    }
+                })
+                .catch(error => { });
+            setCurrentPage(currentPage + 1);
+        }
     }
 
     // Pagination loader

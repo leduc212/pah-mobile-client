@@ -76,15 +76,17 @@ function BuyerOrderList(props) {
 
   // Pagination
   const loadMoreItems = () => {
-    OrderRepository.getAllOrderCurrentBuyer(axiosContext, currentOrderStatus, currentPage + 1)
-      .then(response => {
-        setOrders(orders => [...orders, ...response]);
-        if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
-          setHasNext(false)
-        }
-      })
-      .catch(error => { });
-    setCurrentPage(currentPage + 1);
+    if (hasNext) {
+      OrderRepository.getAllOrderCurrentBuyer(axiosContext, currentOrderStatus, currentPage + 1)
+        .then(response => {
+          setOrders(orders => [...orders, ...response]);
+          if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+            setHasNext(false)
+          }
+        })
+        .catch(error => { });
+      setCurrentPage(currentPage + 1);
+    }
   }
 
   // Pagination loader
@@ -100,7 +102,7 @@ function BuyerOrderList(props) {
       </View>
     )
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>

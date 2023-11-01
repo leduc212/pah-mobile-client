@@ -130,7 +130,7 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
-                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                if (response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE) {
                     setHasNext(false)
                 }
                 setAuctionCount(response.count);
@@ -172,7 +172,7 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
-                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                if (response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE) {
                     setHasNext(false)
                 }
                 setAuctionCount(response.count);
@@ -196,7 +196,7 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
-                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                if (response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE) {
                     setHasNext(false)
                 }
                 setAuctionCount(response.count);
@@ -219,7 +219,7 @@ function AuctionListing(props) {
             })
             .then(response => {
                 setAuctions(response.auctionList);
-                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
+                if (response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE) {
                     setHasNext(false)
                 }
                 setAuctionCount(response.count);
@@ -238,23 +238,25 @@ function AuctionListing(props) {
 
     // Pagination
     const loadMoreItems = () => {
-        AuctionRepository.getAuctions(axiosContext,
-            {
-                materialId: selectedMaterial, categoryId: selectedCategory,
-                orderBy: selectedSortOrder, pageNumber: currentPage + 1
-            })
-            .then(response => {
-                setAuctions(auctions => [...auctions, ...response.auctionList]);
-                if(response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE){
-                    setHasNext(false)
-                }
-                setAuctionCount(response.count);
-            }).catch(error => { });
-        setCurrentPage(currentPage + 1);
+        if (hasNext) {
+            AuctionRepository.getAuctions(axiosContext,
+                {
+                    materialId: selectedMaterial, categoryId: selectedCategory,
+                    orderBy: selectedSortOrder, pageNumber: currentPage + 1
+                })
+                .then(response => {
+                    setAuctions(auctions => [...auctions, ...response.auctionList]);
+                    if (response.auctionList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                        setHasNext(false)
+                    }
+                    setAuctionCount(response.count);
+                }).catch(error => { });
+            setCurrentPage(currentPage + 1);
+        }
     }
 
     // Pagination loader
-    const renderLoader = () =>{
+    const renderLoader = () => {
         return (
             <View style={{
                 alignItems: 'center',

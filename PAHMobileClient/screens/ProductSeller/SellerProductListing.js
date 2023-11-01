@@ -78,15 +78,17 @@ function SellerProductListing(props) {
 
     // Pagination
     const loadMoreItems = () => {
-        ProductRepository.getProductsBySeller(axiosContext, seller_id, currentPage + 1)
-            .then(response => {
-                setProducts(products => [...products, ...response]);
-                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
-                    setHasNext(false)
-                }
-            })
-            .catch(error => { });
-        setCurrentPage(currentPage + 1);
+        if (hasNext) {
+            ProductRepository.getProductsBySeller(axiosContext, seller_id, currentPage + 1)
+                .then(response => {
+                    setProducts(products => [...products, ...response]);
+                    if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                        setHasNext(false)
+                    }
+                })
+                .catch(error => { });
+            setCurrentPage(currentPage + 1);
+        }
     }
 
     // Pagination loader

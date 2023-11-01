@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  FlatList
 } from 'react-native';
 import { colors, fontSizes, images, fonts, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -18,6 +19,8 @@ import { AxiosContext } from '../../context/AxiosContext';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 import { Order as OrderRepository } from '../../repositories';
 import moment from 'moment';
+import Modal from 'react-native-modal';
+
 function SellerOrderDetail(props) {
   //// AXIOS AND NAVIGATION
   // Axios Context
@@ -32,12 +35,26 @@ function SellerOrderDetail(props) {
   // Get orderId from routes
   const { orderId } = props.route.params;
 
+  // Modal data
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+
   // Order detail data
   const [order, setOrder] = useState({});
 
   // Loading state data
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Cancel reason data
+  const [cancelReasons, setCancelReasons] = useState([
+    'Không đủ hàng',
+    'Hàng bị hỏng trong lúc chuẩn bị',
+    'Không thể giao hàng đúng hẹn',
+    'Sản phẩm không đúng mô tả',
+    'Vấn đề kỹ thuật'
+  ]);
+
+  const [cancelReason, setCancelReason] = useState('')
 
   //// FUNCTIONS
   // Get all orders
@@ -199,23 +216,23 @@ function SellerOrderDetail(props) {
 
           {([enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
             .includes(order.status)) && <View style={styles.statusSection}>
-            <View style={{ flex: 80 }}>
-              <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
-              <Text style={styles.noteText}>
-                Chi tiết tại mục 'Chi tiết đơn hủy'
-              </Text>
-            </View>
-            <View style={{ flex: 20, alignItems: 'center' }}>
-              <Image
-                source={images.walletImage}
-                style={{
-                  resizeMode: 'cover',
-                  width: 50,
-                  height: 50,
-                }}
-              />
-            </View>
-          </View>}
+              <View style={{ flex: 80 }}>
+                <Text style={styles.statusText}>Đơn hàng đã bị hủy</Text>
+                <Text style={styles.noteText}>
+                  Chi tiết tại mục 'Chi tiết đơn hủy'
+                </Text>
+              </View>
+              <View style={{ flex: 20, alignItems: 'center' }}>
+                <Image
+                  source={images.walletImage}
+                  style={{
+                    resizeMode: 'cover',
+                    width: 50,
+                    height: 50,
+                  }}
+                />
+              </View>
+            </View>}
 
           <View style={{ marginVertical: 15, marginLeft: 5, marginRight: 10 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
@@ -371,10 +388,7 @@ function SellerOrderDetail(props) {
               borderWidth: 1,
               borderColor: colors.primary
             }}
-            onPress={() => confirmOrder({
-              status: enumConstants.orderStatus.CancelledBySeller,
-              message: "Gặp vấn đề trong khâu đóng gói hàng"
-            })}>
+            onPress={() => setCancelModalVisible(true)}>
             <Text style={{
               fontSize: fontSizes.h3,
               fontFamily: fonts.MontserratMedium,
@@ -482,6 +496,79 @@ function SellerOrderDetail(props) {
           </TouchableOpacity>
         </View>
       }
+      {/* Cancel modal */}
+      <Modal
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        isVisible={cancelModalVisible}
+        onRequestClose={() => {
+          setCancelModalVisible(!cancelModalVisible);
+        }}
+        style={{ margin: 0 }}>
+        <View style={{
+          flex: 1
+        }}>
+          <TouchableOpacity style={{ flex: 1 }}
+            onPress={() => {
+              setCancelModalVisible(!cancelModalVisible);
+            }}></TouchableOpacity>
+          <View style={styles.modalContainer}>
+            {/* Modal title */}
+            <Text style={styles.modalTitle}>Hủy đơn hàng</Text>
+
+            {/* Modal information */}
+            <View style={{
+              gap: 10,
+              marginHorizontal: 20,
+              marginBottom: 10
+            }}>
+              <FlatList
+                data={cancelReasons}
+                keyExtractor={item => item}
+                renderItem={({ item }) =>
+                  <TouchableOpacity style={{
+                    paddingVertical: 10,
+                    flexDirection: 'row',
+                    alignItems: 'baseline',
+                    gap: 10
+                  }}
+                    onPress={() => setCancelReason(item)}>
+                    <View style={styles.radioButtonOuter}>
+                      <View style={[styles.radioButtonInner, {
+                        backgroundColor: item == cancelReason ? 'black' : 'white'
+                      }]}></View>
+                    </View>
+                    <Text style={{
+                      color: 'black',
+                      fontFamily: fonts.MontserratMedium,
+                      fontSize: fontSizes.h4,
+                    }}>{item}</Text>
+                  </TouchableOpacity>
+                }
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                borderRadius: 5,
+                paddingVertical: 10,
+                backgroundColor: cancelReason == '' ? colors.grey : colors.primary,
+                marginHorizontal: 15,
+                marginBottom: 10
+              }}
+              onPress={() => confirmOrder({
+                status: enumConstants.orderStatus.CancelledBySeller,
+                message: cancelReason
+              })}>
+              <Text style={{
+                fontSize: fontSizes.h3,
+                fontFamily: fonts.MontserratMedium,
+                textAlign: 'center',
+                color: cancelReason == '' ? colors.greyText : 'white',
+              }}>Hủy đơn hàng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View >
   );
 }
@@ -663,6 +750,31 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratMedium,
     textAlign: 'center',
     color: colors.darkGreyText
-  }
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25
+  },
+  modalTitle: {
+    color: 'black',
+    fontSize: fontSizes.h3,
+    fontFamily: fonts.MontserratBold,
+    marginLeft: 20,
+    marginVertical: 20
+  },
+  radioButtonOuter: {
+    height: 20,
+    width: 20,
+    borderWidth: 2,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  radioButtonInner: {
+    height: 10,
+    width: 10,
+    borderRadius: 30
+  },
 });
 export default SellerOrderDetail;

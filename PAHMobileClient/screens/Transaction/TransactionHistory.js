@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,15 +10,15 @@ import {
   RefreshControl,
   FlatList,
 } from 'react-native';
-import {AuthContext} from '../../context/AuthContext';
-import {AxiosContext} from '../../context/AxiosContext';
-import {SignalRContext} from '../../context/SignalRContext';
-import {colors, fontSizes, images, fonts} from '../../constants';
-import {transactionTypeText} from '../../utilities/TransactionType';
+import { AuthContext } from '../../context/AuthContext';
+import { AxiosContext } from '../../context/AxiosContext';
+import { SignalRContext } from '../../context/SignalRContext';
+import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
+import { transactionTypeText } from '../../utilities/TransactionType';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {Transaction as TransactionRepository} from '../../repositories';
-import {useIsFocused} from '@react-navigation/native';
-import {TransactionListingCard} from '../../components';
+import { Transaction as TransactionRepository } from '../../repositories';
+import { useIsFocused } from '@react-navigation/native';
+import { TransactionListingCard } from '../../components';
 
 function TransactionHistory(props) {
   //// AUTH AND NAVIGATION
@@ -28,35 +28,43 @@ function TransactionHistory(props) {
   const signalRContext = useContext(SignalRContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // On focus
   const isFocused = useIsFocused();
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   // Loading and refreshing state
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasNext, setHasNext] = useState(true);
 
   // Data for auctions and filters
   const [transactions, setTransactions] = useState([]);
   // Auction status filter
   const [transactionType, setTransactionType] = useState([0, 1, 2, 3, 4]);
   const [currentTransactionType, setCurrentTransactionType] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   //// FUNCTION AND USE EFFECT
 
   // Initialize data for categories, materials and auctions on screen start
   function getAllTransactions() {
     setIsLoading(true);
+    setCurrentPage(1);
+    setHasNext(true);
     TransactionRepository.getTransactionsByCurrentUser(
       axiosContext,
       currentTransactionType,
+      1
     )
       .then(response => {
         setTransactions(response);
+        if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+          setHasNext(false)
+        }
         setIsLoading(false);
       })
       .catch(error => {
@@ -73,6 +81,39 @@ function TransactionHistory(props) {
     getAllTransactions();
     setRefreshing(false);
   };
+
+  // Pagination
+  const loadMoreItems = () => {
+    if (hasNext) {
+      TransactionRepository.getTransactionsByCurrentUser(
+        axiosContext,
+        currentTransactionType,
+        currentPage + 1
+      )
+        .then(response => {
+          setTransactions(transactions => [...transactions, ...response]);
+          if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+            setHasNext(false)
+          }
+        })
+        .catch(error => { });
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
+  // Pagination loader
+  const renderLoader = () => {
+    return (
+      <View style={{
+        alignItems: 'center',
+        marginBottom: 0,
+        paddingBottom: 50,
+        paddingTop: 15
+      }}>
+        {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -96,7 +137,7 @@ function TransactionHistory(props) {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={transactionType}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             return (
               <TouchableOpacity
                 style={{
@@ -135,33 +176,39 @@ function TransactionHistory(props) {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
+        <View>
           {Array.isArray(transactions) && transactions.length ? (
-            <View style={{marginTop: 20}}>
+            <View style={{ marginTop: 20 }}>
               <View
                 style={{
-                  flex: 1,
                   marginBottom: 15,
                 }}>
-                {transactions.map((transaction, index) => (
-                  <TransactionListingCard
-                    key={transaction.id}
-                    transaction={transaction}
+                <FlatList
+                  style={{
+                    marginBottom: 50
+                  }}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                  keyExtractor={item => item.id}
+                  data={transactions}
+                  renderItem={({ item, index }) => <TransactionListingCard
+                    key={item.id}
+                    transaction={item}
                     index={index}
                     onPress={() => {
-                     navigate('TransactionDetail',{transaction_id: transaction.id});
+                      navigate('TransactionDetail', { transaction_id: item.id });
                     }}
-                  />
-                ))}
+                  />}
+                  onEndReached={loadMoreItems}
+                  onEndReachedThreshold={0}
+                  ListFooterComponent={renderLoader}
+                />
               </View>
             </View>
           ) : (
             <View
               style={{
-                flex: 1,
                 alignItems: 'center',
                 paddingTop: 150,
               }}>
@@ -186,7 +233,7 @@ function TransactionHistory(props) {
               </Text>
             </View>
           )}
-        </ScrollView>
+        </View>
       )}
     </View>
   );
