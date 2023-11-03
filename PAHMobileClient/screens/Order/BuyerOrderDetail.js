@@ -18,6 +18,8 @@ import { AxiosContext } from '../../context/AxiosContext';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 import { Order as OrderRepository } from '../../repositories';
 import moment from 'moment';
+import Modal from 'react-native-modal';
+
 function BuyerOrderDetail(props) {
   //// AXIOS AND NAVIGATION
   // Axios Context
@@ -31,6 +33,9 @@ function BuyerOrderDetail(props) {
   //// DATA
   // Get orderId from routes
   const { orderId } = props.route.params;
+
+  // Modal data
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
   // Order detail data
   const [order, setOrder] = useState({});
@@ -482,6 +487,37 @@ function BuyerOrderDetail(props) {
             </TouchableOpacity>
           </View>
         </View>}
+
+      {/* Cancel modal */}
+      <Modal
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        isVisible={cancelModalVisible}
+        onRequestClose={() => {
+          setCancelModalVisible(!cancelModalVisible);
+        }}
+        style={{ margin: 0 }}>
+        <View style={{
+          flex: 1
+        }}>
+          <TouchableOpacity style={{ flex: 1 }}
+            onPress={() => {
+              setCancelModalVisible(!cancelModalVisible);
+            }}></TouchableOpacity>
+          <View style={styles.modalContainer}>
+            {/* Shipping modal title */}
+            <Text style={styles.modalTitle}>Hủy đơn hàng</Text>
+
+            {/* Shipping information */}
+            <View style={{
+              gap: 10,
+              marginHorizontal: 20,
+              marginBottom: 30
+            }}>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View >
   );
 }
@@ -663,6 +699,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratMedium,
     textAlign: 'center',
     color: colors.darkGreyText
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25
+  },
+  modalTitle: {
+    color: 'black',
+    fontSize: fontSizes.h3,
+    fontFamily: fonts.MontserratBold,
+    marginLeft: 20,
+    marginVertical: 20
   }
 });
 export default BuyerOrderDetail;

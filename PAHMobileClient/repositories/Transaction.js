@@ -1,5 +1,7 @@
-async function getTransactionsByCurrentUser(axiosContext, type) {
-    const transactionPath = `/transaction/current?type=${type}&PageSize=50`;
+import { pageParameters } from "../constants";
+
+async function getTransactionsByCurrentUser(axiosContext, type, pageNumber = 1) {
+    const transactionPath = `/transaction/current?type=${type}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
     try {
       let result = [];
       let responseData = await axiosContext.authAxios.get(transactionPath);

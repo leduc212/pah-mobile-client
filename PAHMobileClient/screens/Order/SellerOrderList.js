@@ -80,15 +80,17 @@ function SellerOrderList(props) {
 
   // Pagination
   const loadMoreItems = () => {
-    OrderRepository.getAllOrderCurrentSeller(axiosContext, currentOrderStatus, currentPage + 1)
-      .then(response => {
-        setOrders(orders => [...orders, ...response]);
-        if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
-          setHasNext(false)
-        }
-      })
-      .catch(error => { });
-    setCurrentPage(currentPage + 1);
+    if (hasNext) {
+      OrderRepository.getAllOrderCurrentSeller(axiosContext, currentOrderStatus, currentPage + 1)
+        .then(response => {
+          setOrders(orders => [...orders, ...response]);
+          if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+            setHasNext(false)
+          }
+        })
+        .catch(error => { });
+      setCurrentPage(currentPage + 1);
+    }
   }
 
   // Pagination loader

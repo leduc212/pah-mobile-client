@@ -62,7 +62,7 @@ function BidderAuctionHistoryListing(props) {
         AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus, 1)
             .then(response => {
                 setAuctions(response);
-                if(response.length < pageParameters.DEFAULT_PAGE_SIZE){
+                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
                     setHasNext(false)
                 }
                 setIsLoading(false);
@@ -85,15 +85,17 @@ function BidderAuctionHistoryListing(props) {
 
     // Pagination
     const loadMoreItems = () => {
-        AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus, currentPage + 1)
-            .then(response => {
-                setAuctions(auctions => [...auctions, ...response]);
-                if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
-                    setHasNext(false)
-                }
-            })
-            .catch(error => { });
-        setCurrentPage(currentPage + 1);
+        if (hasNext) {
+            AuctionRepository.getAuctionsByBidder(axiosContext, currentAuctionStatus, currentPage + 1)
+                .then(response => {
+                    setAuctions(auctions => [...auctions, ...response]);
+                    if (response.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                        setHasNext(false)
+                    }
+                })
+                .catch(error => { });
+            setCurrentPage(currentPage + 1);
+        }
     }
 
     // Pagination loader

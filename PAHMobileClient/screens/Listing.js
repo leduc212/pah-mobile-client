@@ -317,21 +317,23 @@ function Listing(props) {
 
     // Pagination
     const loadMoreItems = () => {
-        ProductRepository.getProducts(axiosContext,
-            {
-                nameSearch: searchTextFilter, materialId: selectedMaterial,
-                categoryId: selectedCategory, orderBy: selectedSortOrder,
-                priceMin: selectedPriceMin, priceMax: selectedPriceMax,
-                pageNumber: currentPage + 1
-            })
-            .then(response => {
-                setProducts(products => [...products, ...response.productList]);
-                if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
-                    setHasNext(false)
-                }
-                setProductCount(response.count);
-            }).catch(error => { });
-        setCurrentPage(currentPage + 1);
+        if (hasNext) {
+            ProductRepository.getProducts(axiosContext,
+                {
+                    nameSearch: searchTextFilter, materialId: selectedMaterial,
+                    categoryId: selectedCategory, orderBy: selectedSortOrder,
+                    priceMin: selectedPriceMin, priceMax: selectedPriceMax,
+                    pageNumber: currentPage + 1
+                })
+                .then(response => {
+                    setProducts(products => [...products, ...response.productList]);
+                    if (response.productList.length < pageParameters.DEFAULT_PAGE_SIZE) {
+                        setHasNext(false)
+                    }
+                    setProductCount(response.count);
+                }).catch(error => { });
+            setCurrentPage(currentPage + 1);
+        }
     }
 
     // Pagination loader
