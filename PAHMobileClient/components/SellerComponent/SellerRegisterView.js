@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   imageZoneButton: {
     backgroundColor: colors.primary,
     borderRadius: 5,
-    width: 170,
+    width: 180,
     alignItems: 'center',
     borderWidth: 1,
     paddingVertical: 5,

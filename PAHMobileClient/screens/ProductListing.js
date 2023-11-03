@@ -580,7 +580,6 @@ function ProductListing(props) {
                   style={{
                     width: 130,
                     borderColor: colors.black,
-                    marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h4,
                     fontFamily: fonts.MontserratMedium,
@@ -624,7 +623,6 @@ function ProductListing(props) {
                   style={{
                     width: 130,
                     borderColor: colors.black,
-                    marginStart: 20,
                     color: colors.black,
                     fontSize: fontSizes.h4,
                     fontFamily: fonts.MontserratMedium,
@@ -672,7 +670,6 @@ function ProductListing(props) {
                 style={{
                   width: 200,
                   borderColor: colors.black,
-                  marginStart: 20,
                   color: colors.black,
                   fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
@@ -707,7 +704,6 @@ function ProductListing(props) {
                 style={{
                   width: 200,
                   borderColor: colors.black,
-                  marginStart: 20,
                   color: colors.black,
                   fontSize: fontSizes.h4,
                   fontFamily: fonts.MontserratMedium,
@@ -1054,7 +1050,7 @@ const styles = StyleSheet.create({
   imageZoneButton: {
     backgroundColor: colors.primary,
     borderRadius: 5,
-    width: 170,
+    width: 180,
     alignItems: 'center',
     borderWidth: 1,
     paddingVertical: 5,
