@@ -35,7 +35,8 @@ import {
     SellerProductListing,
     ListingDetailSeller,
     TransactionHistory,
-    TransactionDetail
+    TransactionDetail,
+    EmailConfirm
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -280,6 +281,7 @@ function App(props) {
                         <>
                             <Stack.Screen name={"Login"} component={Login} />
                             <Stack.Screen name={"Register"} component={Register} />
+                            <Stack.Screen name={"EmailConfirm"} component={EmailConfirm} />
                         </>
                     )}
                 </Stack.Navigator>

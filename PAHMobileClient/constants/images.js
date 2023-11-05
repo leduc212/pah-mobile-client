@@ -15,5 +15,6 @@ export default {
     failedImage: require('../assets/images/failed.png'),
     orderFailImage: require('../assets/images/order-failed.png'),
     walletImage: require('../assets/images/wallet.png'), 
+    checkMailImage: require('../assets/images/check-mail.png'), 
     defaultAvatar: 'https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg'
 }

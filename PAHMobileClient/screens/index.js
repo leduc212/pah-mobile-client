@@ -36,6 +36,7 @@ import SellerProductListing from "./ProductSeller/SellerProductListing";
 import ListingDetailSeller from "./ListingDetail/ListingDetailSeller";
 import TransactionHistory from "./Transaction/TransactionHistory";
 import TransactionDetail from "./Transaction/TransactionDetail";
+import EmailConfirm from "./EmailConfirm";
 
 export {
     Account,
@@ -75,5 +76,6 @@ export {
     SellerProductListing,
     ListingDetailSeller,
     TransactionHistory,
-    TransactionDetail
+    TransactionDetail,
+    EmailConfirm
 }

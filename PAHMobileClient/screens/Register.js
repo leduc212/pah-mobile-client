@@ -88,7 +88,7 @@ function Register(props) {
       {emailCheck ? <RegisterView2 password={password} setPassword={setPassword}
         errorMessage={errorMessage}
         setEmailCheck={setEmailCheck}
-        onAccountCreate={() => register()}
+        onAccountCreate={() => {navigate('EmailConfirm',{_email:email})}}
       />
         : <RegisterView1 setEmailCheck={setEmailCheck}
           email={email} setEmail={setEmail}
