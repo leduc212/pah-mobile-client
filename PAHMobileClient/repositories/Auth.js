@@ -1,5 +1,5 @@
 async function login(axiosContext, userInfo) {
-    const loginPath = `/login`;
+    const loginPath = `/customer/login`;
     try {
         let responseData = await axiosContext.publicAxios.post(loginPath, userInfo);
         if (responseData.status != 200) {
@@ -49,8 +49,24 @@ async function register(axiosContext, userInfo) {
     }
 }
 
+async function verifyResend(axiosContext, email) {
+    const verifyResendPath = `/verify/${email}/resend`;
+    try {
+        let responseData = await axiosContext.publicAxios.get(verifyResendPath);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+        
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     login,
     register,
-    loginWithGoogle
+    loginWithGoogle,
+    verifyResend
 }

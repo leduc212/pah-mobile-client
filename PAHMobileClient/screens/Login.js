@@ -264,9 +264,9 @@ function Login(props) {
             Đăng nhập bằng Google
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigate('ForgetPassword')}}>
           <Text style={[styles.infoText, { marginVertical: 40, }]}>
-            Lấy lại mật khẩu
+            Quên mật khẩu?
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {

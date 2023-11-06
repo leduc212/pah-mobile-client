@@ -37,6 +37,7 @@ import ListingDetailSeller from "./ListingDetail/ListingDetailSeller";
 import TransactionHistory from "./Transaction/TransactionHistory";
 import TransactionDetail from "./Transaction/TransactionDetail";
 import EmailConfirm from "./EmailConfirm";
+import ForgetPassword from "./ForgetPassword";
 
 export {
     Account,
@@ -77,5 +78,6 @@ export {
     ListingDetailSeller,
     TransactionHistory,
     TransactionDetail,
-    EmailConfirm
+    EmailConfirm,
+    ForgetPassword
 }

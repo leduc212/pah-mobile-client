@@ -31,9 +31,9 @@ function Register(props) {
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
 
   // Data for register
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('kingericvt96@gmail.com');
+  const [name, setName] = useState('Tuấn');
+  const [phone, setPhone] = useState('0966948473');
   const [password, setPassword] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -60,7 +60,7 @@ function Register(props) {
           autoHide: true,
           visibilityTime: 2000
         });
-        goBack();
+        navigate('EmailConfirm',{_email:email})
       })
       .catch(error => {
         setIsRegisterLoading(false);
@@ -88,7 +88,7 @@ function Register(props) {
       {emailCheck ? <RegisterView2 password={password} setPassword={setPassword}
         errorMessage={errorMessage}
         setEmailCheck={setEmailCheck}
-        onAccountCreate={() => {navigate('EmailConfirm',{_email:email})}}
+        onAccountCreate={register}
       />
         : <RegisterView1 setEmailCheck={setEmailCheck}
           email={email} setEmail={setEmail}
