@@ -64,9 +64,43 @@ async function verifyResend(axiosContext, email) {
     }
 }
 
+async function forgetPassword(axiosContext, email) {
+    const forgetPasswordPath = `/password/forgot`;
+    try {
+        let responseData = await axiosContext.publicAxios.post(forgetPasswordPath,email);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+        
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function resetPassword(axiosContext, userInfo) {
+    const resetPasswordPath = `/password/reset`;
+    try {
+        let responseData = await axiosContext.publicAxios.post(resetPasswordPath,userInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+        
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
 export default {
     login,
     register,
     loginWithGoogle,
-    verifyResend
+    verifyResend,
+    forgetPassword,
+    resetPassword
 }

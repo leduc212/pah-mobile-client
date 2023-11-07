@@ -26,13 +26,10 @@ function EmailConfirm(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [resendEnable, setResendEnable] = useState(true);
-  const [key, setKey] = useState(0);
   //Email resend verification
   async function resendVerify() {
     setErrorMessage('');
     setResendEnable(false);
-    //for countdown
-    setKey(prevKey=>prevKey+1)
     await AuthRepository.verifyResend(axiosContext, _email)
       .then(response => {
         Toast.show({
