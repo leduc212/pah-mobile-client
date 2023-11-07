@@ -23,6 +23,22 @@ async function getInfoCurrentUser(axiosContext) {
     }
 }
 
+async function updateProfile(axiosContext, profileInfo) {
+    const profilePath = `/user/profile`;
+    try {
+        let responseData = await axiosContext.authAxios.post(profilePath, profileInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getInfoCurrentUser,
+    updateProfile
 }

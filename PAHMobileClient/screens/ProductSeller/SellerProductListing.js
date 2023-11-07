@@ -13,7 +13,6 @@ import {
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
 import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
-import { auctionStatusText } from '../../utilities/AuctionStatus';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
     ProductListingCard
@@ -96,7 +95,7 @@ function SellerProductListing(props) {
         return (
             <View style={{
                 alignItems: 'center',
-                paddingBottom: 50,
+                paddingBottom: 0,
                 paddingTop: 15
             }}>
                 {hasNext && <ActivityIndicator size={'large'} color={colors.primary} />}

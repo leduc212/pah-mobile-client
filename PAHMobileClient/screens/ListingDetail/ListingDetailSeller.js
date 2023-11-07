@@ -159,7 +159,7 @@ function ListingDetailSeller(props) {
                 }}>
                     <TouchableOpacity style={styles.primaryButton}
                         onPress={() => {}}>
-                        <Text style={styles.primaryButtonText}>Chính sửa</Text>
+                        <Text style={styles.primaryButtonText}>Chỉnh sửa</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.secondaryButton}
                         onPress={() => {}}>
@@ -221,7 +221,7 @@ function ListingDetailSeller(props) {
                     gap: 10,
                     marginVertical: 20
                 }}>
-                    <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
+                    <Text style={styles.sectionTitle}>Vận chuyển và thanh toán</Text>
                     <TouchableOpacity style={{
                         marginTop: 5,
                         flexDirection: 'row',
@@ -232,8 +232,6 @@ function ListingDetailSeller(props) {
                             <ListingDetailInfoText label='Giao hàng'
                                 text={'Từ ' + `${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`}
                                 secondText='Thông qua Giao hàng nhanh' />
-                            <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                                secondText='Người mua trả phí vận chuyển' />
                             <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                         </View>
                         <IconFeather name='chevron-right' size={30} color='black' />
@@ -312,7 +310,7 @@ function ListingDetailSeller(props) {
                     }}></TouchableOpacity>
                 <View style={styles.modalContainer}>
                     {/* Shipping modal title */}
-                    <Text style={styles.modalTitle}>Giao hàng, đổi trả và thanh toán</Text>
+                    <Text style={styles.modalTitle}>Giao hàng và thanh toán</Text>
 
                     {/* Shipping information */}
                     <View style={{
@@ -321,8 +319,6 @@ function ListingDetailSeller(props) {
                         marginBottom: 30
                     }}>
                         <ListingDetailInfoText label='Giao từ' text={`${product.seller.ward}, ${product.seller.district}, ${product.seller.province}`} />
-                        <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                            secondText='Người mua trả phí vận chuyển' />
                         <ListingDetailInfoText label='Thanh toán' text='Ví PAH, Zalopay' />
                     </View>
                 </View>

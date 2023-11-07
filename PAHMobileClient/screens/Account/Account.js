@@ -167,8 +167,7 @@ function Account(props) {
                         paddingLeft: 15,
                         paddingRight: 10
                     }}>
-                        <TouchableOpacity
-                            onPress={() => navigate('Profile', { user_id: 1 })}>
+                        <View>
                             <Image source={{ uri: user.profilePicture }}
                                 style={{
                                     resizeMode: 'cover',
@@ -186,11 +185,8 @@ function Account(props) {
                                     fontFamily: fonts.MontserratBold,
                                     fontSize: fontSizes.h3
                                 }}>{user.name}</Text>
-                                <View style={{ flex: 1 }}></View>
-                                <IconFeather name='chevron-right'
-                                    size={20} color={'black'} />
                             </View>
-                        </TouchableOpacity>
+                        </View>
                         <View style={{
                             flex: 1,
                             marginTop: 20,

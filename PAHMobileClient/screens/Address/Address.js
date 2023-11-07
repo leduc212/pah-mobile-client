@@ -100,6 +100,7 @@ function Address(props) {
             }><View style={{ marginBottom: 100 }}>
               {addresses.map(address => (
                 <TouchableOpacity
+                  disabled={address.type == 2}
                   onPress={() => {
                     navigate('EditAddress', {
                       id: address.id,

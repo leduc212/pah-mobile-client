@@ -570,7 +570,7 @@ function AuctionDetail(props) {
                     gap: 10,
                     marginVertical: 20
                 }}>
-                    <Text style={styles.sectionTitle}>Vận chuyển, đổi trả và thanh toán</Text>
+                    <Text style={styles.sectionTitle}>Vận chuyển và thanh toán</Text>
                     <TouchableOpacity style={{
                         marginTop: 5,
                         flexDirection: 'row',
@@ -581,8 +581,6 @@ function AuctionDetail(props) {
                             <ListingDetailInfoText label='Giao hàng'
                                 text={'Từ ' + `${auction.seller.ward}, ${auction.seller.district}, ${auction.seller.province}`}
                                 secondText='Thông qua Giao hàng nhanh' />
-                            <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                                secondText='Người mua trả phí vận chuyển' />
                             <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
                                 secondText='Người tham gia cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                         </View>
@@ -671,7 +669,7 @@ function AuctionDetail(props) {
                     }}></TouchableOpacity>
                 <View style={styles.modalContainer}>
                     {/* Shipping modal title */}
-                    <Text style={styles.modalTitle}>Giao hàng, đổi trả và thanh toán</Text>
+                    <Text style={styles.modalTitle}>Giao hàng và thanh toán</Text>
 
                     {/* Shipping information */}
                     <View style={{
@@ -683,8 +681,6 @@ function AuctionDetail(props) {
                         <ListingDetailInfoText label='Giao đến' text={userAddress.province ?
                             `${userAddress.ward}, ${userAddress.district}, ${userAddress.province}` :
                             'Cài đặt địa chỉ mặc định để thấy cước vận chuyển'} />
-                        <ListingDetailInfoText label='Đổi trả' text='Trong vòng 30 ngày'
-                            secondText='Người mua trả phí vận chuyển' />
                         <ListingDetailInfoText label='Thanh toán' text='Ví PAH'
                             secondText='Người tham gia cần có đủ số dư khả dụng trong ví PAH trước khi tham gia đấu giá' />
                     </View>

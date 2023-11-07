@@ -12,12 +12,15 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { colors, fonts, fontSizes } from '../../constants';
+import { colors, fonts, fontSizes, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import DatePicker from 'react-native-date-picker';
 import { AxiosContext } from '../../context/AxiosContext';
 import { Account as AccountRepository } from '../../repositories';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+import Toast from 'react-native-toast-message';
 
 function EditAccount(props) {
   //// AUTH AND NAVIGATION
@@ -29,6 +32,42 @@ function EditAccount(props) {
   // Function of navigate to/back
   const { navigate, goBack } = navigation;
 
+  //// RN Image Picker handling
+  //Photos
+  let options = {
+    cameraType: 'front',
+    saveToPhotos: true,
+    mediaType: 'photo',
+    quality: 1,
+  };
+
+  // Get image from camera
+  const openCamera = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+    );
+    if (granted == PermissionsAndroid.RESULTS.GRANTED) {
+      try {
+        const result = await launchCamera(options);
+        setPhoto(result.assets[0].uri);
+      } catch (error) {
+
+      }
+    }
+  };
+
+  // Get image from gallery
+  const openGallery = async () => {
+    try {
+      const result = await launchImageLibrary(options);
+      setPhoto(result.assets[0].uri);
+      setPhotoUrl(result.assets[0].uri);
+      setEnabledSave(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //// DATA
   //Date picker
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -36,29 +75,81 @@ function EditAccount(props) {
   const [isEnabledSave, setEnabledSave] = useState(false);
 
   // User data
-  const [user, setUser] = useState({
-    email: 'kingericvt96@gmail.com',
-    phone: '0966948473',
-    name: 'Nguyễn Huỳnh Tuấn',
-    gender: 0,
-    dob: new Date('2002-1-10'),
-    avatar_url:
-      'https://i.pinimg.com/1200x/3e/51/b7/3e51b7003375fb7e9e9c233a7f52c79e.jpg',
-  });
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dob, setDob] = useState('');
+  const [gender, setGender] = useState(0);
+  const [photo, setPhoto] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(images.defaultAvatar);
 
   // Data for loading and refreshing
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
 
   //// FUNCTION
   // Function for getting currentuser info
   function getCurrentUserInfo() {
     AccountRepository.getInfoCurrentUser(axiosContext)
       .then(response => {
-        setUser(response);
+        setEmail(response.email);
+        setName(response.name);
+        setPhone(response.phone);
+        setDob(response.dob);
+        setGender(response.gender);
+        setPhotoUrl(response.profilePicture);
         setIsLoading(false);
       })
       .catch(err => {
         setIsLoading(false);
+      })
+  }
+
+  // Upload image
+  const uploadImage = async () => {
+    if (photo == null) {
+      console.log('No photo to upload');
+      return;
+    }
+
+    const filename = new Date().getTime() + '_' + photo.substring(photo.lastIndexOf('/') + 1);
+    const uploadUri = Platform.OS === 'ios' ? photo.replace('file://', '') : photo;
+    const imageRef = storage().ref(`profilePicture/${filename}`);
+    await imageRef
+      .putFile(uploadUri, { contentType: 'image/jpg' })
+      .catch((error) => { console.log(error) });
+
+    const url = await imageRef.getDownloadURL().catch((error) => { console.log(error) });
+    setPhotoUrl(url);
+    return url;
+  };
+
+  // Create seller profile
+  const updateProfile = async () => {
+    setIsUpdateLoading(true)
+    const url = photo == null ? photoUrl : await uploadImage();
+    const updateInfo = {
+      name: name,
+      phone: phone,
+      profilePicture: url,
+      gender: gender,
+      dob: dob
+    }
+
+    AccountRepository.updateProfile(axiosContext, updateInfo)
+      .then(response => {
+        setIsUpdateLoading(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Cập nhật hồ sơ thành công!',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 2000
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        setIsUpdateLoading(false);
       })
   }
 
@@ -99,7 +190,7 @@ function EditAccount(props) {
                 justifyContent: 'center',
               }}>
               <Image
-                source={{ uri: user.profilePicture }}
+                source={{ uri: photoUrl }}
                 style={{
                   resizeMode: 'cover',
                   width: 80,
@@ -110,7 +201,7 @@ function EditAccount(props) {
               <TouchableOpacity
                 style={styles.penIconButton}
                 onPress={() => {
-                  alert('edit avatar');
+                  openGallery()
                 }}>
                 <Icon
                   style={{
@@ -130,16 +221,7 @@ function EditAccount(props) {
                   fontFamily: fonts.MontserratBold,
                   fontSize: fontSizes.h5,
                 }}>
-                {user.email}
-              </Text>
-              <Text
-                style={{
-                  color: colors.black,
-                  fontFamily: fonts.MontserratMedium,
-                  fontSize: fontSizes.h6,
-                  flexShrink: 1,
-                }}>
-                Hãy chỉnh sửa lại thông tin của bạn để đảm bảo cho vấn đề bảo mật
+                {email}
               </Text>
             </View>
           </View>
@@ -169,14 +251,10 @@ function EditAccount(props) {
             <View style={styles.inputContainer}>
               <Text style={styles.inputTitle}>Tên</Text>
               <TextInput
-                value={user.name}
-                onChange={(text) => {
-                  setUser(newUser => {
-                    return {
-                      ...newUser,
-                      name: text
-                    }
-                  })
+                value={name}
+                onChangeText={(text) => {
+                  setName(text);
+                  setEnabledSave(true);
                 }}
                 style={styles.inputBox}
                 placeholder="Nhập tên của bạn"
@@ -185,14 +263,10 @@ function EditAccount(props) {
             <View style={styles.inputContainer}>
               <Text style={styles.inputTitle}>Điện thoại</Text>
               <TextInput
-                value={user.phone}
-                onChange={(text) => {
-                  setUser(newUser => {
-                    return {
-                      ...newUser,
-                      phone: text
-                    }
-                  })
+                value={phone}
+                onChangeText={(text) => {
+                  setPhone(text);
+                  setEnabledSave(true);
                 }}
                 style={styles.inputBox}
                 placeholder="Nhập số điện thoại"
@@ -210,26 +284,21 @@ function EditAccount(props) {
                     flexDirection: 'row',
                   }}>
                   <Text style={styles.labelDateStyle}>Ngày</Text>
-                  <Text style={styles.dateStyle}>{new Date(user.dob).getDate()}</Text>
+                  <Text style={styles.dateStyle}>{new Date(dob).getDate()}</Text>
                   <Text style={styles.labelDateStyle}>Tháng</Text>
-                  <Text style={styles.dateStyle}>{new Date(user.dob).getMonth() + 1}</Text>
+                  <Text style={styles.dateStyle}>{new Date(dob).getMonth() + 1}</Text>
                   <Text style={styles.labelDateStyle}>Năm</Text>
-                  <Text style={styles.dateStyle}>{new Date(user.dob).getFullYear()}</Text>
+                  <Text style={styles.dateStyle}>{new Date(dob).getFullYear()}</Text>
                 </View>
               </TouchableOpacity>
               <DatePicker
                 modal
                 mode={'date'}
                 open={openDatePicker}
-                date={new Date(user.dob)}
+                date={new Date(dob)}
                 maximumDate={new Date()}
                 onConfirm={newDate => {
-                  setUser(user => {
-                    return {
-                      ...user,
-                      dob: newDate,
-                    };
-                  });
+                  setDob(newDate);
                   setEnabledSave(true);
                   setOpenDatePicker(false);
                 }}
@@ -247,14 +316,9 @@ function EditAccount(props) {
                   marginTop: 5
                 }}>
                 <TouchableOpacity
-                  disabled={user.gender == 1}
+                  disabled={gender == 1}
                   onPress={() => {
-                    setUser(user => {
-                      return {
-                        ...user,
-                        gender: 1,
-                      };
-                    });
+                    setGender(1);
                     setEnabledSave(true);
                   }}
                   style={{
@@ -262,21 +326,16 @@ function EditAccount(props) {
                     gap: 10,
                   }}>
                   <Text style={styles.labelGendersStyle}>Nam</Text>
-                  {user.gender == 1 ? (
+                  {gender == 1 ? (
                     <Icon name="circle-dot" size={30} color={colors.black} />
                   ) : (
                     <Icon name="circle" size={30} />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
-                  disabled={user.gender == 0}
+                  disabled={gender == 0}
                   onPress={() => {
-                    setUser(user => {
-                      return {
-                        ...user,
-                        gender: 0,
-                      };
-                    });
+                    setGender(0);
                     setEnabledSave(true);
                   }}
                   style={{
@@ -284,7 +343,7 @@ function EditAccount(props) {
                     gap: 10,
                   }}>
                   <Text style={styles.labelGendersStyle}>Nữ</Text>
-                  {user.gender == 0 ? (
+                  {gender == 0 ? (
                     <Icon name="circle-dot" size={30} color={colors.black} />
                   ) : (
                     <Icon name="circle" size={30} />
@@ -296,6 +355,7 @@ function EditAccount(props) {
               disabled={!isEnabledSave}
               onPress={() => {
                 setEnabledSave(false);
+                updateProfile();
               }}
               style={[
                 styles.saveButton,
@@ -331,6 +391,18 @@ function EditAccount(props) {
             </TouchableOpacity>
           </ScrollView>
         </View>}
+        {isUpdateLoading && <View style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: colors.inactive
+        }}>
+          <ActivityIndicator size='large' color={colors.primary} />
+        </View>}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -346,6 +418,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 5,
     paddingHorizontal: 10,
+    gap: 10
   },
   usernameSectionStyle: {
     flexGrow: 1,
@@ -365,20 +438,21 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
-    borderRadius: 50,
+    borderRadius: 5,
     backgroundColor: colors.grey,
   },
   saveButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10,
+    marginTop: 10
   },
   saveText: {
     fontSize: fontSizes.h3,
     fontFamily: fonts.MontserratMedium,
     color: 'white',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   cancelButton: {
     backgroundColor: 'white',
@@ -386,9 +460,9 @@ const styles = StyleSheet.create({
     borderColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 35,
+    borderRadius: 5,
     paddingVertical: 10,
-    marginTop: 20,
+    marginTop: 10,
   },
   cancelText: {
     fontSize: fontSizes.h3,
@@ -402,7 +476,8 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 10,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    gap: 10
   },
   titleText: {
     color: 'black',
