@@ -52,12 +52,13 @@ function Register(props) {
     })
       .then(response => {
         setIsRegisterLoading(false);
-        navigate('EmailConfirm',{_email:email})
+        navigate('EmailConfirm',{_email:email});
+        navigation.pop();
       })
       .catch(error => {
         setIsRegisterLoading(false);
         if (error.response) {
-          setErrorMessage(error.response.data.message);
+          setErrorMessage(error.response.data.Message);
         }
       });
   }

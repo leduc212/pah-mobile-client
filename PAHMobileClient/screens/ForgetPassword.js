@@ -35,7 +35,7 @@ function ForgetPassword(props) {
 
   //input data
   const [email, setEmail] = useState('');
-  const [tokenCode, setTokenCode] = useState('PSJPuOs5TDOmVylf');
+  const [tokenCode, setTokenCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -186,10 +186,8 @@ function ForgetPassword(props) {
         </View>
         <View style={styles.inputContainer}>
           <TextInput
-            autoCapitalize="none"
             style={styles.inputBox}
             value={tokenCode}
-            keyboardType="numeric"
             onChangeText={text => {
               setTokenCode(text);
             }}
