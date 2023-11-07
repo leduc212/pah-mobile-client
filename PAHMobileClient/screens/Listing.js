@@ -119,16 +119,20 @@ function Listing(props) {
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             if (route.params) {
-                const { searchText } = route.params;
+                const { searchText = "" } = route.params;
+                const { categoryParam = 0 } = route.params;
+                
                 setSearchTextFilter(searchText);
                 setScreenTitle(searchText != '' ? searchText : 'Tất cả sản phẩm');
                 setFilterDefault();
+                setCurrentCategory(categoryParam);
+                setSelectedCategory(categoryParam);
                 // Get Products
                 setIsLoading(true);
                 ProductRepository.getProducts(axiosContext,
                     {
                         nameSearch: searchText, materialId: 0,
-                        categoryId: 0, orderBy: 0,
+                        categoryId: categoryParam, orderBy: 0,
                         priceMin: '', priceMax: ''
                     })
                     .then(response => {

@@ -39,8 +39,31 @@ async function createSeller(axiosContext, sellerinfo) {
             throw responseData.message;
         }
         let responseUser = responseData.data.data;
-        
+
         return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getSalesOfThreeMonths(axiosContext) {
+    const sellerPath = `/seller/dashboard`;
+    try {
+        let responseData = await axiosContext.authAxios.get(sellerPath);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseSales = responseData.data.data;
+        let sales = {};
+
+        sales.totalSales = responseSales.totalSales ?? 0;
+        sales.sellingProduct = responseSales.sellingProduct ?? 0;
+        sales.processingOrders = responseSales.processingOrders ?? 0;
+        sales.doneOrders = responseSales.doneOrders ?? 0;
+        sales.totalOrders = responseSales.totalOrders ?? 0;
+        sales.totalAuctions = responseSales.totalAuctions ?? 0;
+
+        return sales;
     } catch (error) {
         throw error;
     }
@@ -48,5 +71,6 @@ async function createSeller(axiosContext, sellerinfo) {
 
 export default {
     getSellerCurrentUser,
-    createSeller
+    createSeller,
+    getSalesOfThreeMonths
 }

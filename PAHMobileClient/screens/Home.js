@@ -234,7 +234,7 @@ function Home(props) {
                         </View>
                     </View> : <View></View>}
 
-                    <View style={{marginTop: 10}}>
+                    <View style={{ marginTop: 10 }}>
                         {/*  Categories section */}
                         <View style={{
                             flex: 1,
@@ -249,7 +249,7 @@ function Home(props) {
                                 data={categories}
                                 renderItem={({ item, index }) => {
                                     return <HomeCategoryCard item={item} index={index}
-                                        onPress={() => alert(`Press item name ${item.name}`)} />
+                                        onPress={() => navigate('Listing', { categoryParam: item.id })} />
                                 }}
                                 keyExtractor={eachCategory => eachCategory.id}
                             /> : <View>
@@ -263,7 +263,7 @@ function Home(props) {
                         }}>
                             <View style={styles.headerLayout}>
                                 <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
-                                <TouchableOpacity onPress={() => navigate('Listing')}>
+                                <TouchableOpacity onPress={() => navigate('Listing', { categoryParam: 0 })}>
                                     <Text style={styles.headerSubText}>Xem tất cả</Text>
                                 </TouchableOpacity>
                             </View>

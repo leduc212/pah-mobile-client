@@ -19,6 +19,7 @@ import { numberWithCommas } from '../../utilities/PriceFormat';
 import { Order as OrderRepository } from '../../repositories';
 import moment from 'moment';
 import Modal from 'react-native-modal';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 function BuyerOrderDetail(props) {
   //// AXIOS AND NAVIGATION
@@ -77,6 +78,16 @@ function BuyerOrderDetail(props) {
     setRefreshing(true);
     getOrder();
     setRefreshing(false);
+  };
+
+  // Copy address
+  const copyAddress = () => {
+    Clipboard.setString(order.recipientAddress);
+  };
+
+  // Copy shipping code
+  const copyShippingCode = () => {
+    Clipboard.setString(order.orderShippingCode);
   };
 
   return (
@@ -233,7 +244,8 @@ function BuyerOrderDetail(props) {
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
               <IconEvilIcons name="location" size={30} color={colors.black} />
               <Text style={styles.addressTitleText}>Địa chỉ nhận hàng</Text>
-              <TouchableOpacity style={{ marginLeft: 'auto' }}>
+              <TouchableOpacity style={{ marginLeft: 'auto' }}
+                onPress={() => copyAddress()}>
                 <Text style={styles.copyTextButton}>SAO CHÉP</Text>
               </TouchableOpacity>
             </View>
@@ -355,20 +367,18 @@ function BuyerOrderDetail(props) {
         </View>
         {/* Order time and id */}
         <View style={{ backgroundColor: 'white', padding: 15 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.orderIdText}>Mã đơn hàng</Text>
-            <View
+          {order.orderShippingCode && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.orderIdText}>Mã vận chuyển GHN</Text>
+            <TouchableOpacity
               style={{
                 alignItems: 'center',
                 flexDirection: 'row',
-                marginLeft: 'auto',
-              }}>
-              <Text style={styles.orderIdText}>#{order.id}</Text>
-              <TouchableOpacity>
-                <Text style={styles.copyTextButton}>SAO CHÉP</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+                marginLeft: 'auto'
+              }}
+              onPress={() => copyShippingCode()}>
+              <Text style={styles.orderIdText}>{order.orderShippingCode}</Text>
+            </TouchableOpacity>
+          </View>}
           <View
             style={{
               paddingVertical: 10,

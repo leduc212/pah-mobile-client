@@ -45,6 +45,7 @@ function EmailConfirm(props) {
       })
       .catch(error => {
         setErrorMessage(error.response.data.message);
+        console.log(error);
       });
   }
   return (

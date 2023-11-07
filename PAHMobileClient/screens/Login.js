@@ -93,7 +93,6 @@ function Login(props) {
         showPlayServicesUpdateDialog: true,
       });
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
 
       // Call login with google api
       await AuthRepository.loginWithGoogle(axiosContext, {

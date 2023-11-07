@@ -19,6 +19,7 @@ async function getAllOrderCurrentBuyer(axiosContext, status, pageNumber = 1) {
       order.status = responseOrder.status;
       order.seller = responseOrder.seller;
       order.orderItems = responseOrder.orderItems || [];
+      order.orderShippingCode = responseOrder.orderShippingCode;
 
       result.push(order);
     });
@@ -48,6 +49,7 @@ async function getAllOrderCurrentSeller(axiosContext, status, pageNumber = 1) {
       order.status = responseOrder.status;
       order.seller = responseOrder.seller;
       order.orderItems = responseOrder.orderItems || [];
+      order.orderShippingCode = responseOrder.orderShippingCode;
 
       result.push(order);
     });
@@ -80,7 +82,8 @@ async function getOrderDetail(axiosContext,id) {
       order.status = responseOrder.status;
       order.seller = responseOrder.seller;
       order.orderItems = responseOrder.orderItems || [];
-
+      order.orderShippingCode = responseOrder.orderShippingCode;
+      
       return order;
   } catch (error) {
       throw error;

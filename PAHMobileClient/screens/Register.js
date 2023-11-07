@@ -12,7 +12,6 @@ import { RegisterView2, RegisterView1 } from '../components';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { AxiosContext } from '../context/AxiosContext';
 import { Auth as AuthRepository } from '../repositories';
-import Toast from 'react-native-toast-message';
 
 function Register(props) {
   //// AXIOS AND NAVIGATION
@@ -52,14 +51,7 @@ function Register(props) {
       dob: "1970-01-01T00:00:00.000Z"
     })
       .then(response => {
-        Toast.show({
-          type: 'success',
-          text1: 'Đăng ký thành công',
-          text2: 'Hãy đăng nhập vào tài khoản mới của bạn!',
-          position: 'bottom',
-          autoHide: true,
-          visibilityTime: 2000
-        });
+        setIsRegisterLoading(false);
         navigate('EmailConfirm',{_email:email})
       })
       .catch(error => {
