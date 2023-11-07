@@ -71,7 +71,7 @@ function ListingFeedback(props) {
                 onPress={() => {
                     goBack()
                 }}>
-                <IconFeather name='arrow-left' size={30} color={'black'} />
+                <IconFeather name="chevron-left" size={25} color={'black'} />
             </TouchableOpacity>
             <Text style={styles.titleText}>Tất cả phản hồi</Text>
         </View>

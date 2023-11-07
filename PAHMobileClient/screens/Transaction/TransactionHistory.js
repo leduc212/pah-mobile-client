@@ -124,7 +124,7 @@ function TransactionHistory(props) {
           onPress={() => {
             goBack();
           }}>
-          <IconFeather name="chevron-left" size={30} color={'black'} />
+          <IconFeather name="chevron-left" size={25} color={'black'} />
         </TouchableOpacity>
         <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
           Lịch sử giao dịch

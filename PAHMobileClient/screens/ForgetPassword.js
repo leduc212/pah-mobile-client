@@ -13,7 +13,7 @@ import {
 import {colors, fontSizes, fonts, images} from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {isValidPassword} from '../utilities/Validation';
+import {isValidPassword, isValidEmail} from '../utilities/Validation';
 import {AxiosContext} from '../context/AxiosContext';
 import {Auth as AuthRepository} from '../repositories';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
@@ -54,8 +54,10 @@ function ForgetPassword(props) {
   const passwordConfirmValidation = () => password === confirmPassword;
   const [showPasswordConfirmValidation, setShowPasswordConfirmValidation] =
     useState(false);
+  const emailValidation = () => isValidEmail(email);
+  const [showErrorEmail, setShowErrorEmail] = useState(false);
 
-    // Loading states
+  // Loading states
   const [isResetLoading, setIsResetLoading] = useState(false);
 
   ////FUNCTION
@@ -81,7 +83,7 @@ function ForgetPassword(props) {
 
   async function resetPassword() {
     setErrorMessage('');
-    setIsResetLoading(true)
+    setIsResetLoading(true);
     await AuthRepository.resetPassword(axiosContext, {
       password: password,
       confirmPassword: confirmPassword,
@@ -96,7 +98,7 @@ function ForgetPassword(props) {
           autoHide: true,
           visibilityTime: 2000,
         });
-        navigate('Login')
+        navigate('Login');
       })
       .catch(error => {
         setErrorMessage(error.response.data.message);
@@ -112,7 +114,7 @@ function ForgetPassword(props) {
           onPress={() => {
             goBack();
           }}>
-          <IconFeather name="chevron-left" size={30} color={'black'} />
+          <IconFeather name="chevron-left" size={25} color={'black'} />
         </TouchableOpacity>
       </View>
       {/* Content */}
@@ -135,17 +137,19 @@ function ForgetPassword(props) {
             value={email}
             onChangeText={text => {
               setEmail(text);
+              setShowErrorEmail(true);
             }}
             placeholder="Nhập Email"
           />
           <TouchableOpacity
-            disabled={!enableSend}
+            disabled={!enableSend || !emailValidation()}
             onPress={forgetPassword}
             style={{
               position: 'absolute',
+              top:10,
               right: 10,
               backgroundColor:
-                enableSend == true ? colors.info : colors.inactive,
+                enableSend == true && emailValidation()==true ? colors.info : colors.inactive,
               justifyContent: 'center',
               alignItems: 'center',
               padding: 5,
@@ -183,6 +187,9 @@ function ForgetPassword(props) {
               </CountdownCircleTimer>
             )}
           </TouchableOpacity>
+          {!emailValidation() && showErrorEmail && (
+            <Text style={styles.errorText}>Hãy nhập địa chỉ Email hợp lệ</Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
           <TextInput
@@ -289,18 +296,21 @@ function ForgetPassword(props) {
           <Text style={styles.confirmText}>Xác nhận</Text>
         </TouchableOpacity>
       </ScrollView>
-      {isResetLoading && <View style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.inactive
-      }}>
-        <ActivityIndicator size='large' />
-      </View>}
+      {isResetLoading && (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.inactive,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -308,7 +318,7 @@ function ForgetPassword(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.grey,
+    backgroundColor: 'white',
   },
   iconButton: {
     padding: 8,
@@ -345,7 +355,13 @@ const styles = StyleSheet.create({
     color: 'red',
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h6,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+  },
+  errorText: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h6,
+    paddingHorizontal: 5,
   },
   inputContainer: {
     justifyContent: 'center',

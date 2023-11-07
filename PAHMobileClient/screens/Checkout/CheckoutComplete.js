@@ -140,7 +140,7 @@ function CheckoutComplete(props) {
                     </TouchableOpacity>
                 </View>
             </View>}
-    </View >
+    </View>
 }
 
 const styles = StyleSheet.create({

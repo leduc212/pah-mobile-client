@@ -153,7 +153,7 @@ function Cart(props) {
                 onPress={() => {
                     goBack()
                 }}>
-                <IconFeather name='arrow-left' size={30} color={'black'} />
+                <IconFeather name="chevron-left" size={25} color={'black'} />
             </TouchableOpacity>
             <Text style={styles.titleText}>Giỏ hàng</Text>
         </View>

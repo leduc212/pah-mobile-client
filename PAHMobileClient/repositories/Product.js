@@ -57,7 +57,9 @@ async function getProductDetail(axiosContext, product_id) {
         product.condition = responseProduct.condition ?? '';
         product.type = responseProduct.type ?? '';
         product.ratings = responseProduct.ratings ?? '';
+        product.categoryId = responseProduct.categoryId ?? '';
         product.categoryName = responseProduct.categoryName ?? '';
+        product.materialId = responseProduct.materialId ?? '';
         product.materialName = responseProduct.materialName ?? '';
         product.sellerName = responseProduct.sellerName ?? '';
         product.imageUrls = responseProduct.imageUrls ?? [];
@@ -74,6 +76,21 @@ async function createProduct(axiosContext, productinfo) {
     const productPath = `/product`;
     try {
         let responseData = await axiosContext.authAxios.post(productPath, productinfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseProduct = responseData.data.data;
+
+        return responseProduct;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function updateProduct(axiosContext, productId,productInfo) {
+    const updateProductPath = `/product/${productId}`;
+    try {
+        let responseData = await axiosContext.authAxios.put(updateProductPath,productInfo);
         if (responseData.status != 200) {
             throw responseData.message;
         }
@@ -113,5 +130,6 @@ export default {
     getProducts,
     getProductDetail,
     createProduct,
-    getProductsBySeller
+    getProductsBySeller,
+    updateProduct
 }

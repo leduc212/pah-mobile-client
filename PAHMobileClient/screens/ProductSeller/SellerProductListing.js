@@ -110,7 +110,7 @@ function SellerProductListing(props) {
                 onPress={() => {
                     goBack();
                 }}>
-                <IconFeather name='chevron-left' size={30} color={'black'} />
+                <IconFeather name='chevron-left' size={25} color={'black'} />
             </TouchableOpacity>
             <Text style={styles.titleText}
                 numberOfLines={1}
@@ -177,8 +177,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        padding: 12,
-        borderRadius: 5
+        padding: 8,
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     titleContainer: {
         height: 70,

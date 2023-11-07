@@ -12,19 +12,19 @@ import {
   FlatList,
   ActivityIndicator
 } from 'react-native';
-import { colors, enumConstants, fontSizes, fonts } from '../constants';
+import { colors, enumConstants, fontSizes, fonts } from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { Dropdown } from 'react-native-element-dropdown';
-import { ProductPricing } from '../components';
+import { ProductPricing } from '../../components';
 import ImagePicker from 'react-native-image-crop-picker';
-import { AxiosContext } from '../context/AxiosContext';
+import { AxiosContext } from '../../context/AxiosContext';
 import {
   Category as CategoryRepository,
   Product as ProductRepository,
   Material as MaterialRepository
-} from '../repositories';
-import { numberWithCommas } from '../utilities/PriceFormat';
+} from '../../repositories';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 import storage from '@react-native-firebase/storage';
 import Toast from 'react-native-toast-message';
 
@@ -947,7 +947,6 @@ function ProductListing(props) {
               style={{
                 flexDirection: 'row',
                 marginVertical: 10,
-                gap: 10,
               }}>
               {ready == true ? (
                 <IconFeather name="check-square" size={20} />

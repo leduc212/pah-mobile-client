@@ -54,7 +54,7 @@ function EmailConfirm(props) {
           onPress={() => {
             goBack();
           }}>
-          <IconFeather name="chevron-left" size={30} color={'black'} />
+          <IconFeather name="chevron-left" size={25} color={'black'} />
         </TouchableOpacity>
       </View>
       {/* Image */}
@@ -139,7 +139,7 @@ function EmailConfirm(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.grey,
+    backgroundColor: 'white'
   },
   iconButton: {
     padding: 8,

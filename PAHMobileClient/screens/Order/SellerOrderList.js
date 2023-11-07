@@ -362,10 +362,10 @@ function SellerOrderList(props) {
               </View>
             )
             }
-          </View >
+          </View>
         )}
-      </View >
-    </View >
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({

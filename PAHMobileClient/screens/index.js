@@ -26,7 +26,7 @@ import CheckoutComplete from "./Checkout/CheckoutComplete";
 import Wallet from "./Wallet/Wallet";
 import PaymentResult from "./Wallet/PaymentResult";
 import EditAddress from "./Address/EditAddress";
-import ProductListing from "./ProductListing";
+import ProductListing from "./ProductSeller/ProductListing";
 import BuyerOrderList from "./Order/BuyerOrderList";
 import BuyerOrderDetail from "./Order/BuyerOrderDetail";
 import SellerOrderList from "./Order/SellerOrderList";
@@ -38,6 +38,7 @@ import TransactionHistory from "./Transaction/TransactionHistory";
 import TransactionDetail from "./Transaction/TransactionDetail";
 import EmailConfirm from "./EmailConfirm";
 import ForgetPassword from "./ForgetPassword";
+import EditProduct from "./ProductSeller/EditProduct";
 
 export {
     Account,
@@ -79,5 +80,6 @@ export {
     TransactionHistory,
     TransactionDetail,
     EmailConfirm,
-    ForgetPassword
+    ForgetPassword,
+    EditProduct
 }

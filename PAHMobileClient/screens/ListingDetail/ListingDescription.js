@@ -31,7 +31,7 @@ function ListingDescription(props) {
         onPress={() => {
           goBack()
         }}>
-        <IconFeather name='arrow-left' size={30} color={'black'} />
+        <IconFeather name="chevron-left" size={25} color={'black'} />
       </TouchableOpacity>
       <Text style={styles.titleText}>Thông tin thêm</Text>
     </View>

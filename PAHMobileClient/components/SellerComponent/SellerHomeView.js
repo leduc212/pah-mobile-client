@@ -229,9 +229,8 @@ function SellerHomeView(props) {
           flexDirection: 'row',
           alignItems: 'center',
           padding: 15,
-          gap: 15,
           marginTop: 5,
-          marginBottom: 15
+          marginBottom: 5
         }}>
         <View>
           <Text

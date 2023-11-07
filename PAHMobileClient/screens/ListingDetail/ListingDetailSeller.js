@@ -102,7 +102,7 @@ function ListingDetailSeller(props) {
                     onPress={() => {
                         goBack()
                     }}>
-                    <IconFeather name='arrow-left' size={30} color={'black'} />
+                    <IconFeather name="chevron-left" size={25} color={'black'} />
                 </TouchableOpacity>
                 <Text style={styles.titleText}>Sản phẩm</Text>
             </View>
@@ -158,7 +158,9 @@ function ListingDetailSeller(props) {
                     marginVertical: 10,
                 }}>
                     <TouchableOpacity style={styles.primaryButton}
-                        onPress={() => {}}>
+                        onPress={() => {
+                            navigate('EditProduct',{product_id:product.id})
+                        }}>
                         <Text style={styles.primaryButtonText}>Chỉnh sửa</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.secondaryButton}
@@ -333,8 +335,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     backButton: {
-        padding: 12,
-        borderRadius: 5
+        backgroundColor: colors.grey,
+        padding: 8,
+        borderRadius: 5,
+        marginRight:5
     },
     titleContainer: {
         height: 70,
