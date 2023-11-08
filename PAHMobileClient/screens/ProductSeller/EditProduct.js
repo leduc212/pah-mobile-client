@@ -1,45 +1,42 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Text,
   View,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  PermissionsAndroid,
+  FlatList,
   Image,
   TextInput,
-  KeyboardAvoidingView,
-  Button,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {colors, enumConstants, fontSizes, fonts} from '../../constants';
+import { colors, enumConstants, fontSizes, fonts } from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
-import {Dropdown} from 'react-native-element-dropdown';
-import {SliderBox} from 'react-native-image-slider-box';
-import {AxiosContext} from '../../context/AxiosContext';
+import { Dropdown } from 'react-native-element-dropdown';
+import { SliderBox } from 'react-native-image-slider-box';
+import { AxiosContext } from '../../context/AxiosContext';
 import Modal from 'react-native-modal';
 import {
   Category as CategoryRepository,
   Product as ProductRepository,
   Material as MaterialRepository,
 } from '../../repositories';
-import {numberWithCommas} from '../../utilities/PriceFormat';
-import storage from '@react-native-firebase/storage';
+import { numberWithCommas } from '../../utilities/PriceFormat';
 import Toast from 'react-native-toast-message';
 
 function EditProduct(props) {
-  const {product_id} = props.route.params;
+  const { product_id } = props.route.params;
   //// AUTH AND NAVIGATION
   // Auth Context
   const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   //product detail state
   const [categoryFocus, setCategoryFocus] = useState(false);
@@ -64,9 +61,9 @@ function EditProduct(props) {
   // Validating data
   const validate = () =>
     product.name.length > 0 &&
-    product.categoryId!=0 &&
+    product.categoryId != 0 &&
     product.origin.length > 0 &&
-    product.weight !=  0 &&
+    product.weight != 0 &&
     product.dimension.length > 0 &&
     product.packageContent.length > 0 &&
     product.packageMethod.length > 0 &&
@@ -79,11 +76,11 @@ function EditProduct(props) {
   const [categoryData, setCategoryData] = useState([]);
   const [materialData, setMaterialData] = useState([]);
   const conditionData = [
-    {label: 'Mới', value: 0},
-    {label: 'Như mới', value: 1},
-    {label: 'Tốt', value: 2},
-    {label: 'Khá', value: 3},
-    {label: 'Cũ', value: 4},
+    { label: 'Mới', value: 0 },
+    { label: 'Như mới', value: 1 },
+    { label: 'Tốt', value: 2 },
+    { label: 'Khá', value: 3 },
+    { label: 'Cũ', value: 4 },
   ];
 
   //Input is enabled
@@ -147,7 +144,7 @@ function EditProduct(props) {
       description: product.description,
       price: product.price,
       dimension: product.dimension,
-      weight:product.weight,
+      weight: product.weight,
       origin: product.origin,
       packageMethod: product.packageMethod,
       packageContent: product.packageContent,
@@ -157,7 +154,7 @@ function EditProduct(props) {
       step: product.auctionStep,
       imageUrlLists: product.photoUrls
     }
-    ProductRepository.updateProduct(axiosContext,product_id,productRequest)
+    ProductRepository.updateProduct(axiosContext, product_id, productRequest)
       .then(response => {
         Toast.show({
           type: 'success',
@@ -166,7 +163,7 @@ function EditProduct(props) {
           autoHide: true,
           visibilityTime: 2000
         });
-        navigate('ListingDetailSeller',{product_id:product_id})
+        navigate('ListingDetailSeller', { product_id: product_id })
         setIsLoadingEdit(false);
       })
       .catch(error => {
@@ -235,703 +232,730 @@ function EditProduct(props) {
         </View>
       ) : (
         <View>
-            {product.name ? (
-              <ScrollView
-              contentContainerStyle={{paddingBottom: 60}}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
+          {product.name ? (
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 60 }}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              }>
+              {/* Photos */}
+              <View style={styles.sectionPhotoStyle}>
+                <Text style={[styles.titleSection, { marginBottom: 10 }]}>
+                  Hình ảnh
+                </Text>
+                <View>
+                  <FlatList
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    data={product.imageUrls}
+                    renderItem={({ item }) => {
+                      return (
+                        <View key={item}>
+                          <Image
+                            source={{ uri: item }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              marginVertical: 10,
+                              marginRight: 10,
+                              resizeMode: 'cover',
+                              borderRadius: 25,
+                            }}
+                          />
+                        </View>
+                      );
+                    }}
+                    keyExtractor={eachImage => eachImage}
                   />
-                }>
-                {/* Photos */}
-                <View style={styles.sectionPhotoStyle}>
-                  <Text style={[styles.titleSection, {marginLeft: 15}]}>
-                    Hình ảnh
+                </View>
+              </View>
+
+              {/* Title */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Tựa đề</Text>
+                <TextInput
+                  placeholder="Tên sản phẩm"
+                  value={product.name}
+                  onChangeText={text => {
+                    setProduct(p => ({
+                      ...p,
+                      name: text,
+                    }));
+                  }}
+                  multiline
+                  editable={enableTitle == true}
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                    marginTop: 10,
+                    borderBottomWidth: enableTitle == true ? 1 : 0,
+                  }}
+                />
+                {enableTitle == true ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEnableTitle(false);
+                    }}
+                    style={styles.enableTextButtonStyle}>
+                    <IconAntDesign
+                      name="checkcircle"
+                      size={20}
+                      color="green"
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEnableTitle(true);
+                    }}
+                    style={styles.enableTextButtonStyle}>
+                    <IconAntDesign
+                      name="edit"
+                      size={20}
+                      color={colors.black}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Category */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Danh mục</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  itemTextStyle={styles.itemTextStyle}
+                  searchPlaceholder="Tìm danh mục..."
+                  placeholder={!categoryFocus ? 'Chọn danh mục' : '...'}
+                  search
+                  data={categoryData}
+                  labelField="name"
+                  valueField="id"
+                  onFocus={() => setCategoryFocus(true)}
+                  onBlur={() => setCategoryFocus(false)}
+                  value={product.categoryId}
+                  onChange={item => {
+                    setProduct(p => ({
+                      ...p,
+                      categoryId: item.value,
+                    }));
+                    setCategoryFocus(false);
+                  }}
+                />
+              </View>
+
+              {/* Material */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Chất liệu</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  itemTextStyle={styles.itemTextStyle}
+                  searchPlaceholder="Tìm chất liệu..."
+                  placeholder={!materialFocus ? 'Chọn chất liệu' : '...'}
+                  search
+                  data={materialData}
+                  labelField="name"
+                  valueField="id"
+                  onFocus={() => setMaterialFocus(true)}
+                  onBlur={() => setMaterialFocus(false)}
+                  value={product.materialId}
+                  onChange={item => {
+                    setProduct(p => ({
+                      ...p,
+                      materialId: item.value,
+                    }));
+                    setMaterialFocus(false);
+                  }}
+                />
+              </View>
+
+              {/* Detail */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Chi tiết</Text>
+
+                {/* Condition */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    style={{
+                      width: 100,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                    }}>
+                    Tình trạng
                   </Text>
-                  <View>
-                    {/* Images slider */}
-                    <SliderBox
-                      images={product.imageUrls}
-                      sliderBoxHeight={400}
-                      dotColor={colors.primary}
-                      inactiveDotColor="#90A4AE"
-                    />
-                  </View>
-                </View>
-
-                {/* Title */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Tựa đề</Text>
-                  <TextInput
-                    placeholder="Tên sản phẩm"
-                    value={product.name}
-                    onChangeText={text => {
-                      setProduct(p => ({
-                        ...p,
-                        name: text,
-                      }));
-                    }}
-                    multiline
-                    editable={enableTitle == true}
-                    style={{
-                      color: colors.black,
-                      fontSize: fontSizes.h4,
-                      fontFamily: fonts.MontserratMedium,
-                      marginTop: 10,
-                      borderBottomWidth: enableTitle == true ? 1 : 0,
-                    }}
-                  />
-                  {enableTitle == true ? (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setEnableTitle(false);
-                      }}
-                      style={styles.enableTextButtonStyle}>
-                      <IconAntDesign
-                        name="checkcircle"
-                        size={20}
-                        color="green"
-                      />
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setEnableTitle(true);
-                      }}
-                      style={styles.enableTextButtonStyle}>
-                      <IconAntDesign
-                        name="edit"
-                        size={20}
-                        color={colors.black}
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                {/* Category */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Danh mục</Text>
                   <Dropdown
-                    style={styles.dropdown}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    itemTextStyle={styles.itemTextStyle}
-                    searchPlaceholder="Tìm danh mục..."
-                    placeholder={!categoryFocus ? 'Chọn danh mục' : '...'}
-                    search
-                    data={categoryData}
-                    labelField="name"
-                    valueField="id"
-                    onFocus={() => setCategoryFocus(true)}
-                    onBlur={() => setCategoryFocus(false)}
-                    value={product.categoryId}
+                    style={{
+                      height: 30,
+                      width: 200,
+                      borderColor: colors.black,
+                      borderBottomWidth: 1,
+                      paddingHorizontal: 10,
+                      marginStart: 20,
+                    }}
+                    placeholderStyle={[
+                      styles.placeholderStyle,
+                      { textAlign: 'right' },
+                    ]}
+                    selectedTextStyle={[
+                      styles.selectedTextStyle,
+                      { textAlign: 'right' },
+                    ]}
+                    inputSearchStyle={[
+                      styles.inputSearchStyle,
+                      { textAlign: 'right' },
+                    ]}
+                    itemTextStyle={[
+                      styles.itemTextStyle,
+                      { textAlign: 'right' },
+                    ]}
+                    placeholder={!conditionFocus ? 'Chọn' : '...'}
+                    data={conditionData}
+                    labelField="label"
+                    valueField="value"
+                    onFocus={() => setConditionFocus(true)}
+                    onBlur={() => setConditionFocus(false)}
+                    value={product.condition}
                     onChange={item => {
                       setProduct(p => ({
                         ...p,
-                        categoryId: item.value,
+                        condition: item.value,
                       }));
-                      setCategoryFocus(false);
+                      setConditionFocus(false);
                     }}
                   />
                 </View>
 
-                {/* Material */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Chất liệu</Text>
-                  <Dropdown
-                    style={styles.dropdown}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    itemTextStyle={styles.itemTextStyle}
-                    searchPlaceholder="Tìm chất liệu..."
-                    placeholder={!materialFocus ? 'Chọn chất liệu' : '...'}
-                    search
-                    data={materialData}
-                    labelField="name"
-                    valueField="id"
-                    onFocus={() => setMaterialFocus(true)}
-                    onBlur={() => setMaterialFocus(false)}
-                    value={product.materialId}
-                    onChange={item => {
-                      setProduct(p => ({
-                        ...p,
-                        materialId: item.value,
-                      }));
-                      setMaterialFocus(false);
-                    }}
-                  />
-                </View>
-
-                {/* Detail */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Chi tiết</Text>
-
-                  {/* Condition */}
-                  <View
+                {/* Origin */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
                     style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 100,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Tình trạng
-                    </Text>
-                    <Dropdown
-                      style={{
-                        height: 30,
-                        width: 200,
-                        borderColor: colors.black,
-                        borderBottomWidth: 1,
-                        paddingHorizontal: 10,
-                        marginStart: 20,
-                      }}
-                      placeholderStyle={[
-                        styles.placeholderStyle,
-                        {textAlign: 'right'},
-                      ]}
-                      selectedTextStyle={[
-                        styles.selectedTextStyle,
-                        {textAlign: 'right'},
-                      ]}
-                      inputSearchStyle={[
-                        styles.inputSearchStyle,
-                        {textAlign: 'right'},
-                      ]}
-                      itemTextStyle={[
-                        styles.itemTextStyle,
-                        {textAlign: 'right'},
-                      ]}
-                      placeholder={!conditionFocus ? 'Chọn' : '...'}
-                      data={conditionData}
-                      labelField="label"
-                      valueField="value"
-                      onFocus={() => setConditionFocus(true)}
-                      onBlur={() => setConditionFocus(false)}
-                      value={product.condition}
-                      onChange={item => {
-                        setProduct(p => ({
-                          ...p,
-                          condition: item.value,
-                        }));
-                        setConditionFocus(false);
-                      }}
-                    />
-                  </View>
-
-                  {/* Origin */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 100,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Xuất xứ
-                    </Text>
-                    <TextInput
-                      value={product.origin}
-                      onChangeText={text => {
-                        setProduct(p => ({
-                          ...p,
-                          origin: text,
-                        }));
-                      }}
-                      placeholder="Nhập tại đây"
-                      multiline
-                      style={{
-                        width: 200,
-                        borderColor: colors.black,
-                        marginStart: 20,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                        textAlign: 'right',
-                      }}
-                    />
-                  </View>
-
-                  {/* Weight */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 100,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Khối lượng
-                    </Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <TextInput
-                        value={product.weight.toString()}
-                        onChangeText={text => {
-                          setProduct(p => ({
-                            ...p,
-                            weight: parseInt(text),
-                          }));
-                        }}
-                        keyboardType="numeric"
-                        placeholder="Nhập khối lượng"
-                        style={{
-                          width: 130,
-                          borderColor: colors.black,
-                          color: colors.black,
-                          fontSize: fontSizes.h4,
-                          fontFamily: fonts.MontserratMedium,
-                          textAlign: 'right',
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: colors.black,
-                          fontSize: fontSizes.h4,
-                          fontFamily: fonts.MontserratMedium,
-                        }}>
-                        (g)
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Dimension */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 100,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Kích thước
-                    </Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <TextInput
-                        value={product.dimension}
-                        onChangeText={text => {
-                          setProduct(p => ({
-                            ...p,
-                            dimension: item.value,
-                          }));
-                        }}
-                        placeholder="DàixRộngxCao"
-                        style={{
-                          width: 130,
-                          borderColor: colors.black,
-                          color: colors.black,
-                          fontSize: fontSizes.h4,
-                          fontFamily: fonts.MontserratMedium,
-                          textAlign: 'right',
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: colors.black,
-                          fontSize: fontSizes.h4,
-                          fontFamily: fonts.MontserratMedium,
-                        }}>
-                        (mm)
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Package detail */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Gói hàng</Text>
-
-                  {/* Method */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 130,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Phương pháp
-                    </Text>
-                    <TextInput
-                      value={product.packageMethod}
-                      multiline
-                      onChangeText={text => {
-                        setProduct(p => ({
-                          ...p,
-                          packageMethod: text,
-                        }));
-                      }}
-                      placeholder="Nhập tại đây"
-                      style={{
-                        width: 200,
-                        borderColor: colors.black,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                        textAlign: 'right',
-                      }}
-                    />
-                  </View>
-
-                  {/* Include */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginRight: 10,
-                    }}>
-                    <Text
-                      style={{
-                        width: 130,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                      }}>
-                      Bao gồm
-                    </Text>
-                    <TextInput
-                      multiline
-                      value={product.packageContent}
-                      onChangeText={text => {
-                        setProduct(p => ({
-                          ...p,
-                          packageContent: text,
-                        }));
-                      }}
-                      placeholder="Nhập tại đây"
-                      style={{
-                        width: 200,
-                        borderColor: colors.black,
-                        color: colors.black,
-                        fontSize: fontSizes.h4,
-                        fontFamily: fonts.MontserratMedium,
-                        textAlign: 'right',
-                      }}
-                    />
-                  </View>
-                </View>
-
-                {/* Description */}
-                <View style={styles.sectionStyle}>
-                  <Text style={styles.titleSection}>Mô tả</Text>
-                  <TextInput
-                    placeholder="Thông tin thêm về sản phẩm"
-                    value={product.description}
-                    onChangeText={text => {
-                      setProduct(p => ({
-                        ...p,
-                        description: text,
-                      }));
-                    }}
-                    multiline
-                    editable={enableDescription == true}
-                    style={{
+                      width: 100,
                       color: colors.black,
                       fontSize: fontSizes.h4,
                       fontFamily: fonts.MontserratMedium,
-                      marginTop: 10,
-                      borderBottomWidth: enableDescription == true ? 1 : 0,
+                    }}>
+                    Xuất xứ
+                  </Text>
+                  <TextInput
+                    value={product.origin}
+                    onChangeText={text => {
+                      setProduct(p => ({
+                        ...p,
+                        origin: text,
+                      }));
+                    }}
+                    placeholder="Nhập tại đây"
+                    multiline
+                    style={{
+                      width: 200,
+                      borderColor: colors.black,
+                      marginStart: 20,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                      textAlign: 'right',
                     }}
                   />
-                  {enableDescription == true ? (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setEnableDescription(false);
-                      }}
-                      style={styles.enableTextButtonStyle}>
-                      <IconAntDesign
-                        name="checkcircle"
-                        size={20}
-                        color="green"
-                      />
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setEnableDescription(true);
-                      }}
-                      style={styles.enableTextButtonStyle}>
-                      <IconAntDesign
-                        name="edit"
-                        size={20}
-                        color={colors.black}
-                      />
-                    </TouchableOpacity>
-                  )}
                 </View>
 
-                {/* Pricing */}
-                <View style={styles.sectionStyle}>
+                {/* Weight */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    style={{
+                      width: 100,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                    }}>
+                    Khối lượng
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      value={product.weight.toString()}
+                      onChangeText={text => {
+                        setProduct(p => ({
+                          ...p,
+                          weight: parseInt(text),
+                        }));
+                      }}
+                      keyboardType="numeric"
+                      placeholder="Nhập khối lượng"
+                      style={{
+                        width: 130,
+                        borderColor: colors.black,
+                        color: colors.black,
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                        textAlign: 'right',
+                      }}
+                    />
+                    <Text
+                      style={{
+                        color: colors.black,
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                      }}>
+                      (g)
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Dimension */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    style={{
+                      width: 100,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                    }}>
+                    Kích thước
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      value={product.dimension}
+                      onChangeText={text => {
+                        setProduct(p => ({
+                          ...p,
+                          dimension: item.value,
+                        }));
+                      }}
+                      placeholder="DàixRộngxCao"
+                      style={{
+                        width: 130,
+                        borderColor: colors.black,
+                        color: colors.black,
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                        textAlign: 'right',
+                      }}
+                    />
+                    <Text
+                      style={{
+                        color: colors.black,
+                        fontSize: fontSizes.h4,
+                        fontFamily: fonts.MontserratMedium,
+                      }}>
+                      (mm)
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Package detail */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Gói hàng</Text>
+
+                {/* Method */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    style={{
+                      width: 130,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                    }}>
+                    Phương pháp
+                  </Text>
+                  <TextInput
+                    value={product.packageMethod}
+                    multiline
+                    onChangeText={text => {
+                      setProduct(p => ({
+                        ...p,
+                        packageMethod: text,
+                      }));
+                    }}
+                    placeholder="Nhập tại đây"
+                    style={{
+                      width: 200,
+                      borderColor: colors.black,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                      textAlign: 'right',
+                    }}
+                  />
+                </View>
+
+                {/* Include */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    style={{
+                      width: 130,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                    }}>
+                    Bao gồm
+                  </Text>
+                  <TextInput
+                    multiline
+                    value={product.packageContent}
+                    onChangeText={text => {
+                      setProduct(p => ({
+                        ...p,
+                        packageContent: text,
+                      }));
+                    }}
+                    placeholder="Nhập tại đây"
+                    style={{
+                      width: 200,
+                      borderColor: colors.black,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                      textAlign: 'right',
+                    }}
+                  />
+                </View>
+              </View>
+
+              {/* Description */}
+              <View style={styles.sectionStyle}>
+                <Text style={styles.titleSection}>Mô tả</Text>
+                <TextInput
+                  placeholder="Thông tin thêm về sản phẩm"
+                  value={product.description}
+                  onChangeText={text => {
+                    setProduct(p => ({
+                      ...p,
+                      description: text,
+                    }));
+                  }}
+                  multiline
+                  editable={enableDescription == true}
+                  style={{
+                    color: colors.black,
+                    fontSize: fontSizes.h4,
+                    fontFamily: fonts.MontserratMedium,
+                    marginTop: 10,
+                    borderBottomWidth: enableDescription == true ? 1 : 0,
+                  }}
+                />
+                {enableDescription == true ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEnableDescription(false);
+                    }}
+                    style={styles.enableTextButtonStyle}>
+                    <IconAntDesign
+                      name="checkcircle"
+                      size={20}
+                      color="green"
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEnableDescription(true);
+                    }}
+                    style={styles.enableTextButtonStyle}>
+                    <IconAntDesign
+                      name="edit"
+                      size={20}
+                      color={colors.black}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Pricing */}
+              <View style={styles.sectionStyle}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={styles.titleSection}>Định giá</Text>
+                </View>
+                <View>
+                  <Text
+                    style={{
+                      marginTop: 20,
+                      color: colors.black,
+                      fontSize: fontSizes.h4,
+                      fontFamily: fonts.MontserratMedium,
+                      marginBottom: 20,
+                    }}>
+                    Mua ngay
+                  </Text>
                   <View
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      alignItems: 'center',
+                      marginBottom: 10,
+                      marginRight: 10,
                     }}>
-                    <Text style={styles.titleSection}>Định giá</Text>
-                  </View>
-                  <View>
                     <Text
                       style={{
-                        marginTop: 20,
                         color: colors.black,
                         fontSize: fontSizes.h4,
                         fontFamily: fonts.MontserratMedium,
-                        marginBottom: 20,
                       }}>
-                      Mua ngay
+                      Giá bán
                     </Text>
                     <View
                       style={{
                         flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginBottom: 10,
-                        marginRight: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setEditPriceMode(true);
+                        }}
+                        style={{
+                          marginRight: 20,
+                        }}>
+                        <IconFeather
+                          name="edit"
+                          size={20}
+                          color={colors.black}
+                        />
+                      </TouchableOpacity>
                       <Text
                         style={{
-                          color: colors.black,
+                          color: colors.darkGreyText,
                           fontSize: fontSizes.h4,
                           fontFamily: fonts.MontserratMedium,
                         }}>
-                        Giá bán
+                        ₫{numberWithCommas(product.price)}
                       </Text>
+                    </View>
+                    <Modal isVisible={editPriceMode}>
                       <View
                         style={{
-                          flexDirection: 'row',
-                          justifyContent: 'center',
+                          position: 'absolute',
+                          left: 0,
+                          right: 0,
                           alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 10,
+                          padding: 15,
+                          backgroundColor: 'white',
                         }}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setEditPriceMode(true);
-                          }}
-                          style={{
-                            marginRight: 20,
-                          }}>
-                          <IconFeather
-                            name="edit"
-                            size={20}
-                            color={colors.black}
-                          />
-                        </TouchableOpacity>
                         <Text
                           style={{
-                            color: colors.darkGreyText,
-                            fontSize: fontSizes.h4,
-                            fontFamily: fonts.MontserratMedium,
+                            color: colors.black,
+                            fontSize: fontSizes.h3,
+                            fontFamily: fonts.MontserratBold,
                           }}>
-                          ₫{numberWithCommas(product.price)}
+                          Chỉnh sửa giá bán
                         </Text>
-                      </View>
-                      <Modal isVisible={editPriceMode}>
                         <View
                           style={{
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
+                            flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            borderRadius: 10,
-                            padding: 15,
-                            backgroundColor: 'white',
+                            marginBottom: 10
                           }}>
                           <Text
-                        style={{
-                          color: colors.black,
-                          fontSize: fontSizes.h3,
-                          fontFamily: fonts.MontserratBold,
-                        }}>
-                        Chỉnh sửa giá bán
-                      </Text>
-                          <View
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              marginBottom:10
+                              color: colors.black,
+                              fontSize: fontSizes.h4,
+                              fontFamily: fonts.MontserratMedium,
                             }}>
-                            <Text
-                              style={{
-                                color: colors.black,
-                                fontSize: fontSizes.h4,
-                                fontFamily: fonts.MontserratMedium,
-                              }}>
-                              Giá bán
-                            </Text>
-                            <TextInput
-                              value={product.price.toString()}
-                              onChangeText={text => {
-                                setProduct(p => ({
-                                  ...p,
-                                  price: parseInt(text),
-                                }));
-                              }}
-                              keyboardType="numeric"
-                              placeholder="Nhập khối lượng"
-                              style={{
-                                marginLeft:10,
-                                borderColor: colors.black,
-                                color: colors.black,
-                                fontSize: fontSizes.h4,
-                                fontFamily: fonts.MontserratMedium,
-                                textAlign: 'right',
-                                borderBottomWidth:1
-                              }}
-                            />
-                            <Text
-                              style={{
-                                color: colors.black,
-                                fontSize: fontSizes.h4,
-                                fontFamily: fonts.MontserratMedium,
-                              }}>
-                              ₫
-                            </Text>
-                          </View>
-                          <Button
-                            title="Cập nhật"
-                            onPress={() => {
-                              setEditPriceMode(false);
+                            Giá bán
+                          </Text>
+                          <TextInput
+                            value={product.price.toString()}
+                            onChangeText={text => {
+                              setProduct(p => ({
+                                ...p,
+                                price: parseInt(text),
+                              }));
+                            }}
+                            keyboardType="numeric"
+                            placeholder="Nhập khối lượng"
+                            style={{
+                              marginLeft: 10,
+                              borderColor: colors.black,
+                              color: colors.black,
+                              fontSize: fontSizes.h4,
+                              fontFamily: fonts.MontserratMedium,
+                              textAlign: 'right',
+                              borderBottomWidth: 1
                             }}
                           />
+                          <Text
+                            style={{
+                              color: colors.black,
+                              fontSize: fontSizes.h4,
+                              fontFamily: fonts.MontserratMedium,
+                            }}>
+                            ₫
+                          </Text>
                         </View>
-                      </Modal>
-                    </View>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setEditPriceMode(false);
+                          }}
+                          style={{
+                            backgroundColor: colors.primary,
+                            paddingVertical: 10,
+                            borderRadius: 5,
+                            paddingHorizontal: 10
+                          }}
+                        >
+                          <Text style={{
+                            fontFamily: fonts.MontserratMedium,
+                            color: 'white',
+                            fontSize: fontSizes.h5
+                          }}>Cập nhật</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </Modal>
                   </View>
                 </View>
+              </View>
 
-                {/* Start listing */}
-                <View
-                  style={{
-                    paddingHorizontal: 15,
-                    marginBottom: 15,
-                  }}>
-                  <TouchableOpacity
-                    disabled={!validate()}
-                    onPress={updateProduct}
-                    style={{
-                      backgroundColor: validate()
-                        ? colors.primary
-                        : colors.grey,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginVertical: 15,
-                      padding: 10,
-                      borderRadius: 5,
-                    }}>
-                    <Text
-                      style={{
-                        color: validate() ? 'white' : colors.darkGreyText,
-                        fontFamily: fonts.MontserratMedium,
-                        fontSize: fontSizes.h3,
-                      }}>
-                      Cập nhật sản phẩm
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setReady(!ready);
-                    }}
-                    style={{
-                      flexDirection: 'row',
-                      marginVertical: 10,
-                      gap: 10,
-                    }}>
-                    {ready == true ? (
-                      <IconFeather name="check-square" size={20} />
-                    ) : (
-                      <IconFeather name="square" size={20} />
-                    )}
-                    <Text
-                      style={{
-                        color: colors.darkGreyText,
-                        fontFamily: fonts.MontserratMedium,
-                        fontSize: fontSizes.h5,
-                      }}>
-                      Tôi đồng ý với các điều khoản
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
-            ) : (
+              {/* Start listing */}
               <View
                 style={{
-                  alignItems: 'center',
-                  paddingTop: 150,
+                  paddingHorizontal: 15,
+                  marginBottom: 15,
                 }}>
-                <Image
-                  source={images.warningImage}
+                <TouchableOpacity
+                  disabled={!validate()}
+                  onPress={updateProduct}
                   style={{
-                    resizeMode: 'cover',
-                    width: 140,
-                    height: 140,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: fontSizes.h4,
-                    fontFamily: fonts.MontserratMedium,
-                    color: 'black',
-                    textAlign: 'center',
-                    marginHorizontal: 35,
-                    marginTop: 10,
+                    backgroundColor: validate()
+                      ? colors.primary
+                      : colors.grey,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginVertical: 15,
+                    padding: 10,
+                    borderRadius: 5,
                   }}>
-                  Không thể tìm thấy thông tin sản phẩm này.
-                </Text>
-                <TouchableOpacity onPress={() => getProductDetail()}>
                   <Text
                     style={{
-                      fontSize: fontSizes.h5,
+                      color: validate() ? 'white' : colors.darkGreyText,
                       fontFamily: fonts.MontserratMedium,
-                      color: colors.primary,
-                      textAlign: 'center',
-                      marginHorizontal: 35,
-                      marginTop: 20,
+                      fontSize: fontSizes.h3,
                     }}>
-                    Tải lại
+                    Cập nhật sản phẩm
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setReady(!ready);
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    marginVertical: 10,
+                    gap: 10,
+                  }}>
+                  {ready == true ? (
+                    <IconFeather name="check-square" size={20} />
+                  ) : (
+                    <IconFeather name="square" size={20} />
+                  )}
+                  <Text
+                    style={{
+                      color: colors.darkGreyText,
+                      fontFamily: fonts.MontserratMedium,
+                      fontSize: fontSizes.h5,
+                    }}>
+                    Tôi đồng ý với các điều khoản
                   </Text>
                 </TouchableOpacity>
               </View>
-            )}
+            </ScrollView>
+          ) : (
+            <View
+              style={{
+                alignItems: 'center',
+                paddingTop: 150,
+              }}>
+              <Image
+                source={images.warningImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 140,
+                  height: 140,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: fontSizes.h4,
+                  fontFamily: fonts.MontserratMedium,
+                  color: 'black',
+                  textAlign: 'center',
+                  marginHorizontal: 35,
+                  marginTop: 10,
+                }}>
+                Không thể tìm thấy thông tin sản phẩm này.
+              </Text>
+              <TouchableOpacity onPress={() => getProductDetail()}>
+                <Text
+                  style={{
+                    fontSize: fontSizes.h5,
+                    fontFamily: fonts.MontserratMedium,
+                    color: colors.primary,
+                    textAlign: 'center',
+                    marginHorizontal: 35,
+                    marginTop: 20,
+                  }}>
+                  Tải lại
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
 
@@ -987,6 +1011,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.darkGrey,
     paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   sectionStyle: {
     borderBottomWidth: 1,
