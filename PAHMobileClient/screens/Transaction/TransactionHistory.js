@@ -245,13 +245,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   iconButton: {
-    padding: 12,
+    padding: 8,
     borderRadius: 5,
-  },
+    backgroundColor: colors.grey
+},
   titleContainer: {
     height: 70,
     flexDirection: 'row',
-    paddingLeft: 5,
+    paddingLeft: 15,
     paddingRight: 10,
     justifyContent: 'space-between',
     alignItems: 'center',

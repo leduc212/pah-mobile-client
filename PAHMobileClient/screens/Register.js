@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginLeft:5
   }
 });
 

@@ -440,13 +440,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     backButton: {
-        padding: 12,
-        borderRadius: 5
+        padding: 8,
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     titleContainer: {
         height: 70,
         flexDirection: 'row',
-        paddingLeft: 5,
+        paddingLeft: 15,
         paddingRight: 10,
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -455,7 +456,8 @@ const styles = StyleSheet.create({
         color: 'black',
         fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginLeft:5
     },
     titleButtonContainer: {
         flexDirection: 'row',

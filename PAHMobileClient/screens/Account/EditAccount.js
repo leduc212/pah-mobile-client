@@ -477,13 +477,13 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     alignItems: 'center',
     backgroundColor: 'white',
-    gap: 10
   },
   titleText: {
     color: 'black',
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
+    marginLeft:5
   },
   inputContainer: {
     justifyContent: 'center',

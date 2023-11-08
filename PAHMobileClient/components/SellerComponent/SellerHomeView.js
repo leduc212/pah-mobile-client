@@ -1,31 +1,26 @@
-import React, { useContext, useState, useEffect } from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet
-} from 'react-native';
-import { colors, fontSizes, fonts, roles } from '../../constants';
+import React, {useContext, useState, useEffect} from 'react';
+import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
+import {colors, fontSizes, fonts, roles} from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconFoundation from 'react-native-vector-icons/Foundation';
 import {
   Seller as SellerRepository,
-  Wallet as WalletRepository
+  Wallet as WalletRepository,
 } from '../../repositories';
-import { AxiosContext } from '../../context/AxiosContext';
-import { numberWithCommas } from '../../utilities/PriceFormat';
+import {AxiosContext} from '../../context/AxiosContext';
+import {numberWithCommas} from '../../utilities/PriceFormat';
 
 function SellerHomeView(props) {
   //// AXIOS AND NAVIGATION
   // Axios Context
   const axiosContext = useContext(AxiosContext);
 
-  const { user } = props
+  const {user} = props;
   // Navigation
-  const { navigation, route } = props;
+  const {navigation, route} = props;
 
   // Function of navigate to/back
-  const { navigate, goBack } = navigation;
+  const {navigate, goBack} = navigation;
 
   //// DATA
   const [sales, setSales] = useState(0);
@@ -36,45 +31,48 @@ function SellerHomeView(props) {
   const [totalAuctions, setTotalAuctions] = useState(0);
   const [wallet, setWallet] = useState({
     availableBalance: 0,
-    lockedBalance: 0
+    lockedBalance: 0,
   });
 
   //// FUNCTION
   // Function for fetching sales
   const getSellerDashboard = () => {
-    const promiseDashboard = SellerRepository.getSalesOfThreeMonths(axiosContext)
-      .then(response => {
-        setSales(response.totalSales);
-        setSellingProduct(response.sellingProduct);
-        setProcessingOrders(response.processingOrders);
-        setDoneOrders(response.doneOrders);
-        setTotalOrders(response.totalOrders);
-        setTotalAuctions(response.totalAuctions);
-      });
+    const promiseDashboard = SellerRepository.getSalesOfThreeMonths(
+      axiosContext,
+    ).then(response => {
+      setSales(response.totalSales);
+      setSellingProduct(response.sellingProduct);
+      setProcessingOrders(response.processingOrders);
+      setDoneOrders(response.doneOrders);
+      setTotalOrders(response.totalOrders);
+      setTotalAuctions(response.totalAuctions);
+    });
 
-    const promiseWallet = WalletRepository.getWalletCurrentUser(axiosContext)
-      .then(response => {
-        setWallet(response);
-      });
+    const promiseWallet = WalletRepository.getWalletCurrentUser(
+      axiosContext,
+    ).then(response => {
+      setWallet(response);
+    });
 
     Promise.all([promiseDashboard, promiseWallet])
-      .then((values) => {
-      })
+      .then(values => {})
       .catch(error => {
         console.log(error);
       });
-  }
+  };
   // Use effect
   useEffect(() => {
     getSellerDashboard();
-  }, [])
+  }, []);
 
   return (
     <View>
       {/* total money */}
       <View style={styles.totalMoneyStyle}>
         <Text style={styles.totalTitleTextStyle}>Doanh thu</Text>
-        <Text style={styles.totalTextStyle}>{`₫${numberWithCommas(sales)}`}</Text>
+        <Text style={styles.totalTextStyle}>{`₫${numberWithCommas(
+          sales,
+        )}`}</Text>
         <Text style={styles.subtotalTextStyle}>Tổng 3 tháng</Text>
       </View>
       {/* selling status */}
@@ -87,7 +85,7 @@ function SellerHomeView(props) {
         <View
           style={{
             alignItems: 'center',
-            flex: 1
+            flex: 1,
           }}>
           <Text style={styles.statStyle}>{sellingProduct}</Text>
           <Text style={styles.statTitleStyle}>Sản phẩm</Text>
@@ -95,7 +93,7 @@ function SellerHomeView(props) {
         <View
           style={{
             alignItems: 'center',
-            flex: 1
+            flex: 1,
           }}>
           <Text style={styles.statStyle}>{processingOrders}</Text>
           <Text style={styles.statTitleStyle}>Đơn đang xử lý</Text>
@@ -103,7 +101,7 @@ function SellerHomeView(props) {
         <View
           style={{
             alignItems: 'center',
-            flex: 1
+            flex: 1,
           }}>
           <Text style={styles.statStyle}>{doneOrders}</Text>
           <Text style={styles.statTitleStyle}>Đơn hoàn thành</Text>
@@ -116,12 +114,11 @@ function SellerHomeView(props) {
           flexDirection: 'row',
           alignItems: 'center',
           padding: 15,
-          gap: 15,
           marginTop: 20,
           marginHorizontal: 10,
         }}>
         <IconFoundation name="info" size={30} color={colors.primary} />
-        <View>
+        <View style={{marginLeft: 15}}>
           <Text
             style={{
               fontSize: fontSizes.h5,
@@ -140,14 +137,9 @@ function SellerHomeView(props) {
           </Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 15,
-          gap: 15,
-          marginTop: 5,
-        }}>
+      <TouchableOpacity 
+      onPress={()=>{navigate('Profile',{user_id: user.id})}}
+      style={styles.infoButtonStyle}>
         <View>
           <Text
             style={{
@@ -167,15 +159,9 @@ function SellerHomeView(props) {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          navigate('SellerProductListing', { seller_id: user.id })
+          navigate('SellerProductListing', {seller_id: user.id});
         }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 15,
-          gap: 15,
-          marginTop: 5,
-        }}>
+        style={styles.infoButtonStyle}>
         <View>
           <Text
             style={{
@@ -195,15 +181,9 @@ function SellerHomeView(props) {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          navigate('SellerAuctionHistoryListing', { seller_id: user.id })
+          navigate('SellerAuctionHistoryListing', {seller_id: user.id});
         }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 15,
-          gap: 15,
-          marginTop: 5,
-        }}>
+        style={styles.infoButtonStyle}>
         <View>
           <Text
             style={{
@@ -223,15 +203,9 @@ function SellerHomeView(props) {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          navigate('SellerOrderList')
+          navigate('SellerOrderList');
         }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 15,
-          marginTop: 5,
-          marginBottom: 5
-        }}>
+        style={styles.infoButtonStyle}>
         <View>
           <Text
             style={{
@@ -252,7 +226,7 @@ function SellerHomeView(props) {
       {/* list item button */}
       <TouchableOpacity
         onPress={() => {
-          navigate('ProductListing', { sellerId: user.id });
+          navigate('ProductListing', {sellerId: user.id});
         }}
         style={styles.listItemButtonStyle}>
         <Text
@@ -307,7 +281,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     padding: 15,
-    marginHorizontal: 15
+    marginTop: 5,
+    marginHorizontal: 10,
   },
   totalMoneyStyle: {
     justifyContent: 'center',
@@ -318,13 +293,13 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h1 * 1.5,
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
-    marginBottom: 5
+    marginBottom: 5,
   },
   totalTitleTextStyle: {
     fontSize: fontSizes.h1 * 1.2,
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
-    marginBottom: 5
+    marginBottom: 5,
   },
   subtotalTextStyle: {
     fontSize: fontSizes.h6,
@@ -340,6 +315,14 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h6,
     color: colors.darkGreyText,
     fontFamily: fonts.MontserratMedium,
+  },
+  infoButtonStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    marginTop: 5,
+    marginHorizontal:10,
+    backgroundColor: colors.grey
   },
 });
 export default SellerHomeView;

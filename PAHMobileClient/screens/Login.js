@@ -308,13 +308,13 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 10,
     alignItems: 'center',
-    gap: 10
   },
   titleText: {
     color: 'black',
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginLeft:5
   },
   welcomeText: {
     color: colors.black,

@@ -317,9 +317,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 5
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     loginButton: {
         borderWidth: 1.2,
@@ -361,10 +361,11 @@ const styles = StyleSheet.create({
         fontFamily: fonts.MontserratBold
     },
     headerSubText: {
-        color: colors.greyText,
+        color: colors.secondary,
         fontSize: fontSizes.h5,
         fontFamily: fonts.MontserratRegular,
-        textDecorationLine: 'underline'
+        textDecorationLine: 'underline',
+        marginLeft:5
     },
     emptyText: {
         color: colors.greyText,

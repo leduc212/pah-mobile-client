@@ -604,7 +604,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     alignItems: 'center',
-    gap: 20,
     backgroundColor: 'white'
   },
   titleText: {
@@ -612,6 +611,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
+    marginLeft:5
   },
   emptyText: {
     color: colors.greyText,

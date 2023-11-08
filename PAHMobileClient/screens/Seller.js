@@ -156,10 +156,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   iconButton: {
-    backgroundColor: colors.grey,
     padding: 12,
     borderRadius: 5,
-  },
+    backgroundColor: colors.grey
+},
   titleContainer: {
     height: 70,
     flexDirection: 'row',
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
+    marginLeft:5
   },
   titleButtonContainer: {
     flexDirection: 'row',

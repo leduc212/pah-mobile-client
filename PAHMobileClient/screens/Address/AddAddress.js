@@ -323,13 +323,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     alignItems: 'center',
-    gap: 20,
   },
   titleText: {
     color: colors.black,
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
+    marginLeft:5
   },
   inputContainer: {
     flex: 1,

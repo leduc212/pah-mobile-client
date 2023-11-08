@@ -492,7 +492,7 @@ function ProductListing(props) {
               <Dropdown
                 style={{
                   height: 30,
-                  width: 200,
+                  width: 120,
                   borderColor: colors.black,
                   borderBottomWidth: 1,
                   paddingHorizontal: 10,
@@ -502,9 +502,7 @@ function ProductListing(props) {
                 selectedTextStyle={[styles.selectedTextStyle, {textAlign: 'right'}]}
                 inputSearchStyle={[styles.inputSearchStyle, {textAlign: 'right'}]}
                 itemTextStyle={[styles.itemTextStyle, {textAlign: 'right'}]}
-                searchPlaceholder="Tìm tình trạng..."
                 placeholder={!conditionFocus ? 'Chọn' : '...'}
-                search
                 data={conditionData}
                 labelField="label"
                 valueField="value"
@@ -986,9 +984,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   iconButton: {
-    padding: 12,
+    padding: 8,
     borderRadius: 5,
-  },
+},
   titleContainer: {
     height: 70,
     flexDirection: 'row',
@@ -1002,6 +1000,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
+    marginLeft:5
   },
   titleButtonContainer: {
     flexDirection: 'row',
