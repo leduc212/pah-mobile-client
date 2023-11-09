@@ -125,11 +125,27 @@ async function getProductsBySeller(axiosContext, seller_id, pageNumber = 1) {
     }
 }
 
+async function deleteProduct(axiosContext, productId) {
+    const productPath = `/product/${productId}`;
+
+    try {
+        let responseData = await axiosContext.authAxios.delete(productPath);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseProduct = responseData.data.data;
+        return responseProduct;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getProductsHome,
     getProducts,
     getProductDetail,
     createProduct,
     getProductsBySeller,
-    updateProduct
+    updateProduct,
+    deleteProduct
 }

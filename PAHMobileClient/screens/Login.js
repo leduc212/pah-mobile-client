@@ -324,16 +324,18 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   errorContainer: {
+    paddingHorizontal:10,
     marginTop: 10,
     marginBottom: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row'
   },
   errorMessage: {
-    color: colors.black,
+    color: 'red',
     fontFamily: fonts.MontserratMedium,
-    fontSize: fontSizes.h4,
-    marginLeft: 10
+    fontSize: fontSizes.h5,
+    marginLeft: 5
   },
   inputContainer: {
     justifyContent: 'center',

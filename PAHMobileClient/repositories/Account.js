@@ -38,7 +38,23 @@ async function updateProfile(axiosContext, profileInfo) {
     }
 }
 
+async function changePassword(axiosContext, passwordInfo) {
+    const profilePath = `/user/password`;
+    try {
+        let responseData = await axiosContext.authAxios.post(profilePath, passwordInfo);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseUser = responseData.data.data;
+
+        return responseUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getInfoCurrentUser,
-    updateProfile
+    updateProfile,
+    changePassword
 }
