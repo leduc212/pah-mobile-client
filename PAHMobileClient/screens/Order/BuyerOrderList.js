@@ -10,12 +10,13 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { colors, fontSizes, images, fonts, pageParameters } from '../../constants';
+import { colors, fontSizes, images, fonts, pageParameters, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconFA5 from 'react-native-vector-icons/FontAwesome5';
 import { AxiosContext } from '../../context/AxiosContext';
 import { Order as OrderRepository } from '../../repositories';
 import { orderStatusText } from '../../utilities/OrderStatus';
+import { orderFilterStatusText } from '../../utilities/OrderFilterStatus';
 import { numberWithCommas } from '../../utilities/PriceFormat';
 import moment from 'moment';
 
@@ -41,8 +42,15 @@ function BuyerOrderList(props) {
   const isAllEmpty = () => !(Array.isArray(orders) && orders.length);
 
   // Order status filter
-  const [orderStatus, setOrderStatus] = useState([5, 2, 3, 4, 6, 10, 11, 12]);
-  const [currentOrderStatus, setCurrentOrderStatus] = useState(5);
+  const [orderStatus, setOrderStatus] = useState([
+    [enumConstants.orderStatus.WaitingSellerConfirm],
+    [enumConstants.orderStatus.ReadyForPickup],
+    [enumConstants.orderStatus.Delivering],
+    [enumConstants.orderStatus.Delivered, enumConstants.orderStatus.Done],
+    [enumConstants.orderStatus.CancelApprovalPending],
+    [enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
+  ]);
+  const [currentOrderStatus, setCurrentOrderStatus] = useState([enumConstants.orderStatus.WaitingSellerConfirm]);
   const [currentPage, setCurrentPage] = useState(1);
 
   //// FUNCTIONS
@@ -136,9 +144,9 @@ function BuyerOrderList(props) {
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 15,
-                    borderBottomWidth: item == currentOrderStatus ? 2 : null,
+                    borderBottomWidth: currentOrderStatus.includes(item[0]) ? 2 : null,
                     borderBottomColor:
-                      item == currentOrderStatus ? colors.primary : null,
+                    currentOrderStatus.includes(item[0]) ? colors.primary : null,
                   }}
                   onPress={() => {
                     setCurrentOrderStatus(item);
@@ -146,11 +154,11 @@ function BuyerOrderList(props) {
                   <Text
                     style={{
                       color:
-                        item == currentOrderStatus ? colors.primary : 'black',
+                      currentOrderStatus.includes(item[0]) ? colors.primary : 'black',
                       fontFamily: fonts.MontserratMedium,
                       fontSize: fontSizes.h5,
                     }}>
-                    {orderStatusText(item)}
+                    {orderFilterStatusText(item)}
                   </Text>
                 </TouchableOpacity>
               );

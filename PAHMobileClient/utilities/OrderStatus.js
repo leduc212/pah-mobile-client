@@ -18,7 +18,7 @@ export const orderStatusText = (orderStatus) => {
             result = 'Hoàn thành'
             break;
         case 10:
-            result = 'Bị từ chối'
+            result = 'Chờ hủy'
             break;
         case 11:
             result = 'Người mua hủy'

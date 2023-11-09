@@ -1,7 +1,11 @@
 import { pageParameters } from "../constants";
 
 async function getAllOrderCurrentBuyer(axiosContext, status, pageNumber = 1) {
-  const orderPath = `/buyer/order?Status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
+  let statusString = "";
+  status.forEach(item => {
+    statusString = statusString.concat(`Status=${item}&`)
+  })
+  const orderPath = `/buyer/order?${statusString}PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);
@@ -31,7 +35,11 @@ async function getAllOrderCurrentBuyer(axiosContext, status, pageNumber = 1) {
 }
 
 async function getAllOrderCurrentSeller(axiosContext, status, pageNumber = 1) {
-  const orderPath = `/seller/order?Status=${status}&PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
+  let statusString = "";
+  status.forEach(item => {
+    statusString = statusString.concat(`Status=${item}&`)
+  })
+  const orderPath = `/seller/order?${statusString}PageSize=${pageParameters.DEFAULT_PAGE_SIZE}&PageNumber=${pageNumber}`;
   try {
     let result = [];
     let responseData = await axiosContext.authAxios.get(orderPath);
@@ -60,33 +68,33 @@ async function getAllOrderCurrentSeller(axiosContext, status, pageNumber = 1) {
   }
 }
 
-async function getOrderDetail(axiosContext,id) {
+async function getOrderDetail(axiosContext, id) {
   const orderPath = `/order/${id}`;
   try {
-      let responseData = await axiosContext.authAxios.get(orderPath);
-      if (responseData.status != 200) {
-          throw responseData.message;
-      }
-      let responseOrder = responseData.data.data;
-      let order = {};
-      
-      order.id = responseOrder.id;
-      order.buyerId = responseOrder.buyerId;
-      order.sellerId = responseOrder.sellerId;
-      order.recipientName = responseOrder.recipientName;
-      order.recipientPhone = responseOrder.recipientPhone;
-      order.recipientAddress = responseOrder.recipientAddress;
-      order.orderDate = responseOrder.orderDate;
-      order.totalAmount = responseOrder.totalAmount;
-      order.shippingCost = responseOrder.shippingCost;
-      order.status = responseOrder.status;
-      order.seller = responseOrder.seller;
-      order.orderItems = responseOrder.orderItems || [];
-      order.orderShippingCode = responseOrder.orderShippingCode;
-      
-      return order;
+    let responseData = await axiosContext.authAxios.get(orderPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let responseOrder = responseData.data.data;
+    let order = {};
+
+    order.id = responseOrder.id;
+    order.buyerId = responseOrder.buyerId;
+    order.sellerId = responseOrder.sellerId;
+    order.recipientName = responseOrder.recipientName;
+    order.recipientPhone = responseOrder.recipientPhone;
+    order.recipientAddress = responseOrder.recipientAddress;
+    order.orderDate = responseOrder.orderDate;
+    order.totalAmount = responseOrder.totalAmount;
+    order.shippingCost = responseOrder.shippingCost;
+    order.status = responseOrder.status;
+    order.seller = responseOrder.seller;
+    order.orderItems = responseOrder.orderItems || [];
+    order.orderShippingCode = responseOrder.orderShippingCode;
+
+    return order;
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
 

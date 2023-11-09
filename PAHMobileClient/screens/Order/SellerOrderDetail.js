@@ -208,9 +208,28 @@ function SellerOrderDetail(props) {
 
           {order.status == enumConstants.orderStatus.Delivered && <View style={styles.statusSection}>
             <View style={{ flex: 80 }}>
-              <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
+              <Text style={styles.statusText}>Đơn hàng đã được vận chuyển đến nơi</Text>
               <Text style={styles.noteText}>
                 Tiền sẽ được chuyển vào ví PAH của bạn khi đơn hàng được xác nhận đã hoàn thành!
+              </Text>
+            </View>
+            <View style={{ flex: 20, alignItems: 'center' }}>
+              <Image
+                source={images.walletImage}
+                style={{
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>}
+
+          {order.status == enumConstants.orderStatus.Done && <View style={styles.statusSection}>
+            <View style={{ flex: 80 }}>
+              <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
+              <Text style={styles.noteText}>
+                Tiền sẽ được chuyển vào ví PAH của bạn sau khi hệ thống xác nhận đơn hàng
               </Text>
             </View>
             <View style={{ flex: 20, alignItems: 'center' }}>
