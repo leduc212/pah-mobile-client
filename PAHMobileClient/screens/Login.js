@@ -308,13 +308,13 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 10,
     alignItems: 'center',
-    gap: 10
   },
   titleText: {
     color: 'black',
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginLeft:5
   },
   welcomeText: {
     color: colors.black,
@@ -324,16 +324,18 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   errorContainer: {
+    paddingHorizontal:10,
     marginTop: 10,
     marginBottom: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row'
   },
   errorMessage: {
-    color: colors.black,
+    color: 'red',
     fontFamily: fonts.MontserratMedium,
-    fontSize: fontSizes.h4,
-    marginLeft: 10
+    fontSize: fontSizes.h5,
+    marginLeft: 5
   },
   inputContainer: {
     justifyContent: 'center',

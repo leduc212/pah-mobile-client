@@ -525,9 +525,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 5
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     titleContainer: {
         height: 70,

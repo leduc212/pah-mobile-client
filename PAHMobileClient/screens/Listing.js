@@ -653,9 +653,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        backgroundColor: colors.grey,
         padding: 12,
-        borderRadius: 5
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     titleContainer: {
         height: 70,
@@ -671,7 +671,8 @@ const styles = StyleSheet.create({
         fontSize: fontSizes.h1,
         alignSelf: 'center',
         flex: 1,
-        marginRight: 10
+        marginRight: 10,
+        marginLeft:5
     },
     titleButtonContainer: {
         flexDirection: 'row',

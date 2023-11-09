@@ -39,6 +39,7 @@ import TransactionDetail from "./Transaction/TransactionDetail";
 import EmailConfirm from "./EmailConfirm";
 import ForgetPassword from "./ForgetPassword";
 import EditProduct from "./ProductSeller/EditProduct";
+import ChangePassword from "./ChangePassword";
 
 export {
     Account,
@@ -81,5 +82,6 @@ export {
     TransactionDetail,
     EmailConfirm,
     ForgetPassword,
-    EditProduct
+    EditProduct,
+    ChangePassword
 }

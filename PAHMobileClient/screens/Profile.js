@@ -141,7 +141,7 @@ function Profile(props) {
         }}>
         <IconFeather name="chevron-left" size={25} color={'black'} />
       </TouchableOpacity>
-      <Text style={styles.titleText}>Hồ sơ</Text>
+      <Text style={styles.titleText}>Hồ sơ người bán</Text>
     </View>
 
     {/* Loading section */}
@@ -330,13 +330,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   iconButton: {
-    padding: 12,
-    borderRadius: 50
+    padding: 8,
+    borderRadius: 5,
+    backgroundColor: colors.grey
   },
   titleContainer: {
     height: 70,
     flexDirection: 'row',
-    paddingLeft: 5,
+    paddingLeft: 15,
     paddingRight: 10,
     alignItems: 'center'
   },
@@ -344,7 +345,8 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginLeft:5
   },
   titleButtonContainer: {
     flexDirection: 'row',

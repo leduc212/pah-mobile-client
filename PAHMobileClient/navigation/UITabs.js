@@ -30,7 +30,7 @@ const screenOptions = ({ route }) => ({
             iconName = 'tag';
         }
         else if (screenName == 'AuctionListing') {
-            iconName = 'align-justify';
+            iconName = 'dollar-sign';
         }
         return <IconFeather
             style={{ paddingTop: 5 }}

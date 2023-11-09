@@ -414,17 +414,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     iconButton: {
-        padding: 12,
-        borderRadius: 5
+        padding: 8,
+        borderRadius: 5,
+        backgroundColor: colors.grey
     },
     titleContainer: {
         height: 70,
         flexDirection: 'row',
-        paddingLeft: 5,
+        paddingLeft: 15,
         paddingRight: 10,
         alignItems: 'center'
     },
     titleText: {
+        marginLeft:5,
         color: 'black',
         fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
