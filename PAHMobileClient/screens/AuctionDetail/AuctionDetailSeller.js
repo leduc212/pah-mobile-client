@@ -384,6 +384,13 @@ function AuctionDetailSeller(props) {
                                 }}>{auction.winner.email}</Text>
                             </View>
                         </View>
+                        <TouchableOpacity onPress={() => navigate('BiddingHistory', { auction_id: auction_id })}>
+                            <Text style={{
+                                fontFamily: fonts.MontserratMedium,
+                                color: colors.primary,
+                                fontSize: fontSizes.h5
+                            }}>Xem lịch sử đấu giá</Text>
+                        </TouchableOpacity>
                     </View>}
                 </View>
 
@@ -509,7 +516,7 @@ const styles = StyleSheet.create({
         fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,
         alignSelf: 'center',
-        marginLeft:5
+        marginLeft: 5
     },
     titleButtonContainer: {
         flexDirection: 'row',

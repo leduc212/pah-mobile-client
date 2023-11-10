@@ -307,13 +307,13 @@ function AuctionDetail(props) {
 
                 {/* Pricing section */}
                 <View style={styles.priceContainer}>
-                    {auction.status == 4 && <Text style={styles.pricePrimary}>
+                    {auction.status == enumConstants.auction.RegistrationOpen && <Text style={styles.pricePrimary}>
                         Giá khởi điểm: ₫{numberWithCommas(auction.startingPrice)}
                     </Text>}
-                    {(auction.status == 5 && moment(auction.endedAt).isAfter(moment())) && <Text style={styles.pricePrimary}>
+                    {(auction.status == enumConstants.auction.Opened && moment(auction.endedAt).isAfter(moment())) && <Text style={styles.pricePrimary}>
                         Giá hiện tại: ₫{numberWithCommas(auction.currentPrice)}
                     </Text>}
-                    {(auction.status == 5 && moment(auction.endedAt).isBefore(moment())) && <Text style={styles.pricePrimary}>
+                    {(auction.status == enumConstants.auction.Opened && moment(auction.endedAt).isBefore(moment())) && <Text style={styles.pricePrimary}>
                         Giá cuối cùng: ₫{numberWithCommas(auction.currentPrice)}
                     </Text>}
                     {auction.status == enumConstants.auction.Ended && <Text style={styles.pricePrimary}>
@@ -333,7 +333,7 @@ function AuctionDetail(props) {
                 {/* Countdown and button section */}
                 <View>
                     {/* During registration, valid time */}
-                    {(auction.status == 4 && isRegisterDuration()) && <View style={{
+                    {(auction.status == enumConstants.auction.RegistrationOpen && isRegisterDuration()) && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
@@ -373,7 +373,7 @@ function AuctionDetail(props) {
                     </View>}
 
                     {/* During registration, invalid time */}
-                    {(auction.status == 4 && !isRegisterDuration()) && <View style={{
+                    {(auction.status == enumConstants.auction.RegistrationOpen && !isRegisterDuration()) && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
@@ -397,7 +397,7 @@ function AuctionDetail(props) {
                     </View>}
 
                     {/* During bidding, valid time */}
-                    {(auction.status == 5 && isBiddingDuration()) && <View style={{
+                    {(auction.status == enumConstants.auction.Opened && isBiddingDuration()) && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,
@@ -494,6 +494,13 @@ function AuctionDetail(props) {
                                 </View>
                             </View>
                         </>}
+                        <TouchableOpacity onPress={() => navigate('BiddingHistory', { auction_id: auction_id })}>
+                            <Text style={{
+                                fontFamily: fonts.MontserratMedium,
+                                color: colors.primary,
+                                fontSize: fontSizes.h5
+                            }}>Xem lịch sử đấu giá</Text>
+                        </TouchableOpacity>
                     </View>}
                 </View>
 

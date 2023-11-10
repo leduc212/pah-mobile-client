@@ -145,8 +145,8 @@ function BiddingHistory(props) {
           fontSize: fontSizes.h2
         }}>Thông tin cuộc đấu giá</Text>
         <View style={{ gap: 10, marginTop: 5 }}>
-          <ListingDetailInfoText label='Thời gian còn lại' text={moment(auction.endedAt).fromNow()}
-            secondText={moment(auction.endedAt).format('dd, Do MMMM YYYY, h:mm A')} />
+        <ListingDetailInfoText label='Thời gian bắt đầu' text={moment(auction.startedAt).format('DD/MM/YYYY, HH:mm')} />
+          <ListingDetailInfoText label='Thời gian kết thúc' text={moment(auction.endedAt).format('DD/MM/YYYY, HH:mm')}/>
           <ListingDetailInfoText label='Số lần đặt' text={auction.numberOfBids} />
           <ListingDetailInfoText label='Người tham gia' text={auction.numberOfBidders} />
         </View>
@@ -163,7 +163,7 @@ function BiddingHistory(props) {
           fontFamily: fonts.MontserratBold,
           fontSize: fontSizes.h2
         }}>Lịch sử đấu giá</Text>
-        <View style={{ gap: 10, marginTop: 5 }}>
+        <View style={{ gap: 10}}>
           {(Array.isArray(bidHistory) && bidHistory.length) ? <View>
             {bidHistory.map((bid) =>
               <BidHistoryItem bid={bid} key={bid.id} />)}
@@ -194,14 +194,31 @@ function BiddingHistory(props) {
               </View>
             </View>
           </View> : <View>
-            <Text style={{
-              color: colors.greyText,
-              fontSize: fontSizes.h4,
-              textAlign: 'center',
-              fontFamily: fonts.MontserratMedium,
-              marginVertical: 30
-            }}>Không có lần đặt giá nào để hiển thị</Text>
-          </View>}
+              <View style={{
+                flexDirection: 'row',
+                marginVertical: 5
+              }}>
+                <View style={{ flex: 5 }}>
+                  <Text style={{
+                    color: 'black',
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h4
+                  }}>₫{numberWithCommas(auction.startingPrice)}</Text>
+                  <Text style={{
+                    color: colors.darkGreyText,
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h4
+                  }}>{auction.seller.name}</Text>
+                </View>
+                <View style={{ flex: 4, flexDirection: 'row' }}>
+                  <Text style={{
+                    color: 'black',
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h4
+                  }}>Giá khởi điểm</Text>
+                </View>
+              </View>
+            </View>}
         </View>
       </View>
     </ScrollView>}
