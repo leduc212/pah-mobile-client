@@ -352,7 +352,7 @@ function Wallet(props) {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.secondaryButton}
-                    onPress={() => { }}>
+                    onPress={() => {navigate('Withdraw') }}>
                     <Text style={styles.secondaryButtonText}>Rút tiền khỏi ví</Text>
                 </TouchableOpacity>
             </View>

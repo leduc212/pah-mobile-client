@@ -158,6 +158,36 @@ async function orderComplete(axiosContext, orderId) {
   }
 }
 
+async function orderCancelRequest(axiosContext, orderId) {
+  const orderPath = `/buyer/order/cancelrequest/${orderId}`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function orderApproveCancelRequest(axiosContext, orderId) {
+  const orderPath = `/seller/order/cancelrequest/${orderId}`;
+  try {
+    let responseData = await axiosContext.authAxios.post(orderPath);
+    if (responseData.status != 200) {
+      throw responseData.message;
+    }
+    let response = responseData.data.data;
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllOrderCurrentBuyer,
   getAllOrderCurrentSeller,
@@ -165,5 +195,7 @@ export default {
   checkout,
   sellerConfirm,
   defaultShippingOrder,
-  orderComplete
+  orderComplete,
+  orderCancelRequest,
+  orderApproveCancelRequest,
 };

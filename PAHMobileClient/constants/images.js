@@ -4,6 +4,7 @@ export default {
     benefit3: require('../assets/images/account-benefits-3.png'),
     depositImage: require('../assets/images/deposit.png'),
     withdrawImage: require('../assets/images/withdraw.png'),
+    withdrawRequestImage: require('../assets/images/withdrawal.png'),
     paymentImage: require('../assets/images/payment.png'),
     refundImage: require('../assets/images/refund.png'),
     logoImage: require('../assets/logo/pah-logo.png'),
@@ -19,5 +20,8 @@ export default {
     resetPasswordImage: require('../assets/images/reset-password.png'), 
     changePasswordImage: require('../assets/images/changepassword.png'), 
     alertImage: require('../assets/images/alert.png'), 
+    pendingImage: require('../assets/images/hourglass.png'), 
+    doneImage: require('../assets/images/check.png'), 
+    rejectImage: require('../assets/images/decline.png'), 
     defaultAvatar: 'https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg'
 }

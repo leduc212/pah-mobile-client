@@ -40,6 +40,8 @@ import EmailConfirm from "./EmailConfirm";
 import ForgetPassword from "./ForgetPassword";
 import EditProduct from "./ProductSeller/EditProduct";
 import ChangePassword from "./ChangePassword";
+import Withdraw from "./Wallet/Withdraw";
+import WithdrawHistory from "./Wallet/WithdrawHistory";
 
 export {
     Account,
@@ -83,5 +85,7 @@ export {
     EmailConfirm,
     ForgetPassword,
     EditProduct,
-    ChangePassword
+    ChangePassword,
+    Withdraw,
+    WithdrawHistory
 }

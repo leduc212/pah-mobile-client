@@ -8,7 +8,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
-  FlatList
+  FlatList,
+  Alert
 } from 'react-native';
 import { colors, fontSizes, images, fonts, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -44,6 +45,7 @@ function SellerOrderDetail(props) {
 
   // Loading state data
   const [isLoading, setIsLoading] = useState(true);
+  const [isRequestLoading, setIsRequestLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   // Cancel reason data
@@ -73,15 +75,31 @@ function SellerOrderDetail(props) {
 
   // Change order status
   function confirmOrder(confirmInfo) {
+    setIsRequestLoading(true);
     OrderRepository.sellerConfirm(axiosContext, orderId, confirmInfo)
       .then(response => {
         getOrder();
+        setIsRequestLoading(false);
       })
       .catch(err => {
-
+        setIsRequestLoading(false);
+        console.log(err.response);
       })
   }
 
+  //approve cancel request
+  function orderCancel() {
+    setIsRequestLoading(true);
+    OrderRepository.orderApproveCancelRequest(axiosContext, orderId)
+      .then(response => {
+        setIsRequestLoading(false);
+        goBack();
+      })
+      .catch(err => {
+        setIsRequestLoading(false);
+        console.log(err.response);
+      })
+  }
   // Order handle to shipping service
   function defaultShippingApply() {
     OrderRepository.defaultShippingOrder(axiosContext, orderId)
@@ -525,79 +543,66 @@ function SellerOrderDetail(props) {
           </TouchableOpacity>
         </View>
       }
-      {/* Cancel modal */}
-      <Modal
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        isVisible={cancelModalVisible}
-        onRequestClose={() => {
-          setCancelModalVisible(!cancelModalVisible);
-        }}
-        style={{ margin: 0 }}>
-        <View style={{
-          flex: 1
-        }}>
-          <TouchableOpacity style={{ flex: 1 }}
-            onPress={() => {
-              setCancelModalVisible(!cancelModalVisible);
-            }}></TouchableOpacity>
-          <View style={styles.modalContainer}>
-            {/* Modal title */}
-            <Text style={styles.modalTitle}>Hủy đơn hàng</Text>
-
-            {/* Modal information */}
-            <View style={{
-              gap: 10,
-              marginHorizontal: 20,
-              marginBottom: 10
-            }}>
-              <FlatList
-                data={cancelReasons}
-                keyExtractor={item => item}
-                renderItem={({ item }) =>
-                  <TouchableOpacity style={{
-                    paddingVertical: 10,
-                    flexDirection: 'row',
-                    alignItems: 'baseline',
-                    gap: 10
-                  }}
-                    onPress={() => setCancelReason(item)}>
-                    <View style={styles.radioButtonOuter}>
-                      <View style={[styles.radioButtonInner, {
-                        backgroundColor: item == cancelReason ? 'black' : 'white'
-                      }]}></View>
-                    </View>
-                    <Text style={{
-                      color: 'black',
-                      fontFamily: fonts.MontserratMedium,
-                      fontSize: fontSizes.h4,
-                    }}>{item}</Text>
-                  </TouchableOpacity>
-                }
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                borderRadius: 5,
-                paddingVertical: 10,
-                backgroundColor: cancelReason == '' ? colors.grey : colors.primary,
-                marginHorizontal: 15,
-                marginBottom: 10
-              }}
-              onPress={() => confirmOrder({
-                status: enumConstants.orderStatus.CancelledBySeller,
-                message: cancelReason
-              })}>
-              <Text style={{
-                fontSize: fontSizes.h3,
-                fontFamily: fonts.MontserratMedium,
-                textAlign: 'center',
-                color: cancelReason == '' ? colors.greyText : 'white',
-              }}>Hủy đơn hàng</Text>
-            </TouchableOpacity>
-          </View>
+      {order.status == enumConstants.orderStatus.CancelApprovalPending && <View style={{
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10
+      }}>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              borderRadius: 5,
+              paddingVertical: 10,
+              backgroundColor: colors.white,
+              borderWidth: 1,
+              borderColor: colors.primary
+            }}
+            onPress={() => confirmOrder({
+              status: enumConstants.orderStatus.ReadyForPickup,
+              message: ""
+            })}>
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.MontserratMedium,
+              textAlign: 'center',
+              color: colors.primary
+            }}>Từ chối</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+          onPress={orderCancel}
+            style={{
+              flex: 1,
+              borderRadius: 5,
+              paddingVertical: 10,
+              backgroundColor: colors.primary
+            }}
+            >
+            <Text style={{
+              fontSize: fontSizes.h3,
+              fontFamily: fonts.MontserratMedium,
+              textAlign: 'center',
+              color: 'white'
+            }}>Xác nhận</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
+      </View>}
+
+      {isRequestLoading && (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.inactive,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 }
