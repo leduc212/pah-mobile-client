@@ -146,7 +146,7 @@ function BuyerOrderList(props) {
                     paddingHorizontal: 15,
                     borderBottomWidth: currentOrderStatus.includes(item[0]) ? 2 : null,
                     borderBottomColor:
-                    currentOrderStatus.includes(item[0]) ? colors.primary : null,
+                      currentOrderStatus.includes(item[0]) ? colors.primary : null,
                   }}
                   onPress={() => {
                     setCurrentOrderStatus(item);
@@ -154,7 +154,7 @@ function BuyerOrderList(props) {
                   <Text
                     style={{
                       color:
-                      currentOrderStatus.includes(item[0]) ? colors.primary : 'black',
+                        currentOrderStatus.includes(item[0]) ? colors.primary : 'black',
                       fontFamily: fonts.MontserratMedium,
                       fontSize: fontSizes.h5,
                     }}>
@@ -349,10 +349,13 @@ function BuyerOrderList(props) {
                         {[4, 10, 11, 12, 6].includes(item.status) && (
                           <TouchableOpacity style={[styles.orderDetailButton, {
                             backgroundColor: colors.primary
-                          }]}>
+                          }]}
+                            onPress={() => {
+                              navigate('BuyerOrderDetail', { orderId: item.id });
+                            }}>
                             <Text style={[styles.orderDetailText, {
                               color: 'white'
-                            }]}>Mua lại</Text>
+                            }]}>Chi tiết</Text>
                           </TouchableOpacity>
                         )}
                       </View>
@@ -397,7 +400,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
-    marginLeft:5
+    marginLeft: 5
   },
   emptyText: {
     color: colors.greyText,

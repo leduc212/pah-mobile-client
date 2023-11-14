@@ -43,7 +43,7 @@ function BuyerOrderDetail(props) {
 
   // Loading state data
   const [isLoading, setIsLoading] = useState(true);
-  const [isCancelLoading,setIsCancelLoading] = useState(false);
+  const [isCancelLoading, setIsCancelLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   //// FUNCTIONS
@@ -73,13 +73,13 @@ function BuyerOrderDetail(props) {
   //Request cancel order
   function orderCancel() {
     setIsCancelLoading(true);
-    OrderRepository.orderCancelRequest(axiosContext,orderId)
-    .then(response => {
-      goBack();
-    })
-    .catch(error => {
-      setisCancelLoading(false)
-    })
+    OrderRepository.orderCancelRequest(axiosContext, orderId)
+      .then(response => {
+        goBack();
+      })
+      .catch(error => {
+        setisCancelLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -409,8 +409,8 @@ function BuyerOrderDetail(props) {
           marginVertical: 10
         }}>
           <TouchableOpacity
-          onPress={()=>{setCancelModalVisible(!cancelModalVisible)}}
-           style={styles.buyAgainButton}>
+            onPress={() => { setCancelModalVisible(!cancelModalVisible) }}
+            style={styles.buyAgainButton}>
             <Text style={styles.buyAgainText}>Hủy đơn hàng</Text>
           </TouchableOpacity>
         </View>}
@@ -428,7 +428,7 @@ function BuyerOrderDetail(props) {
               paddingVertical: 10,
               backgroundColor: colors.grey
             }}>
-            <Text style={[styles.buyAgainText,{color: colors.darkGreyText}]}>Đang xử lý</Text>
+            <Text style={[styles.buyAgainText, { color: colors.darkGreyText }]}>Đang xử lý</Text>
           </TouchableOpacity>
         </View>}
       {order.status == enumConstants.orderStatus.Delivered && <View style={{
@@ -451,67 +451,7 @@ function BuyerOrderDetail(props) {
           }}>Tôi đã nhận được hàng</Text>
         </TouchableOpacity>
       </View>}
-      {order.status == enumConstants.orderStatus.Done && order.orderItems[0].productType == 1
-        && <View style={{
-          backgroundColor: 'white',
-          paddingHorizontal: 15,
-          paddingVertical: 10
-        }}>
-          <TouchableOpacity
-            style={{
-              borderRadius: 5,
-              paddingVertical: 10,
-              backgroundColor: colors.primary
-            }}
-            onPress={() => { }}>
-            <Text style={{
-              fontSize: fontSizes.h3,
-              fontFamily: fonts.MontserratMedium,
-              textAlign: 'center',
-              color: 'white'
-            }}>Mua lại</Text>
-          </TouchableOpacity>
-        </View>}
-      {[enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller]
-        .includes(order.status) && <View style={{
-          backgroundColor: 'white',
-          paddingHorizontal: 15,
-          paddingVertical: 10
-        }}>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                borderRadius: 5,
-                paddingVertical: 10,
-                backgroundColor: colors.white,
-                borderWidth: 1,
-                borderColor: colors.primary
-              }}>
-              <Text style={{
-                fontSize: fontSizes.h3,
-                fontFamily: fonts.MontserratMedium,
-                textAlign: 'center',
-                color: colors.primary
-              }}>Chi tiết đơn hủy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                borderRadius: 5,
-                paddingVertical: 10,
-                backgroundColor: colors.primary
-              }}>
-              <Text style={{
-                fontSize: fontSizes.h3,
-                fontFamily: fonts.MontserratMedium,
-                textAlign: 'center',
-                color: 'white'
-              }}>Mua lại</Text>
-            </TouchableOpacity>
-          </View>
-        </View>}
-
+      
       {/* Cancel modal */}
       <Modal
         animationIn="slideInUp"
@@ -528,28 +468,28 @@ function BuyerOrderDetail(props) {
           <View style={styles.modalContainer}>
             {/* Cancel modal title */}
             <Image
-                source={images.alertImage}
-                style={{
-                    resizeMode:'contain',
-                    width:70,
-                    height:70,
-                    alignSelf:'center',
-                }}
+              source={images.alertImage}
+              style={{
+                resizeMode: 'contain',
+                width: 70,
+                height: 70,
+                alignSelf: 'center',
+              }}
             />
             <Text style={styles.modalTitle}>Xác nhận hủy!</Text>
             <Text style={styles.modalText}>Yêu cầu hủy sẽ được gửi đến người bán. Nếu được chấp thuận, đơn hàng sẽ được hủy! Ngược lại, đơn hàng sẽ được tiếp tục xử lí!</Text>
             {/* Cancel Confirmation */}
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-              <TouchableOpacity 
-              onPress={()=>{setCancelModalVisible(!cancelModalVisible)}}
-              style={[styles.deleteButtonStyle,{borderWidth:1,borderColor:colors.primary}]}>
-                <Text style={[styles.deleteButtonText,{color:colors.primary}]}>Quay lại</Text>
+              style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+              <TouchableOpacity
+                onPress={() => { setCancelModalVisible(!cancelModalVisible) }}
+                style={[styles.deleteButtonStyle, { borderWidth: 1, borderColor: colors.primary }]}>
+                <Text style={[styles.deleteButtonText, { color: colors.primary }]}>Quay lại</Text>
               </TouchableOpacity>
               <TouchableOpacity
-              onPress={orderCancel}
-              style={[styles.deleteButtonStyle,{backgroundColor:'red'}]}>
-                <Text style={[styles.deleteButtonText,{color:'white'}]}>Xác nhận</Text>
+                onPress={orderCancel}
+                style={[styles.deleteButtonStyle, { backgroundColor: 'red' }]}>
+                <Text style={[styles.deleteButtonText, { color: 'white' }]}>Xác nhận</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -603,7 +543,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
-    marginLeft:5
+    marginLeft: 5
   },
   emptyText: {
     color: colors.greyText,
@@ -757,7 +697,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 25,
     justifyContent: 'center',
-    padding:30
+    padding: 30
   },
   modalTitle: {
     color: 'red',
@@ -777,12 +717,12 @@ const styles = StyleSheet.create({
     width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius:5,
-    paddingVertical:5
+    borderRadius: 5,
+    paddingVertical: 5
   },
-  deleteButtonText:{
-    fontFamily:fonts.MontserratMedium,
-    fontSize:fontSizes.h4,
+  deleteButtonText: {
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h4,
   }
 });
 export default BuyerOrderDetail;

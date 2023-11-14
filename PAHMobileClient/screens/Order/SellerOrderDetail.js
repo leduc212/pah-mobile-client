@@ -520,29 +520,7 @@ function SellerOrderDetail(props) {
           </TouchableOpacity>
         </View>
       }
-      {
-        [enumConstants.orderStatus.CancelledByBuyer, enumConstants.orderStatus.CancelledBySeller].includes(order.status) && <View style={{
-          backgroundColor: 'white',
-          paddingHorizontal: 15,
-          paddingVertical: 10
-        }}>
-          <TouchableOpacity
-            style={{
-              borderRadius: 5,
-              paddingVertical: 10,
-              backgroundColor: colors.white,
-              borderWidth: 1,
-              borderColor: colors.primary
-            }}>
-            <Text style={{
-              fontSize: fontSizes.h3,
-              fontFamily: fonts.MontserratMedium,
-              textAlign: 'center',
-              color: colors.primary
-            }}>Chi tiết đơn hủy</Text>
-          </TouchableOpacity>
-        </View>
-      }
+      
       {order.status == enumConstants.orderStatus.CancelApprovalPending && <View style={{
         backgroundColor: 'white',
         paddingHorizontal: 15,
