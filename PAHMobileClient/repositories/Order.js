@@ -91,6 +91,7 @@ async function getOrderDetail(axiosContext, id) {
     order.seller = responseOrder.seller;
     order.orderItems = responseOrder.orderItems || [];
     order.orderShippingCode = responseOrder.orderShippingCode;
+    order.orderCancellation=responseOrder.orderCancellation
 
     return order;
   } catch (error) {

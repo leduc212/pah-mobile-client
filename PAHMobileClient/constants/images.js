@@ -23,5 +23,6 @@ export default {
     pendingImage: require('../assets/images/hourglass.png'), 
     doneImage: require('../assets/images/check.png'), 
     rejectImage: require('../assets/images/decline.png'), 
+    infoImage: require('../assets/images/alert1.png'), 
     defaultAvatar: 'https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg'
 }
