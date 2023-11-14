@@ -33,7 +33,7 @@ function Withdraw(props) {
   const [bank, setBank] = useState(null);
   const [bankValue, setBankValue] = useState(null);
   const [bankNumber, setBankNumber] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   //Validation
@@ -87,9 +87,9 @@ function Withdraw(props) {
     setErrorMessage('');
     setIsResetLoading(true);
     await WalletRepository.withdraw(axiosContext, {
-      amount: 1000000,
-      bank: "Vietcombank",
-      bankNumber: "008123456789",
+      amount: parseInt(amount),
+      bank: bank,
+      bankNumber: bankNumber,
     })
       .then(response => {
         Toast.show({
@@ -223,16 +223,13 @@ function Withdraw(props) {
               value={amount}
               keyboardType="numeric"
               onChangeText={text => {
-                setAmount(parseInt(text));
+                setAmount(text);
               }}
               placeholder="500000"
             />
             <Text style={[styles.inputLabel, {marginLeft: 5}]}>VNĐ</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={()=>alert(`${bank},${amount},${bankNumber}`)}>
-          <Text>alert</Text>
-        </TouchableOpacity>
         <TouchableOpacity
         onPress={withdraw}
         disabled={!validationOk()}

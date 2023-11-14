@@ -12,7 +12,7 @@ function WithdrawalListingCard(props) {
   return (
     <TouchableOpacity
       style={{
-        backgroundColor: index % 2 ? colors.darkGrey : null,
+        backgroundColor: index % 2 ? colors.darkGrey :colors.grey,
         paddingHorizontal: 10,
         paddingVertical: 5,
         alignItems: 'center',
@@ -21,11 +21,11 @@ function WithdrawalListingCard(props) {
       onPress={onPress}>
       <Image
         source={
-          type == 1
+          status == 1
             ? images.pendingImage
-            : type == 2
+            : status == 2
             ? images.doneImage
-            : type == 3
+            : status == 3
             ? images.rejectImage
             : null
         }
@@ -78,11 +78,7 @@ function WithdrawalListingCard(props) {
               marginBottom: 5,
               alignContent:'center'
             }}>
-            {type == 1 || type == 4 ? (
-              <IconFeather name="plus" size={10} />
-            ) : (
-              <IconFeather name="minus" size={10} />
-            )}
+              <IconFeather name="minus" size={10} />         
             <Text>{numberWithCommas(amount)} ₫</Text>
           </Text>
         </View>

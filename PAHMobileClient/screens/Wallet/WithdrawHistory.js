@@ -152,7 +152,7 @@ function WithdrawHistory(props) {
                   }
                   keyExtractor={item => item.id}
                   data={withdrawals}
-                  renderItem={({ item, index }) => <TransactionListingCard
+                  renderItem={({ item, index }) => <WithdrawalListingCard
                     key={item.id}
                     withdrawal={item}
                     index={index}

@@ -1,3 +1,5 @@
+import { pageParameters } from "../constants";
+
 async function getWalletCurrentUser(axiosContext) {
   const walletPath = `/wallet/current`;
   try {
