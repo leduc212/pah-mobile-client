@@ -16,7 +16,7 @@ import ProductPricing from "./ProductListingComponents/ProductPricing";
 import SellerRegisterView from "./SellerComponent/SellerRegisterView";
 import SellerHomeView from "./SellerComponent/SellerHomeView";
 import TransactionListingCard from "./TransactionComponent/TransactionListingCard";
-import WithdrawalListingCard from "./WithdrawalListingCard";
+import WithdrawalListingCard from "./WithdrawalComponent/WithdrawalListingCard";
 
 export {
     HomeItemCard,
