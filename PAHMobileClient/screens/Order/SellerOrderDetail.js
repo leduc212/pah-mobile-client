@@ -93,20 +93,10 @@ function SellerOrderDetail(props) {
     OrderRepository.orderApproveCancelRequest(axiosContext, orderId)
       .then(response => {
         setIsRequestLoading(false);
-        goBack();
-      })
-      .catch(err => {
-        setIsRequestLoading(false);
-        console.log(err.response);
-      });
-  }
-  // Order handle to shipping service
-  function defaultShippingApply() {
-    OrderRepository.defaultShippingOrder(axiosContext, orderId)
-      .then(response => {
         getOrder();
       })
       .catch(err => {
+        setIsRequestLoading(false);
         console.log(err.response);
       });
   }
@@ -581,34 +571,7 @@ function SellerOrderDetail(props) {
           </View>
         </View>
       )}
-
-      {order.status == enumConstants.orderStatus.ReadyForPickup && (
-        <View
-          style={{
-            backgroundColor: 'white',
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-          }}>
-          <TouchableOpacity
-            style={{
-              borderRadius: 5,
-              paddingVertical: 10,
-              backgroundColor: colors.primary,
-            }}
-            onPress={() => defaultShippingApply()}>
-            <Text
-              style={{
-                fontSize: fontSizes.h3,
-                fontFamily: fonts.MontserratMedium,
-                textAlign: 'center',
-                color: 'white',
-              }}>
-              Đã giao cho đơn vị vận chuyển
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      {order.status == enumConstants.orderStatus.Delivering && (
+      {(order.status == enumConstants.orderStatus.Delivering || order.status == enumConstants.orderStatus.ReadyForPickup) && (
         <View
           style={{
             backgroundColor: 'white',
@@ -626,7 +589,7 @@ function SellerOrderDetail(props) {
           </TouchableOpacity>
         </View>
       )}
-      {order.status == enumConstants.orderStatus.Delivered && (
+      {(order.status == enumConstants.orderStatus.Delivered || order.status == enumConstants.orderStatus.Done) && (
         <View
           style={{
             backgroundColor: 'white',
