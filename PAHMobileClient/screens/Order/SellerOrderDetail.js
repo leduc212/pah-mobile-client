@@ -172,8 +172,7 @@ function SellerOrderDetail(props) {
                   <Text style={styles.statusText}>Chờ xác nhận</Text>
                   <Text style={styles.noteText}>
                     Bạn có thể xác nhận đơn hàng hoặc từ chối tiếp nhận đơn hàng
-                    nếu gặp các vấn đề trục trặc. Nếu từ chối quá nhiều đơn hàng
-                    bạn sẽ bị phạt!
+                    nếu gặp các vấn đề trục trặc.
                   </Text>
                 </View>
                 <View style={{ flex: 20, alignItems: 'center' }}>
@@ -716,6 +715,82 @@ function SellerOrderDetail(props) {
           <ActivityIndicator size="large" />
         </View>
       )}
+      {/* Cancel modal */}
+      <Modal
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        isVisible={cancelModalVisible}
+        onRequestClose={() => {
+          setCancelModalVisible(!cancelModalVisible);
+        }}
+        style={{ margin: 0 }}>
+        <View style={{
+          flex: 1
+        }}>
+          <TouchableOpacity style={{ flex: 1 }}
+            onPress={() => {
+              setCancelModalVisible(!cancelModalVisible);
+            }}></TouchableOpacity>
+          <View style={styles.modalContainer}>
+            {/* Modal title */}
+            <Text style={styles.modalTitle}>Hủy đơn hàng</Text>
+            {/* Modal information */}
+            <View style={{
+              gap: 10,
+              marginHorizontal: 20,
+              marginBottom: 10
+            }}>
+              <FlatList
+                data={cancelReasons}
+                keyExtractor={item => item}
+                renderItem={({ item }) =>
+                  <TouchableOpacity style={{
+                    paddingVertical: 10,
+                    flexDirection: 'row',
+                    alignItems: 'baseline',
+                    gap: 10
+                  }}
+                    onPress={() => setCancelReason(item)}>
+                    <View style={styles.radioButtonOuter}>
+                      <View style={[styles.radioButtonInner, {
+                        backgroundColor: item == cancelReason ? 'black' : 'white'
+                      }]}></View>
+                    </View>
+                    <Text style={{
+                      color: 'black',
+                      fontFamily: fonts.MontserratMedium,
+                      fontSize: fontSizes.h4,
+                    }}>{item}</Text>
+                  </TouchableOpacity>
+                }
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                borderRadius: 5,
+                paddingVertical: 10,
+                backgroundColor: cancelReason == '' ? colors.grey : colors.primary,
+                marginHorizontal: 15,
+                marginBottom: 10
+              }}
+              onPress={() => {
+                setCancelModalVisible(false);
+                confirmOrder({
+                  status: enumConstants.orderStatus.CancelledBySeller,
+                  message: cancelReason
+                })
+              }
+              }>
+              <Text style={{
+                fontSize: fontSizes.h3,
+                fontFamily: fonts.MontserratMedium,
+                textAlign: 'center',
+                color: cancelReason == '' ? colors.greyText : 'white',
+              }}>Hủy đơn hàng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
