@@ -224,9 +224,6 @@ function BuyerOrderList(props) {
                     paddingVertical: 5,
                   }}>
                   <FlatList
-                    style={{
-                      marginBottom: 50
-                    }}
                     refreshControl={
                       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }

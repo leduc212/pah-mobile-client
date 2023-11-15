@@ -211,7 +211,7 @@ function BuyerOrderDetail(props) {
                   </Text>
                   <Text style={styles.noteText}>
                     Bạn hãy xác nhận việc nhận hàng. Nếu không xác nhận thì đơn
-                    hàng sẽ được đánh dấu là giao thành công trong vòng 48 giờ.
+                    hàng sẽ được đánh dấu là giao thành công trong vòng 24 giờ.
                   </Text>
                 </View>
                 <View style={{flex: 20, alignItems: 'center'}}>
