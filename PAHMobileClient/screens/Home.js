@@ -262,7 +262,7 @@ function Home(props) {
                             marginBottom: 30
                         }}>
                             <View style={styles.headerLayout}>
-                                <Text style={styles.headerText}>Sản phẩm bán chạy</Text>
+                                <Text style={styles.headerText}>Sản phẩm mới nhất</Text>
                                 <TouchableOpacity onPress={() => navigate('Listing', { categoryParam: 0 })}>
                                     <Text style={styles.headerSubText}>Xem tất cả</Text>
                                 </TouchableOpacity>

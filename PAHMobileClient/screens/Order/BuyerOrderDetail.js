@@ -248,6 +248,27 @@ function BuyerOrderDetail(props) {
               </View>
             )}
 
+            {order.status == enumConstants.orderStatus.CancelApprovalPending && (
+              <View style={styles.statusSection}>
+                <View style={{flex: 80}}>
+                  <Text style={styles.statusText}>Đơn hàng đang chờ người bán hủy</Text>
+                  <Text style={styles.noteText}>
+                    Yêu cầu hủy đơn hàng của bạn đang được người bán duyệt. Nếu được duyệt, đơn hàng của bạn sẽ bị hủy và được hoàn tiền. Nếu không, đơn hàng sẽ tiếp tục được vận chuyển tới bạn.
+                  </Text>
+                </View>
+                <View style={{flex: 20, alignItems: 'center'}}>
+                  <Image
+                    source={images.walletImage}
+                    style={{
+                      resizeMode: 'cover',
+                      width: 50,
+                      height: 50,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+
             {[
               enumConstants.orderStatus.CancelledByBuyer,
               enumConstants.orderStatus.CancelledBySeller,
