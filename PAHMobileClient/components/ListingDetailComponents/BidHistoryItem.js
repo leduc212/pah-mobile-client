@@ -10,40 +10,43 @@ import { numberWithCommas } from '../../utilities/PriceFormat';
 
 function BidHistoryItem(props) {
     const { bid } = props;
-    const { id, bidderName, bidAmount, bidDate } = bid
-    
+    const { id, bidder, bidAmount, bidDate, status } = bid;
+    const { name, email } = bidder
+
     return <View key={id}>
-        <View style={{
-            flexDirection: 'row',
-            marginVertical: 5
-        }}>
-            <View style={{ flex: 5 }}>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.MontserratMedium,
-                    fontSize: fontSizes.h4
-                }}>₫{numberWithCommas(bidAmount)}</Text>
-                <Text style={{
-                    color: colors.darkGreyText,
-                    fontFamily: fonts.MontserratMedium,
-                    fontSize: fontSizes.h4
-                }}>{bidderName}</Text>
-            </View>
-            <View style={{ flex: 4, flexDirection: 'row' }}>
-                <Text style={{
-                    color: 'black',
-                    fontFamily: fonts.MontserratMedium,
-                    fontSize: fontSizes.h4
-                }}>Đặt</Text>
-                <TimeLeft showText={false} closedTime={bidDate}
-                    textStyle={{
+        {status != 3 && <>
+            <View style={{
+                flexDirection: 'row',
+                marginVertical: 5
+            }}>
+                <View style={{ flex: 5 }}>
+                    <Text style={{
                         color: 'black',
                         fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
-                    }} />
+                    }}>₫{numberWithCommas(bidAmount)}</Text>
+                    <Text style={{
+                        color: colors.darkGreyText,
+                        fontFamily: fonts.MontserratMedium,
+                        fontSize: fontSizes.h4
+                    }}>{name}</Text>
+                </View>
+                <View style={{ flex: 4, flexDirection: 'row' }}>
+                    <Text style={{
+                        color: 'black',
+                        fontFamily: fonts.MontserratMedium,
+                        fontSize: fontSizes.h4
+                    }}>Đặt</Text>
+                    <TimeLeft showText={false} closedTime={bidDate}
+                        textStyle={{
+                            color: 'black',
+                            fontFamily: fonts.MontserratMedium,
+                            fontSize: fontSizes.h4
+                        }} />
+                </View>
             </View>
-        </View>
-        <View style={styles.separator}></View>
+            <View style={styles.separator}></View>
+        </>}
     </View>
 }
 
