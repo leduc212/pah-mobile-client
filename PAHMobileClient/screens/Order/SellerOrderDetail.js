@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   Text,
   View,
@@ -11,14 +11,14 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import {colors, fontSizes, images, fonts, enumConstants} from '../../constants';
+import { colors, fontSizes, images, fonts, enumConstants } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
 import IconFA5 from 'react-native-vector-icons/FontAwesome5';
-import {AxiosContext} from '../../context/AxiosContext';
-import {numberWithCommas} from '../../utilities/PriceFormat';
-import {Order as OrderRepository} from '../../repositories';
+import { AxiosContext } from '../../context/AxiosContext';
+import { numberWithCommas } from '../../utilities/PriceFormat';
+import { Order as OrderRepository } from '../../repositories';
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -28,14 +28,14 @@ function SellerOrderDetail(props) {
   // Axios Context
   const axiosContext = useContext(AxiosContext);
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   //// DATA
   // Get orderId from routes
-  const {orderId} = props.route.params;
+  const { orderId } = props.route.params;
 
   // Modal data
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -165,10 +165,10 @@ function SellerOrderDetail(props) {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
           {/* Status and note */}
-          <View style={{backgroundColor: 'white', marginBottom: 10}}>
+          <View style={{ backgroundColor: 'white', marginBottom: 10 }}>
             {order.status == enumConstants.orderStatus.WaitingSellerConfirm && (
               <View style={styles.statusSection}>
-                <View style={{flex: 80}}>
+                <View style={{ flex: 80 }}>
                   <Text style={styles.statusText}>Chờ xác nhận</Text>
                   <Text style={styles.noteText}>
                     Bạn có thể xác nhận đơn hàng hoặc từ chối tiếp nhận đơn hàng
@@ -176,7 +176,7 @@ function SellerOrderDetail(props) {
                     bạn sẽ bị phạt!
                   </Text>
                 </View>
-                <View style={{flex: 20, alignItems: 'center'}}>
+                <View style={{ flex: 20, alignItems: 'center' }}>
                   <Image
                     source={images.walletImage}
                     style={{
@@ -191,14 +191,14 @@ function SellerOrderDetail(props) {
 
             {order.status == enumConstants.orderStatus.ReadyForPickup && (
               <View style={styles.statusSection}>
-                <View style={{flex: 80}}>
+                <View style={{ flex: 80 }}>
                   <Text style={styles.statusText}>Chờ lấy hàng</Text>
                   <Text style={styles.noteText}>
                     Hãy chuẩn bị hàng hóa của bạn và giao cho đơn vị vận chuyển.
                     Hãy nhớ đảm bảo chất lượng của sản phẩm nhé!
                   </Text>
                 </View>
-                <View style={{flex: 20, alignItems: 'center'}}>
+                <View style={{ flex: 20, alignItems: 'center' }}>
                   <Image
                     source={images.walletImage}
                     style={{
@@ -213,14 +213,14 @@ function SellerOrderDetail(props) {
 
             {order.status == enumConstants.orderStatus.Delivering && (
               <View style={styles.statusSection}>
-                <View style={{flex: 80}}>
+                <View style={{ flex: 80 }}>
                   <Text style={styles.statusText}>Đang vận chuyển</Text>
                   <Text style={styles.noteText}>
                     Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang
                     trên đường tới chỗ người mua.
                   </Text>
                 </View>
-                <View style={{flex: 20, alignItems: 'center'}}>
+                <View style={{ flex: 20, alignItems: 'center' }}>
                   <Image
                     source={images.walletImage}
                     style={{
@@ -235,7 +235,7 @@ function SellerOrderDetail(props) {
 
             {order.status == enumConstants.orderStatus.Delivered && (
               <View style={styles.statusSection}>
-                <View style={{flex: 80}}>
+                <View style={{ flex: 80 }}>
                   <Text style={styles.statusText}>
                     Đơn hàng đã được vận chuyển đến nơi
                   </Text>
@@ -244,7 +244,7 @@ function SellerOrderDetail(props) {
                     nhận đã hoàn thành!
                   </Text>
                 </View>
-                <View style={{flex: 20, alignItems: 'center'}}>
+                <View style={{ flex: 20, alignItems: 'center' }}>
                   <Image
                     source={images.walletImage}
                     style={{
@@ -259,14 +259,35 @@ function SellerOrderDetail(props) {
 
             {order.status == enumConstants.orderStatus.Done && (
               <View style={styles.statusSection}>
-                <View style={{flex: 80}}>
+                <View style={{ flex: 80 }}>
                   <Text style={styles.statusText}>Đơn hàng đã hoàn thành</Text>
                   <Text style={styles.noteText}>
                     Tiền sẽ được chuyển vào ví PAH của bạn sau khi hệ thống xác
                     nhận đơn hàng
                   </Text>
                 </View>
-                <View style={{flex: 20, alignItems: 'center'}}>
+                <View style={{ flex: 20, alignItems: 'center' }}>
+                  <Image
+                    source={images.walletImage}
+                    style={{
+                      resizeMode: 'cover',
+                      width: 50,
+                      height: 50,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+
+            {order.status == enumConstants.orderStatus.CancelApprovalPending && (
+              <View style={styles.statusSection}>
+                <View style={{ flex: 80 }}>
+                  <Text style={styles.statusText}>Đơn hàng đang chờ hủy</Text>
+                  <Text style={styles.noteText}>
+                    Bạn có thể duyệt yêu cầu hủy đơn này. Nếu được duyệt, đơn hàng sẽ bị hủy và người mua được hoàn tiền. Nếu không, đơn hàng sẽ tiếp tục được vận chuyển tới người mua.
+                  </Text>
+                </View>
+                <View style={{ flex: 20, alignItems: 'center' }}>
                   <Image
                     source={images.walletImage}
                     style={{
@@ -283,37 +304,37 @@ function SellerOrderDetail(props) {
               enumConstants.orderStatus.CancelledByBuyer,
               enumConstants.orderStatus.CancelledBySeller,
             ].includes(order.status) && (
-              <View>
-                <View
-                  style={[styles.statusSection, {justifyContent: 'center'}]}>
-                  <View style={{flex: 80}}>
-                    <Text style={[styles.statusText, {marginBottom: 0}]}>
-                      Đơn hàng đã bị hủy
-                    </Text>
+                <View>
+                  <View
+                    style={[styles.statusSection, { justifyContent: 'center' }]}>
+                    <View style={{ flex: 80 }}>
+                      <Text style={[styles.statusText, { marginBottom: 0 }]}>
+                        Đơn hàng đã bị hủy
+                      </Text>
+                    </View>
+                    <View style={{ flex: 20, alignItems: 'center' }}>
+                      <Image
+                        source={images.walletImage}
+                        style={{
+                          resizeMode: 'cover',
+                          width: 50,
+                          height: 50,
+                        }}
+                      />
+                    </View>
                   </View>
-                  <View style={{flex: 20, alignItems: 'center'}}>
+                  <View
+                    style={{
+                      paddingHorizontal: 15,
+                      paddingVertical: 10,
+                      margin: 15,
+                      flex: 1,
+                      backgroundColor: colors.grey,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      borderRadius: 10
+                    }}>
                     <Image
-                      source={images.walletImage}
-                      style={{
-                        resizeMode: 'cover',
-                        width: 50,
-                        height: 50,
-                      }}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    paddingHorizontal: 15,
-                    paddingVertical: 10,
-                    margin: 15,
-                    flex: 1,
-                    backgroundColor: colors.grey,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    borderRadius:10
-                  }}>
-                  <Image
                       source={images.infoImage}
                       style={{
                         resizeMode: 'contain',
@@ -321,37 +342,37 @@ function SellerOrderDetail(props) {
                         height: 30,
                       }}
                     />
-                  <View style={{marginLeft:5}}>
-                    <Text
-                      style={[
-                        styles.noteText,
-                        {
-                          fontFamily: fonts.MontserratBold,
-                          fontSize: fontSizes.h4,
-                        },
-                      ]}>
-                      Lý do hủy đơn:
-                    </Text>
-                    <Text style={styles.noteText}>
-                      {order.orderCancellation.reason}
-                    </Text>
+                    <View style={{ marginLeft: 5 }}>
+                      <Text
+                        style={[
+                          styles.noteText,
+                          {
+                            fontFamily: fonts.MontserratBold,
+                            fontSize: fontSizes.h4,
+                          },
+                        ]}>
+                        Lý do hủy đơn:
+                      </Text>
+                      <Text style={styles.noteText}>
+                        {order.orderCancellation.reason}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            )}
+              )}
 
-            <View style={{marginVertical: 15, marginLeft: 5, marginRight: 10}}>
+            <View style={{ marginVertical: 15, marginLeft: 5, marginRight: 10 }}>
               <View
-                style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+                style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                 <IconEvilIcons name="location" size={30} color={colors.black} />
                 <Text style={styles.addressTitleText}>Địa chỉ nhận hàng</Text>
                 <TouchableOpacity
-                  style={{marginLeft: 'auto'}}
+                  style={{ marginLeft: 'auto' }}
                   onPress={() => copyAddress()}>
                   <Text style={styles.copyTextButton}>SAO CHÉP</Text>
                 </TouchableOpacity>
               </View>
-              <View style={{paddingTop: 10, paddingHorizontal: 30}}>
+              <View style={{ paddingTop: 10, paddingHorizontal: 30 }}>
                 <Text style={styles.addressDetailText}>
                   {order.recipientName}
                 </Text>
@@ -380,7 +401,7 @@ function SellerOrderDetail(props) {
                 paddingVertical: 15,
               }}>
               <TouchableOpacity
-                style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -418,7 +439,7 @@ function SellerOrderDetail(props) {
                       x{orderItem.quantity}
                     </Text>
                   </View>
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.itemMoneyText}>
                       đ {numberWithCommas(orderItem.price)}
                     </Text>
@@ -463,8 +484,8 @@ function SellerOrderDetail(props) {
           </View>
           {/* Payment method */}
           <View
-            style={{backgroundColor: 'white', padding: 15, marginBottom: 10}}>
-            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+            style={{ backgroundColor: 'white', padding: 15, marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <IconFA5 name="wallet" size={18} color={colors.black} />
               <Text style={styles.paymentMethodTitle}>
                 Phương thức thanh toán
@@ -475,9 +496,9 @@ function SellerOrderDetail(props) {
             </Text>
           </View>
           {/* Order time and id */}
-          <View style={{backgroundColor: 'white', padding: 15}}>
+          <View style={{ backgroundColor: 'white', padding: 15 }}>
             {order.orderShippingCode && (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={styles.orderIdText}>Mã vận chuyển GHN</Text>
                 <TouchableOpacity
                   style={{
@@ -514,7 +535,7 @@ function SellerOrderDetail(props) {
             paddingHorizontal: 15,
             paddingVertical: 10,
           }}>
-          <View style={{flexDirection: 'row', gap: 10}}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
             <TouchableOpacity
               style={{
                 flex: 1,
@@ -632,7 +653,7 @@ function SellerOrderDetail(props) {
             paddingHorizontal: 15,
             paddingVertical: 10,
           }}>
-          <View style={{flexDirection: 'row', gap: 10}}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
             <TouchableOpacity
               style={{
                 flex: 1,
