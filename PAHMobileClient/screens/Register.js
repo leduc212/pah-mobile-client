@@ -52,11 +52,13 @@ function Register(props) {
     })
       .then(response => {
         setIsRegisterLoading(false);
-        navigate('EmailConfirm',{_email:email});
+        console.log('a')
         navigation.pop();
+        navigate('EmailConfirm',{_email:email});
       })
       .catch(error => {
         setIsRegisterLoading(false);
+        console.log(error.response);
         if (error.response) {
           setErrorMessage(error.response.data.Message);
         }
