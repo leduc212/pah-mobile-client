@@ -25,6 +25,7 @@ import {
     Product as ProductRepository,
     Auction as AuctionRepository
 } from '../repositories';
+import { unsubscribe } from '../utilities/PushNotificationHelper';
 
 function Home(props) {
     //// AUTH AND NAVIGATION
@@ -155,11 +156,16 @@ function Home(props) {
                         >Tìm kiếm sản phẩm...</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        navigate('Search')
+                        //navigate('Search')
+                        unsubscribe("weather");
+                        unsubscribe("AUCTION_1");
+                        unsubscribe("USER_2");
+                        unsubscribe("USER_5");
+                        unsubscribe("USER_7");
                     }}>
-                        <IconSLI name='microphone'
-                            size={20} color={'black'}
-                        />
+                        <View style={{
+                            width: 20, height: 20
+                        }}></View>
                     </TouchableOpacity>
                 </View>
             </View>

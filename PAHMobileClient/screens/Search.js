@@ -31,12 +31,12 @@ function Search(props) {
         'đồ gỗ'
     ]);
 
-    useEffect(()=>{
+    useEffect(() => {
         if (route.params) {
             const { searchText } = route.params;
             setSearchText(searchText);
         }
-    },[]);
+    }, []);
 
     return <View style={styles.container}>
         {/* Search bar*/}
@@ -73,8 +73,10 @@ function Search(props) {
                         fontFamily: fonts.MontserratMedium,
                         fontSize: fontSizes.h4
                     }} />
-                <TouchableOpacity>
-                    <IconSLI name='microphone' size={25} color={'black'} />
+                <TouchableOpacity onPress={()=>{
+                    navigate('Listing', { searchText: searchText })
+                }}>
+                    <IconFeather name='search' size={20} color={'black'} />
                 </TouchableOpacity>
             </View>
         </View>

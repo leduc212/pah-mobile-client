@@ -172,7 +172,6 @@ function App(props) {
         SplashScreen.hide();
         requestUserPermission();
         NotificationListener();
-        subscribe("weather");
     }, []);
 
     useEffect(() => {

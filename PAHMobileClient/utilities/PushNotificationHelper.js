@@ -23,6 +23,12 @@ export function subscribe(topicName) {
         .then(() => console.log('Subscribed to topic ' + topicName));
 }
 
+export function unsubscribe(topicName) {
+    messaging()
+        .unsubscribeFromTopic(topicName)
+        .then(() => console.log('Unsubscribed from topic ' + topicName));
+}
+
 export const NotificationListener = () => {
     messaging().onNotificationOpenedApp(remoteMessage => {
         console.log(
