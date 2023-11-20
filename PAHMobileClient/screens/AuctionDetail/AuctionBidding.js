@@ -94,6 +94,7 @@ function AuctionBidding(props) {
     const promiseBidHistory = BidRepository.getBidsByAuctionId(
       axiosContext,
       auction_id,
+      1
     ).then(response => {
       setBidHistory(response);
     });

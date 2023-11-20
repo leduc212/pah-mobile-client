@@ -64,9 +64,8 @@ function BiddingHistory(props) {
         setAuction(response)
       })
 
-    const promiseBidHistory = BidRepository.getBidsByAuctionId(axiosContext, auction_id)
+    const promiseBidHistory = BidRepository.getBidsByAuctionId(axiosContext, auction_id, 0)
       .then(response => {
-        console.log(response)
         setBidHistory(response);
       })
 

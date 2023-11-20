@@ -66,7 +66,9 @@ function BuyerOrderDetail(props) {
       .then(response => {
         getOrder();
       })
-      .catch(error => {});
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   //Request cancel order

@@ -1,5 +1,5 @@
-async function getBidsByAuctionId(axiosContext, auction_id) {
-    const bidPath = `/bid/auction/${auction_id}?status=0&PageSize=50`;
+async function getBidsByAuctionId(axiosContext, auction_id, status) {
+    const bidPath = `/bid/auction/${auction_id}?status=${status}&PageSize=50`;
     try {
         let result = [];
         let responseData = await axiosContext.publicAxios.get(bidPath);
