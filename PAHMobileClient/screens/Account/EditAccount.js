@@ -119,6 +119,7 @@ function EditAccount(props) {
       .putFile(uploadUri, {contentType: 'image/jpg'})
       .catch(error => {
         console.log(error);
+        setIsUpdateLoading(false);
       });
 
     const url = await imageRef.getDownloadURL().catch(error => {
@@ -153,6 +154,14 @@ function EditAccount(props) {
       })
       .catch(error => {
         console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: 'Không thể cập nhật hồ sơ của bạn!',
+          text2: 'Hãy kiểm tra lại thông tin',
+          position: 'bottom',
+          autoHide: true,
+          visibilityTime: 2000,
+        });
         setIsUpdateLoading(false);
       });
   };

@@ -55,9 +55,8 @@ import CartStore from '../stores/CartStore';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import config from '../config';
 import axios from 'axios';
-
 const Stack = createNativeStackNavigator();
-
+import { requestUserPermission, NotificationListener, subscribe,  } from '../utilities/PushNotificationHelper';
 const toastConfig = {
     success: (props) => (
         <BaseToast
@@ -171,6 +170,9 @@ function App(props) {
 
     useEffect(() => {
         SplashScreen.hide();
+        requestUserPermission();
+        NotificationListener();
+        subscribe("weather");
     }, []);
 
     useEffect(() => {
@@ -189,53 +191,57 @@ function App(props) {
             console.log(`'${message}' - ${user}`);
         });
 
+        signalRContext?.connection?.on("ReceiveSubscribe", function (message) {
+            subscribe(message);
+        });
+
         signalRContext?.connection?.on("ReceiveNewBid", function (userName, auctionTitle) {
             console.log(`${userName} Da dat bid moi trong cuoc dau gia '${auctionTitle}'`);
             Toast.show({
-              type: 'success',
-              text1: `${auctionTitle}`,
-              text2: `${userName} đã trả giá cao nhất`,
-              position: 'top',
-              autoHide: true,
-              visibilityTime: 2000
+                type: 'success',
+                text1: `${auctionTitle}`,
+                text2: `${userName} đã trả giá cao nhất`,
+                position: 'top',
+                autoHide: true,
+                visibilityTime: 2000
             });
-          });
+        });
 
-          signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
-            console.log(`'${auctionTitle}' da mo ra`);
-            Toast.show({
-              type: 'success',
-              text1: `${auctionTitle}`,
-              text2: `Cuộc đấu giá đã bắt đầu, hãy tham gia nào!`,
-              position: 'top',
-              autoHide: true,
-              visibilityTime: 2000
-            });
-          });
+        // signalRContext?.connection?.on("ReceiveAuctionOpen", function (auctionTitle) {
+        //     console.log(`'${auctionTitle}' da mo ra`);
+        //     Toast.show({
+        //         type: 'success',
+        //         text1: `${auctionTitle}`,
+        //         text2: `Cuộc đấu giá đã bắt đầu, hãy tham gia nào!`,
+        //         position: 'top',
+        //         autoHide: true,
+        //         visibilityTime: 2000
+        //     });
+        // });
 
-          signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
-            console.log(`'${auctionTitle}' da ket thuc`);
-            Toast.show({
-              type: 'success',
-              text1: `${auctionTitle}`,
-              text2: `Cuộc đấu giá đã kết thúc, hãy cùng xem người thắng cuộc nào!`,
-              position: 'top',
-              autoHide: true,
-              visibilityTime: 2000
-            });
-          });
+        // signalRContext?.connection?.on("ReceiveAuctionEnd", function (auctionTitle) {
+        //     console.log(`'${auctionTitle}' da ket thuc`);
+        //     Toast.show({
+        //         type: 'success',
+        //         text1: `${auctionTitle}`,
+        //         text2: `Cuộc đấu giá đã kết thúc, hãy cùng xem người thắng cuộc nào!`,
+        //         position: 'top',
+        //         autoHide: true,
+        //         visibilityTime: 2000
+        //     });
+        // });
 
-          signalRContext?.connection?.on("ReceiveAuctionAboutToEnd", function (auctionTitle) {
-            console.log(`'${auctionTitle}' sap ket thuc`);
-            Toast.show({
-              type: 'success',
-              text1: `${auctionTitle}`,
-              text2: `Cuộc đấu giá chuẩn bị kết thúc!`,
-              position: 'top',
-              autoHide: true,
-              visibilityTime: 2000
-            });
-          });
+        // signalRContext?.connection?.on("ReceiveAuctionAboutToEnd", function (auctionTitle) {
+        //     console.log(`'${auctionTitle}' sap ket thuc`);
+        //     Toast.show({
+        //         type: 'success',
+        //         text1: `${auctionTitle}`,
+        //         text2: `Cuộc đấu giá chuẩn bị kết thúc!`,
+        //         position: 'top',
+        //         autoHide: true,
+        //         visibilityTime: 2000
+        //     });
+        // });
 
     }, [signalRContext?.connection]);
 

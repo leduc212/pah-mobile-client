@@ -33,6 +33,7 @@ import CountDown from 'react-native-countdown-fixed';
 import { differenceInSeconds } from 'date-fns';
 import Toast from 'react-native-toast-message';
 import { useIsFocused } from '@react-navigation/native';
+import { subscribe } from '../../utilities/PushNotificationHelper';
 
 function AuctionDetail(props) {
     //// AUTH AND NAVIGATION
@@ -213,6 +214,7 @@ function AuctionDetail(props) {
                             signalRContext.connection?.invoke("JoinGroup", `AUCTION_${auction_id}`).catch(function (err) {
                                 return console.error(err.toString());
                             });
+                            subscribe(`AUCTION_${auction_id}`);
                         })
                         .catch(err => {
                             setIsRegisterLoading(false);
