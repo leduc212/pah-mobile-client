@@ -155,7 +155,7 @@ function ProductListing(props) {
     await Promise.all(photoList.map(async (photo) => {
       const filename = new Date().getTime() + '_' + photo.path.substring(photo.path.lastIndexOf('/') + 1);
       const uploadUri = Platform.OS === 'ios' ? photo.path.replace('file://', '') : photo.path;
-      const imageRef = storage().ref(`sellerProfilePicture/${filename}`);
+      const imageRef = storage().ref(`productPicture/${filename}`);
       await imageRef
         .putFile(uploadUri, { contentType: 'image/jpg' })
         .catch((error) => { console.log(error) });

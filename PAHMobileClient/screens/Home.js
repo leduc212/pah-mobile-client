@@ -159,9 +159,11 @@ function Home(props) {
                         //navigate('Search')
                         unsubscribe("weather");
                         unsubscribe("AUCTION_1");
+                        unsubscribe("AUCTION_4");
                         unsubscribe("USER_2");
                         unsubscribe("USER_5");
                         unsubscribe("USER_7");
+                        unsubscribe("USER_29");
                     }}>
                         <View style={{
                             width: 20, height: 20
