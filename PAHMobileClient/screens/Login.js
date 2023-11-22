@@ -78,7 +78,12 @@ function Login(props) {
       })
       .catch(error => {
         setIsLoginLoading(false);
-        setErrorMessage(error.response.data.message);
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
       });
   }
 
@@ -126,7 +131,12 @@ function Login(props) {
         })
         .catch(error => {
           setIsLoginLoading(false);
-          setErrorMessage(error.message);
+          if(error.response.data.message){
+            setErrorMessage(error.response.data.message);
+          }
+          if(error.response.data.Message){
+            setErrorMessage(error.response.data.Message);
+          }
         });
     } catch (error) {
       console.log('Message', JSON.stringify(error));
@@ -233,7 +243,7 @@ function Login(props) {
           )}
         </View>
         <TouchableOpacity
-          disabled={!validationOk() && isLoginLoading}
+          disabled={!validationOk()}
           onPress={() => {
             login()
           }}

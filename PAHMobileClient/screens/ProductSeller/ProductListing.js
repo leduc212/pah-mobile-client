@@ -103,7 +103,7 @@ function ProductListing(props) {
   const [ready, setReady] = useState(false);
   //Edit Pricing
   const [pricingMode, setPricingMode] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState('');
   // Validating data
   const validate = () => name.length > 0 && category.id && condition != 0
     && origin.length > 0 && weight.length > 0 && dimension.length > 0 && photoList.length > 0
@@ -169,6 +169,7 @@ function ProductListing(props) {
 
   // Create new product
   async function createProduct() {
+    setErrorMessage('');
     setIsLoadingCreate(true);
     const photoUrls = await uploadImage();
     const productRequest = {
@@ -205,6 +206,12 @@ function ProductListing(props) {
       })
       .catch(error => {
         console.log(error);
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
         setIsLoadingCreate(false);
       })
   }
@@ -498,10 +505,10 @@ function ProductListing(props) {
                   paddingHorizontal: 10,
                   marginStart: 20,
                 }}
-                placeholderStyle={[styles.placeholderStyle, {textAlign: 'right'}]}
-                selectedTextStyle={[styles.selectedTextStyle, {textAlign: 'right'}]}
-                inputSearchStyle={[styles.inputSearchStyle, {textAlign: 'right'}]}
-                itemTextStyle={[styles.itemTextStyle, {textAlign: 'right'}]}
+                placeholderStyle={[styles.placeholderStyle, { textAlign: 'right' }]}
+                selectedTextStyle={[styles.selectedTextStyle, { textAlign: 'right' }]}
+                inputSearchStyle={[styles.inputSearchStyle, { textAlign: 'right' }]}
+                itemTextStyle={[styles.itemTextStyle, { textAlign: 'right' }]}
                 placeholder={!conditionFocus ? 'Chọn' : '...'}
                 data={conditionData}
                 labelField="label"
@@ -938,6 +945,11 @@ function ProductListing(props) {
                 Bắt đầu đăng bán
               </Text>
             </TouchableOpacity>
+            {errorMessage == '' ? null : (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorMessage}>{errorMessage}</Text>
+                </View>
+              )}
             <TouchableOpacity
               onPress={() => {
                 setReady(!ready);
@@ -986,7 +998,7 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 8,
     borderRadius: 5,
-},
+  },
   titleContainer: {
     height: 70,
     flexDirection: 'row',
@@ -1000,7 +1012,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
-    marginLeft:5
+    marginLeft: 5
   },
   titleButtonContainer: {
     flexDirection: 'row',
@@ -1086,6 +1098,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 'auto',
     marginRight: 20,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h5,
+    marginLeft: 5,
   },
 });
 

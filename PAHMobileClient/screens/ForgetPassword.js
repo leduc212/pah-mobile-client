@@ -77,7 +77,12 @@ function ForgetPassword(props) {
         });
       })
       .catch(error => {
-        setErrorMessage(error.response.data.message);
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
       });
   }
 
@@ -101,7 +106,12 @@ function ForgetPassword(props) {
         navigate('Login');
       })
       .catch(error => {
-        setErrorMessage(error.response.data.message);
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
       });
   }
 

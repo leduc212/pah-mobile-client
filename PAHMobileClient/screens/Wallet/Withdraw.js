@@ -104,7 +104,12 @@ function Withdraw(props) {
       })
       .catch(error => {
         setIsResetLoading(false);
-        setErrorMessage(error.response.data.message);
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
         console.log(error)
       });
   }

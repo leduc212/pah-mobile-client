@@ -57,6 +57,7 @@ function AddAddress(props) {
   const validate = () => name.length > 0 && phone.length > 0 && street.length > 0
     && province != null && provinceId != null && district != null && districtId != null
     && ward != null && wardCode != null;
+  const [errorMessage, setErrorMessage] = useState('');
 
   //// FUNCTION
   // Get Province list
@@ -92,6 +93,7 @@ function AddAddress(props) {
 
   // Create address
   function createAddress() {
+    setErrorMessage('');
     setIsLoadingCreate(true);
     AddressRepository.createAddress(axiosContext, {
       recipientName: name,
@@ -110,9 +112,15 @@ function AddAddress(props) {
         goBack();
         setIsLoadingCreate(false);
       })
-      .catch(err => {
+      .catch(error => {
         setIsLoadingCreate(false);
-        console.log(err.response)
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
+        console.log(error.response)
       })
   }
 
@@ -149,6 +157,11 @@ function AddAddress(props) {
           </Text>
         </TouchableOpacity>
       </View>
+      {errorMessage == '' ? null : (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorMessage}>{errorMessage}</Text>
+          </View>
+        )}
       {/* Input */}
       {isLoading ? <View style={{
         flex: 1,
@@ -373,6 +386,18 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h4,
+  },
+  errorContainer: {
+    paddingHorizontal: 15,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h5,
+    marginLeft: 5,
   },
 });
 export default AddAddress;

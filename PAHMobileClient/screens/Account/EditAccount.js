@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Text,
   View,
@@ -12,13 +12,13 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import {colors, fonts, fontSizes, images} from '../../constants';
+import { colors, fonts, fontSizes, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import DatePicker from 'react-native-date-picker';
-import {AxiosContext} from '../../context/AxiosContext';
-import {Account as AccountRepository} from '../../repositories';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { AxiosContext } from '../../context/AxiosContext';
+import { Account as AccountRepository } from '../../repositories';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import Toast from 'react-native-toast-message';
 
@@ -27,10 +27,10 @@ function EditAccount(props) {
   const axiosContext = useContext(AxiosContext);
 
   // Navigation
-  const {navigation, route} = props;
+  const { navigation, route } = props;
 
   // Function of navigate to/back
-  const {navigate, goBack} = navigation;
+  const { navigate, goBack } = navigation;
 
   //// RN Image Picker handling
   //Photos
@@ -41,18 +41,7 @@ function EditAccount(props) {
     quality: 1,
   };
 
-  // Get image from camera
-  const openCamera = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-    );
-    if (granted == PermissionsAndroid.RESULTS.GRANTED) {
-      try {
-        const result = await launchCamera(options);
-        setPhoto(result.assets[0].uri);
-      } catch (error) {}
-    }
-  };
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Get image from gallery
   const openGallery = async () => {
@@ -116,7 +105,7 @@ function EditAccount(props) {
       Platform.OS === 'ios' ? photo.replace('file://', '') : photo;
     const imageRef = storage().ref(`profilePicture/${filename}`);
     await imageRef
-      .putFile(uploadUri, {contentType: 'image/jpg'})
+      .putFile(uploadUri, { contentType: 'image/jpg' })
       .catch(error => {
         console.log(error);
         setIsUpdateLoading(false);
@@ -132,6 +121,7 @@ function EditAccount(props) {
   // Create seller profile
   const updateProfile = async () => {
     setIsUpdateLoading(true);
+    setErrorMessage('');
     const url = photo == null ? photoUrl : await uploadImage();
     const updateInfo = {
       name: name,
@@ -154,6 +144,12 @@ function EditAccount(props) {
       })
       .catch(error => {
         console.log(error);
+        if (error.response.data.message) {
+          setErrorMessage(error.response.data.message);
+        }
+        if (error.response.data.Message) {
+          setErrorMessage(error.response.data.Message);
+        }
         Toast.show({
           type: 'error',
           text1: 'Không thể cập nhật hồ sơ của bạn!',
@@ -177,7 +173,7 @@ function EditAccount(props) {
       onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{backgroundColor: 'white', flex: 1}}>
+        style={{ backgroundColor: 'white', flex: 1 }}>
         {/* Fixed screen title: Edit account */}
         <View style={styles.titleContainer}>
           <TouchableOpacity
@@ -207,7 +203,7 @@ function EditAccount(props) {
                   justifyContent: 'center',
                 }}>
                 <Image
-                  source={{uri: photoUrl}}
+                  source={{ uri: photoUrl }}
                   style={{
                     resizeMode: 'cover',
                     width: 80,
@@ -241,8 +237,8 @@ function EditAccount(props) {
                   {email}
                 </Text>
                 <TouchableOpacity
-                onPress={()=>{navigate('ChangePassword')}}
-                  style={{position: 'absolute', right: 0, bottom: 0}}>
+                  onPress={() => { navigate('ChangePassword') }}
+                  style={{ position: 'absolute', right: 0, bottom: 0 }}>
                   <Text
                     style={{
                       color: colors.primary,
@@ -265,18 +261,24 @@ function EditAccount(props) {
                   style={{
                     color: colors.black,
                     fontFamily: fonts.MontserratBold,
-                    fontSize: fontSizes.h3,
-                    paddingVertical: 15,
+                    fontSize: fontSizes.h2,
+                    paddingTop: 15,
                   }}>
                   Thông tin cá nhân
                 </Text>
               </View>
             </View>
+            {errorMessage == '' ? null : (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+              </View>
+            )}
             {/* Info detail */}
 
             <ScrollView
               style={{
                 paddingHorizontal: 15,
+                paddingTop: 5
               }}>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputTitle}>Tên</Text>
@@ -459,7 +461,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 5,
     paddingHorizontal: 10,
-    gap:10
+    gap: 10
   },
   usernameSectionStyle: {
     flexGrow: 1,
@@ -566,6 +568,18 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h3,
     color: colors.black,
     fontFamily: fonts.MontserratMedium,
+  },
+  errorContainer: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h5,
+    marginLeft: 5,
   },
 });
 export default EditAccount;

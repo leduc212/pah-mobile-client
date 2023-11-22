@@ -77,7 +77,12 @@ function ChangePassword(props) {
       })
       .catch(error => {
         setIsResetLoading(false);
-        setErrorMessage(error.response.data.Message);
+        if(error.response.data.Message){
+          setErrorMessage(error.response.data.Message);
+        }
+        if(error.response.data.message){
+          setErrorMessage(error.response.data.message);
+        }
       });
   }
 
