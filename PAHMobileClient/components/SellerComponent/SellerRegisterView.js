@@ -102,6 +102,7 @@ function SellerRegisterView(props) {
   const validate = () => name.length > 0 && phone.length > 0 && street.length > 0
     && province != null && provinceId != null && district != null && districtId != null
     && ward != null && wardCode != null && ready && photo != null && photoUrl != '';
+  const [errorMessage, setErrorMessage] = useState('');
 
   //// FUNCTION
   // Get Province list
@@ -118,7 +119,7 @@ function SellerRegisterView(props) {
     setIsLoading(true);
     SellerRepository.getSellerCurrentUser(axiosContext)
       .then(response => {
-        if (response.status != 2 && response.id!=0) {
+        if (response.status != 2 && response.id != 0) {
           setStatus(response.status);
           setName(response.name);
           setPhone(response.phone);
@@ -188,7 +189,8 @@ function SellerRegisterView(props) {
 
   // Create seller profile
   const registerSeller = async () => {
-    setIsLoadingCreate(true)
+    setIsLoadingCreate(true);
+    setErrorMessage('');
     const url = photo == null ? images.defaultAvatar : photo.includes('https') ? photoUrl : await uploadImage();
     const user = {
       name: name,
@@ -220,6 +222,12 @@ function SellerRegisterView(props) {
       })
       .catch(error => {
         console.log(error);
+        if (error.response.data.message) {
+          setErrorMessage(error.response.data.message);
+        }
+        if (error.response.data.Message) {
+          setErrorMessage(error.response.data.Message);
+        }
         setIsLoadingCreate(false);
       })
   }
@@ -448,6 +456,14 @@ function SellerRegisterView(props) {
                 {status == -1 ? 'Đăng ký' : 'Cập nhật thông tin'}
               </Text>
             </TouchableOpacity>
+            {errorMessage == '' ? null : (
+              <View style={styles.errorContainer}>
+                <Text
+                  style={styles.errorMessage}>
+                  {errorMessage}
+                </Text>
+              </View>
+            )}
             <TouchableOpacity
               onPress={() => {
                 setReady(!ready);
@@ -590,6 +606,18 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h4,
     marginTop: 10,
     marginHorizontal: 10
+  },
+  errorContainer: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row'
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h5,
+    marginLeft: 5
   },
 });
 export default SellerRegisterView;
