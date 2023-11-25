@@ -159,7 +159,9 @@ function Home(props) {
                         //navigate('Search')
                         unsubscribe("weather");
                         unsubscribe("AUCTION_1");
+                        unsubscribe("AUCTION_2");
                         unsubscribe("AUCTION_4");
+                        unsubscribe("AUCTION_5");
                         unsubscribe("USER_2");
                         unsubscribe("USER_5");
                         unsubscribe("USER_7");
