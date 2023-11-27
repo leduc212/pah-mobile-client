@@ -8,7 +8,6 @@ export async function requestUserPermission() {
 
     if (enabled) {
         console.log('Authorization status:', authStatus);
-        getFCMToken();
     }
 }
 
