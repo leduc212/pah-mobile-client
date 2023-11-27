@@ -640,7 +640,7 @@ function ProductListing(props) {
                     fontSize: fontSizes.h4,
                     fontFamily: fonts.MontserratMedium,
                   }}>
-                  (mm)
+                  (cm)
                 </Text>
               </View>
             </View>

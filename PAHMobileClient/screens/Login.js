@@ -34,8 +34,8 @@ function Login(props) {
   const { navigate, goBack } = navigation;
 
   //states to store email/password
-  const [email, setEmail] = useState('chautnse161445@fpt.edu.vn');
-  const [password, setPassword] = useState('123456789');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // states for validating
   const [errorMessage, setErrorMessage] = useState('');

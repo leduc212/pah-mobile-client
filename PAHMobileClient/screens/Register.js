@@ -30,9 +30,9 @@ function Register(props) {
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
 
   // Data for register
-  const [email, setEmail] = useState('kingericvt96@gmail.com');
-  const [name, setName] = useState('Tuấn');
-  const [phone, setPhone] = useState('0966948473');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
