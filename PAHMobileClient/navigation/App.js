@@ -46,6 +46,7 @@ import {
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
 import { SignalRContext } from '../context/SignalRContext';
+import { PushNotificationContext } from '../context/PushNotificationContext';
 import * as Keychain from 'react-native-keychain';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { fonts, fontSizes } from '../constants';
@@ -56,7 +57,7 @@ import { HubConnectionBuilder } from '@microsoft/signalr';
 import config from '../config';
 import axios from 'axios';
 const Stack = createNativeStackNavigator();
-import { requestUserPermission, NotificationListener, subscribe,  } from '../utilities/PushNotificationHelper';
+import { requestUserPermission, NotificationListener, subscribe, unsubscribe  } from '../utilities/PushNotificationHelper';
 const toastConfig = {
     success: (props) => (
         <BaseToast
@@ -85,6 +86,7 @@ const toastConfig = {
 function App(props) {
     const authContext = useContext(AuthContext);
     const signalRContext = useContext(SignalRContext);
+    const pushNotificationContext= useContext(PushNotificationContext);
 
     const loadJWT = useCallback(async () => {
         try {
@@ -192,6 +194,7 @@ function App(props) {
 
         signalRContext?.connection?.on("ReceiveSubscribe", function (message) {
             subscribe(message);
+            pushNotificationContext?.setMessageState([...pushNotificationContext.messageState, message]);
         });
 
         signalRContext?.connection?.on("ReceiveNewBid", function (userName, auctionTitle) {

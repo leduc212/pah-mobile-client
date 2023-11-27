@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { AxiosContext } from '../../context/AxiosContext';
+import { PushNotificationContext } from '../../context/PushNotificationContext';
 import { colors, fontSizes, fonts, images } from '../../constants';
 import IconFeather from 'react-native-vector-icons/Feather';
 import {
@@ -24,11 +25,13 @@ import {
     statusCodes,
 } from 'react-native-google-signin';
 import config from '../../config';
+import { unsubscribe } from '../../utilities/PushNotificationHelper';
 
 function Account(props) {
     //// AUTH AND NAVIGATION
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
+    const pushNotificationContext= useContext(PushNotificationContext);
 
     // Navigation
     const { navigation, route } = props;
@@ -57,6 +60,10 @@ function Account(props) {
         await GoogleSignin.revokeAccess().catch((err) => { });
         await GoogleSignin.signOut((err) => { });
         authContext?.logout();
+
+        pushNotificationContext.messageState.forEach(topic => {
+            unsubscribe(topic);
+        });
 
         Toast.show({
             type: 'success',

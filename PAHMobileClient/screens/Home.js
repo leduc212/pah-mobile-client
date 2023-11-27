@@ -156,16 +156,7 @@ function Home(props) {
                         >Tìm kiếm sản phẩm...</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        //navigate('Search')
-                        unsubscribe("weather");
-                        unsubscribe("AUCTION_1");
-                        unsubscribe("AUCTION_2");
-                        unsubscribe("AUCTION_4");
-                        unsubscribe("AUCTION_5");
-                        unsubscribe("USER_2");
-                        unsubscribe("USER_5");
-                        unsubscribe("USER_7");
-                        unsubscribe("USER_29");
+                        navigate('Search')
                     }}>
                         <View style={{
                             width: 20, height: 20
