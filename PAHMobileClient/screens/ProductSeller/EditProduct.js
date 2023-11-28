@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { colors, enumConstants, fontSizes, fonts } from '../../constants';
+import { colors, enumConstants, fontSizes, fonts, images } from '../../constants';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -240,7 +240,7 @@ function EditProduct(props) {
         </View>
       ) : (
         <View>
-          {product.name ? (
+          {product ? (
             <ScrollView
               contentContainerStyle={{ paddingBottom: 60 }}
               refreshControl={
