@@ -9,6 +9,8 @@ import { AuthProvider } from './context/AuthContext';
 import { AxiosProvider } from './context/AxiosContext';
 import { SignalRProvider } from './context/SignalRContext';
 import { PushNotificationProvider } from './context/PushNotificationContext';
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs();
 const Root = () => {
   return (
     <PushNotificationProvider>
