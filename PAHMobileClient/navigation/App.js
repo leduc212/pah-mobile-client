@@ -41,7 +41,9 @@ import {
     EditProduct,
     ChangePassword,
     Withdraw,
-    WithdrawHistory
+    WithdrawHistory,
+    UserAgreement,
+    PrivacyPolicy
 } from '../screens';
 import { uuidv4 } from '../utilities/UUIDGenerate';
 import { AuthContext } from '../context/AuthContext';
@@ -297,6 +299,8 @@ function App(props) {
                             <Stack.Screen name={"Register"} component={Register} />
                             <Stack.Screen name={"EmailConfirm"} component={EmailConfirm} />
                             <Stack.Screen name={"ForgetPassword"} component={ForgetPassword} />
+                            <Stack.Screen name={"UserAgreement"} component={UserAgreement} />
+                            <Stack.Screen name={"PrivacyPolicy"} component={PrivacyPolicy} />
                         </>
                     )}
                 </Stack.Navigator>

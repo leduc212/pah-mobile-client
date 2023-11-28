@@ -148,7 +148,6 @@ function SellerProductListing(props) {
                     />
                 </View>
             </View> : <View style={{
-                flex: 1,
                 alignItems: 'center',
                 paddingTop: 150
             }}>

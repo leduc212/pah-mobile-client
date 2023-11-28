@@ -87,6 +87,8 @@ function Register(props) {
         errorMessage={errorMessage}
         setEmailCheck={setEmailCheck}
         onAccountCreate={register}
+        onPressUser={()=>{navigate('UserAgreement')}}
+        onPressPrivacy={()=>{navigate('PrivacyPolicy')}}
       />
         : <RegisterView1 setEmailCheck={setEmailCheck}
           email={email} setEmail={setEmail}

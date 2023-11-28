@@ -42,6 +42,8 @@ import EditProduct from "./ProductSeller/EditProduct";
 import ChangePassword from "./ChangePassword";
 import Withdraw from "./Wallet/Withdraw";
 import WithdrawHistory from "./Wallet/WithdrawHistory";
+import UserAgreement from "./UserAgreement";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export {
     Account,
@@ -87,5 +89,7 @@ export {
     EditProduct,
     ChangePassword,
     Withdraw,
-    WithdrawHistory
+    WithdrawHistory,
+    UserAgreement,
+    PrivacyPolicy
 }
