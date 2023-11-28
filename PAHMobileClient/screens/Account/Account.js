@@ -99,7 +99,7 @@ function Account(props) {
                 webClientId: config.FIREBASE_CLIENT_ID,
             });
         }
-    }, [])
+    }, [isFocused])
 
     useEffect(() => {
         // If user is logined

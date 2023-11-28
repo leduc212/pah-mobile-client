@@ -140,6 +140,14 @@ function ForgetPassword(props) {
           }}
         />
         <Text style={styles.titleText}>Lấy lại mật khẩu</Text>
+        {errorMessage == '' ? null : (
+          <View style={styles.errorContainer}>
+            <Text
+              style={styles.errorMessage}>
+              {errorMessage}
+            </Text>
+          </View>
+        )}
         <View style={styles.inputContainer}>
           <TextInput
             autoCapitalize="none"
@@ -198,7 +206,7 @@ function ForgetPassword(props) {
             )}
           </TouchableOpacity>
           {!emailValidation() && showErrorEmail && (
-            <Text style={styles.errorText}>Hãy nhập địa chỉ Email hợp lệ</Text>
+            <Text style={styles.warningText}>Hãy nhập địa chỉ Email hợp lệ</Text>
           )}
         </View>
         <View style={styles.inputContainer}>
@@ -291,6 +299,10 @@ function ForgetPassword(props) {
             </Text>
           )}
         </View>
+        <Text
+          style={styles.warningText}>
+          Ít nhất 8 ký tự, bao gồm ít nhất 1 chữ cái thường, 1 chữ cái in hoa và ít nhất 1 số
+        </Text>
         <TouchableOpacity
           disabled={!validationOk()}
           onPress={resetPassword}
@@ -373,6 +385,12 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.h6,
     paddingHorizontal: 5,
   },
+  warningText: {
+    color: colors.darkGreyText,
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h6,
+    paddingHorizontal: 5
+  },
   inputContainer: {
     justifyContent: 'center',
     marginBottom: 20,
@@ -386,6 +404,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: fontSizes.h4,
     paddingHorizontal: 15,
+  },
+  errorContainer: {
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row'
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: fonts.MontserratMedium,
+    fontSize: fontSizes.h5,
+    marginLeft: 5
   },
 });
 export default ForgetPassword;

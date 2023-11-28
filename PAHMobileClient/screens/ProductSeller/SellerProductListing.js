@@ -20,6 +20,7 @@ import {
 import {
     Product as ProductRepository
 } from '../../repositories';
+import { useIsFocused } from '@react-navigation/native';
 
 function SellerProductListing(props) {
     const { seller_id } = props.route.params;
@@ -27,6 +28,9 @@ function SellerProductListing(props) {
     // Auth Context
     const authContext = useContext(AuthContext);
     const axiosContext = useContext(AxiosContext);
+
+    // On focus
+    const isFocused = useIsFocused();
 
     // Navigation
     const { navigation, route } = props;
@@ -66,7 +70,7 @@ function SellerProductListing(props) {
 
     useEffect(() => {
         getAllProduct();
-    }, []);
+    }, [isFocused]);
 
     // Scroll view refresh
     const onRefresh = () => {
