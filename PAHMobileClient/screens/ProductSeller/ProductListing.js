@@ -924,6 +924,11 @@ function ProductListing(props) {
               </Text>
             </Text>
             <TouchableOpacity
+                onPress={()=> navigate('UserAgreement')} 
+                style={styles.secondaryButton}>
+                <Text style={styles.secondaryText}>Điều khoản sử dụng</Text>
+              </TouchableOpacity>
+            <TouchableOpacity
               disabled={!validate()}
               onPress={() => {
                 createProduct();
@@ -1109,6 +1114,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
     marginLeft: 5,
+  },
+  secondaryButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop:10
+  },
+  secondaryText: {
+    fontFamily: fonts.MontserratMedium,
+    padding: 10,
+    fontSize: fontSizes.h4,
+    color: colors.primary,
   },
 });
 

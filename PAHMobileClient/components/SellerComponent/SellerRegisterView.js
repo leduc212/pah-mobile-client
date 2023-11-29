@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   Text,
   View,
@@ -8,25 +8,29 @@ import {
   TextInput,
   PermissionsAndroid,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
 } from 'react-native';
-import { colors, fontSizes, fonts, images } from '../../constants';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import {colors, fontSizes, fonts, images} from '../../constants';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconFeather from 'react-native-vector-icons/Feather';
-import { Dropdown } from 'react-native-element-dropdown';
+import {Dropdown} from 'react-native-element-dropdown';
 import storage from '@react-native-firebase/storage';
-import { AxiosContext } from '../../context/AxiosContext';
+import {AxiosContext} from '../../context/AxiosContext';
 import {
   Address as AddressRepository,
-  Seller as SellerRepository
+  Seller as SellerRepository,
 } from '../../repositories';
 import Toast from 'react-native-toast-message';
 
 function SellerRegisterView(props) {
   //// AXIOS CONTEXT
   const axiosContext = useContext(AxiosContext);
+  // Navigation
+  const {navigation, route} = props;
 
+  // Function of navigate to/back
+  const {navigate, goBack} = navigation;
   //// RN Image Picker handling
   //Photos
   let options = {
@@ -45,9 +49,7 @@ function SellerRegisterView(props) {
       try {
         const result = await launchCamera(options);
         setPhoto(result.assets[0].uri);
-      } catch (error) {
-
-      }
+      } catch (error) {}
     }
   };
 
@@ -99,9 +101,19 @@ function SellerRegisterView(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Validating
-  const validate = () => name.length > 0 && phone.length > 0 && street.length > 0
-    && province != null && provinceId != null && district != null && districtId != null
-    && ward != null && wardCode != null && ready && photo != null && photoUrl != '';
+  const validate = () =>
+    name.length > 0 &&
+    phone.length > 0 &&
+    street.length > 0 &&
+    province != null &&
+    provinceId != null &&
+    district != null &&
+    districtId != null &&
+    ward != null &&
+    wardCode != null &&
+    ready &&
+    photo != null &&
+    photoUrl != '';
   const [errorMessage, setErrorMessage] = useState('');
 
   //// FUNCTION
@@ -111,7 +123,7 @@ function SellerRegisterView(props) {
       .then(response => {
         setProvinceList(response);
       })
-      .catch(error => { })
+      .catch(error => {});
   }
 
   // Get seller
@@ -141,7 +153,7 @@ function SellerRegisterView(props) {
       .catch(error => {
         console.log(error);
         setIsLoading(false);
-      })
+      });
   }
 
   // Get District list by province id
@@ -150,7 +162,7 @@ function SellerRegisterView(props) {
       .then(response => {
         setDistrictList(response);
       })
-      .catch(error => { })
+      .catch(error => {});
   }
 
   // Get ward list by district id
@@ -159,7 +171,7 @@ function SellerRegisterView(props) {
       .then(response => {
         setWardList(response);
       })
-      .catch(error => { })
+      .catch(error => {});
   }
 
   // Upload image
@@ -169,14 +181,20 @@ function SellerRegisterView(props) {
       return;
     }
 
-    const filename = new Date().getTime() + '_' + photo.substring(photo.lastIndexOf('/') + 1);
-    const uploadUri = Platform.OS === 'ios' ? photo.replace('file://', '') : photo;
+    const filename =
+      new Date().getTime() + '_' + photo.substring(photo.lastIndexOf('/') + 1);
+    const uploadUri =
+      Platform.OS === 'ios' ? photo.replace('file://', '') : photo;
     const imageRef = storage().ref(`sellerProfilePicture/${filename}`);
     await imageRef
-      .putFile(uploadUri, { contentType: 'image/jpg' })
-      .catch((error) => { console.log(error) });
+      .putFile(uploadUri, {contentType: 'image/jpg'})
+      .catch(error => {
+        console.log(error);
+      });
 
-    const url = await imageRef.getDownloadURL().catch((error) => { console.log(error) });
+    const url = await imageRef.getDownloadURL().catch(error => {
+      console.log(error);
+    });
     setPhotoUrl(url);
     return url;
   };
@@ -185,13 +203,18 @@ function SellerRegisterView(props) {
   useEffect(() => {
     getProvinceList();
     getSeller();
-  }, [])
+  }, []);
 
   // Create seller profile
   const registerSeller = async () => {
     setIsLoadingCreate(true);
     setErrorMessage('');
-    const url = photo == null ? images.defaultAvatar : photo.includes('https') ? photoUrl : await uploadImage();
+    const url =
+      photo == null
+        ? images.defaultAvatar
+        : photo.includes('https')
+        ? photoUrl
+        : await uploadImage();
     const user = {
       name: name,
       phone: phone,
@@ -204,8 +227,8 @@ function SellerRegisterView(props) {
       districtId: districtId,
       ward: ward,
       wardCode: wardCode,
-      street: street
-    }
+      street: street,
+    };
 
     SellerRepository.createSeller(axiosContext, user)
       .then(response => {
@@ -214,10 +237,11 @@ function SellerRegisterView(props) {
         Toast.show({
           type: 'success',
           text1: 'Hồ sơ người bán của bạn đã được gửi',
-          text2: 'Hãy đợi hồ sơ của bạn được duyệt để trở thành người bán chính thức!',
+          text2:
+            'Hãy đợi hồ sơ của bạn được duyệt để trở thành người bán chính thức!',
           position: 'bottom',
           autoHide: true,
-          visibilityTime: 2000
+          visibilityTime: 2000,
         });
       })
       .catch(error => {
@@ -229,46 +253,58 @@ function SellerRegisterView(props) {
           setErrorMessage(error.response.data.Message);
         }
         setIsLoadingCreate(false);
-      })
-  }
+      });
+  };
 
   return (
     <View style={styles.container}>
-      {isLoading ? <View style={{
-        flex: 1,
-        justifyContent: 'center'
-      }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View> :
+      {isLoading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           <View>
-            <Text style={{
-              fontSize: fontSizes.h3,
-              color: colors.primary,
-              fontFamily: fonts.MontserratBold,
-              marginHorizontal: 10
-            }}>{status == -1 ? 'Đăng ký bán hàng ngay hôm nay!' : status == 1 ? 'Hồ sơ của bạn đang được duyệt!' : 'Hồ sơ của bạn đã bị từ chối, hãy nhập và thử lại'}</Text>
+            <Text
+              style={{
+                fontSize: fontSizes.h3,
+                color: colors.primary,
+                fontFamily: fonts.MontserratBold,
+                marginHorizontal: 10,
+              }}>
+              {status == -1
+                ? 'Đăng ký bán hàng ngay hôm nay!'
+                : status == 1
+                ? 'Hồ sơ của bạn đang được duyệt!'
+                : 'Hồ sơ của bạn đã bị từ chối, hãy nhập và thử lại'}
+            </Text>
           </View>
           <View>
             {/* Avatar */}
             <View style={styles.sectionStyle}>
               <Text style={styles.titleSection}>Hình đại diện</Text>
               {photo != null ? (
-                <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
-                  <Image style={styles.imageStyle} source={{ uri: photo }} />
-                  {status != 1 && <TouchableOpacity
-                    onPress={() => {
-                      setPhoto(null);
-                      setPhotoUrl(images.defaultAvatar);
-                    }}
-                    style={{
-                      marginLeft: 'auto',
-                    }}>
-                    <IconAntDesign name="delete" size={20} color={'red'} />
-                  </TouchableOpacity>}
+                <View style={{marginHorizontal: 15, marginVertical: 10}}>
+                  <Image style={styles.imageStyle} source={{uri: photo}} />
+                  {status != 1 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setPhoto(null);
+                        setPhotoUrl(images.defaultAvatar);
+                      }}
+                      style={{
+                        marginLeft: 'auto',
+                      }}>
+                      <IconAntDesign name="delete" size={20} color={'red'} />
+                    </TouchableOpacity>
+                  )}
                 </View>
               ) : (
-                <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
+                <View style={{marginHorizontal: 15, marginVertical: 10}}>
                   <View style={styles.imageZone}>
                     <TouchableOpacity
                       style={styles.imageZoneButton}
@@ -316,13 +352,13 @@ function SellerRegisterView(props) {
                   borderBottomWidth: 1,
                   borderColor: colors.darkGreyText,
                   marginHorizontal: 15,
-                  paddingHorizontal: 0
+                  paddingHorizontal: 0,
                 }}
               />
               <TextInput
                 editable={status != 1}
                 placeholder="Nhập số điện thoại liên lạc"
-                keyboardType='phone-pad'
+                keyboardType="phone-pad"
                 value={phone}
                 onChangeText={text => {
                   setPhone(text);
@@ -335,7 +371,7 @@ function SellerRegisterView(props) {
                   borderBottomWidth: 1,
                   borderColor: colors.darkGreyText,
                   marginHorizontal: 15,
-                  paddingHorizontal: 0
+                  paddingHorizontal: 0,
                 }}
               />
             </View>
@@ -365,7 +401,7 @@ function SellerRegisterView(props) {
                 data={provinceList}
                 labelField="provinceName"
                 valueField="provinceId"
-                dropdownPosition='top'
+                dropdownPosition="top"
                 value={provinceId}
                 onFocus={() => setProvinceFocus(true)}
                 onBlur={() => setProvinceFocus(false)}
@@ -399,7 +435,7 @@ function SellerRegisterView(props) {
                 valueField="districtId"
                 onFocus={() => setDistrictFocus(true)}
                 onBlur={() => setDistrictFocus(false)}
-                dropdownPosition='top'
+                dropdownPosition="top"
                 value={districtId}
                 onChange={item => {
                   setDistrict(item.districtName);
@@ -427,7 +463,7 @@ function SellerRegisterView(props) {
                 data={wardList}
                 labelField="wardName"
                 valueField="wardCode"
-                dropdownPosition='top'
+                dropdownPosition="top"
                 value={wardCode}
                 onFocus={() => setWardFocus(true)}
                 onBlur={() => setWardFocus(false)}
@@ -440,70 +476,90 @@ function SellerRegisterView(props) {
             </View>
           </View>
           {/* Register button */}
-          {status != 1 && <View>
-            <TouchableOpacity
-              disabled={!validate()}
-              onPress={() => {
-                registerSeller();
-              }}
-              style={[styles.registerButtonStyle, { backgroundColor: validate() ? colors.primary : colors.darkGreyText }]}>
-              <Text
-                style={{
-                  fontSize: fontSizes.h4,
-                  color: 'white',
-                  fontFamily: fonts.MontserratMedium
-                }}>
-                {status == -1 ? 'Đăng ký' : 'Cập nhật thông tin'}
-              </Text>
-            </TouchableOpacity>
-            {errorMessage == '' ? null : (
-              <View style={styles.errorContainer}>
+          {status != 1 && (
+            <View>
+              <TouchableOpacity
+                disabled={!validate()}
+                onPress={() => {
+                  registerSeller();
+                }}
+                style={[
+                  styles.registerButtonStyle,
+                  {
+                    backgroundColor: validate()
+                      ? colors.primary
+                      : colors.darkGreyText,
+                  },
+                ]}>
                 <Text
-                  style={styles.errorMessage}>
-                  {errorMessage}
+                  style={{
+                    fontSize: fontSizes.h4,
+                    color: 'white',
+                    fontFamily: fonts.MontserratMedium,
+                  }}>
+                  {status == -1 ? 'Đăng ký' : 'Cập nhật thông tin'}
                 </Text>
-              </View>
-            )}
-            <TouchableOpacity
-              onPress={() => {
-                setReady(!ready);
-              }}
-              style={{
-                flexDirection: 'row',
-                marginVertical: 10,
-                gap: 10,
-                marginHorizontal: 10,
-                marginBottom: 15
-              }}>
-              {ready ? <IconFeather name="check-square" size={20} /> : <IconFeather name="square" size={20} />}
-              <Text style={{
-                color: colors.darkGreyText,
-                fontFamily: fonts.MontserratMedium,
-                fontSize: fontSizes.h5,
-              }}>Tôi đồng ý với các điều khoản</Text>
-            </TouchableOpacity>
-          </View>}
+              </TouchableOpacity>
+              {errorMessage == '' ? null : (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorMessage}>{errorMessage}</Text>
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={()=> navigate('UserAgreement')} 
+                style={styles.secondaryButton}>
+                <Text style={styles.secondaryText}>Điều khoản sử dụng</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setReady(!ready);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  gap: 10,
+                  marginHorizontal: 10,
+                  marginBottom: 15,
+                }}>
+                {ready ? (
+                  <IconFeather name="check-square" size={20} />
+                ) : (
+                  <IconFeather name="square" size={20} />
+                )}
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h5,
+                  }}>
+                  Tôi đồng ý với các điều khoản
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
-      }
-      {isLoadingCreate && <View style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.inactive
-      }}>
-        <ActivityIndicator size='large' color={colors.primary} />
-      </View>}
+      )}
+      {isLoadingCreate && (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.inactive,
+          }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      )}
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   iconButton: {
     backgroundColor: colors.grey,
@@ -520,7 +576,7 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h3,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   detailTextSection: {
     color: colors.black,
@@ -547,7 +603,7 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   imageZoneButton: {
     backgroundColor: colors.primary,
@@ -565,7 +621,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 15,
     marginHorizontal: 15,
-    marginTop: 20
+    marginTop: 20,
   },
   dropdown: {
     height: 50,
@@ -574,7 +630,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     paddingHorizontal: 5,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   placeholderStyle: {
     color: colors.darkGreyText,
@@ -605,19 +661,31 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     fontSize: fontSizes.h4,
     marginTop: 10,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   errorContainer: {
     paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   errorMessage: {
     color: 'red',
     fontFamily: fonts.MontserratMedium,
     fontSize: fontSizes.h5,
-    marginLeft: 5
+    marginLeft: 5,
+  },
+  secondaryButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop:10
+  },
+  secondaryText: {
+    fontFamily: fonts.MontserratMedium,
+    padding: 10,
+    fontSize: fontSizes.h4,
+    color: colors.primary,
   },
 });
 export default SellerRegisterView;

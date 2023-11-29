@@ -24,10 +24,7 @@ function PrivacyPolicy(props) {
     <View style={styles.container}>
       {/* Fixed title*/}
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
-          Chính sách bảo mật
-        </Text>
-        <View style={styles.titleButtonContainer}>
+      <View style={styles.titleButtonContainer}>
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => {
@@ -36,6 +33,9 @@ function PrivacyPolicy(props) {
             <IconFeather name="x" size={18} color={'black'} />
           </TouchableOpacity>
         </View>
+        <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
+          Chính sách bảo mật
+        </Text>
       </View>
       {/*Content*/}
       <ScrollView style={styles.contentContainer}>
