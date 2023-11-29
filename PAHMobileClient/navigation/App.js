@@ -295,6 +295,8 @@ function App(props) {
                             <Stack.Screen name={"ChangePassword"} component={ChangePassword} />
                             <Stack.Screen name={"Withdraw"} component={Withdraw} />
                             <Stack.Screen name={"WithdrawHistory"} component={WithdrawHistory} />
+                            <Stack.Screen name={"UserAgreement"} component={UserAgreement} />
+                            <Stack.Screen name={"PrivacyPolicy"} component={PrivacyPolicy} />
                         </>
                     ) : (
                         <>
