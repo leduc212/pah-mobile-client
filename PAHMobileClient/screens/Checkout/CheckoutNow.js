@@ -713,6 +713,7 @@ function CheckoutNow(props) {
                     </View>
                     <TouchableOpacity onPress={() => {
                         navigate('AddAddress');
+                        setAddressModal(false);
                     }}>
                         <Text style={{
                             color: colors.primary,

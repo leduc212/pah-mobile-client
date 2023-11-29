@@ -59,7 +59,7 @@ function ProductListing(props) {
         setPhotoList([...photoList, ...images]);
       })
       .catch(error => {
-        alert(JSON.stringify(error));
+        console.log(JSON.stringify(error));
       });
   };
   // Navigation
