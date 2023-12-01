@@ -28,6 +28,7 @@ import CryptoJS from 'crypto-js';
 import config from '../../config';
 import Toast from 'react-native-toast-message';
 import { emptyCart } from '../../reducers/CartReducer';
+import { useIsFocused } from '@react-navigation/native';
 
 const { PayZaloBridge } = NativeModules;
 
@@ -53,6 +54,9 @@ function CheckoutCart(props) {
     // Loading
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+
+    // On focus
+    const isFocused = useIsFocused();
 
     // Cart data
     const cartGroupedComputed = () => {
@@ -140,11 +144,37 @@ function CheckoutCart(props) {
         setShippingAddress(responseAddress);
         // After get default address successfully, iterate grouped cart and calculate shipping cost for each seller
         if (responseAddress.length > 0) {
+            console.log('a')
             // Set default shipping address
             defaultAddress = responseAddress.filter(address => {
                 return address.isDefault;
             }).at(0)
-            setCurrentShippingAddress(defaultAddress);
+            if(defaultAddress){
+                setCurrentShippingAddress(defaultAddress);
+                getShippingCost(defaultAddress);
+            } else {
+                setCurrentShippingAddress(responseAddress.at(0));
+                getShippingCost(responseAddress.at(0));
+            }
+        } else {
+            await Promise.all(cartGroupedComputed().map(async (seller, index, array) => {
+                seller.total = seller.products.reduce((accumulator, object) => {
+                    return accumulator + object.price * object.amount;
+                }, 0)
+    
+                seller.shippingCost = 0;
+                seller.shippingDate = 0;
+    
+                setCartGrouped(oldArray => [...oldArray, seller]);
+                if (index === array.length - 1) {
+                    setIsLoading(false);
+                }
+    
+            }))
+            .catch(err => {
+                console.log('getShippingCost');
+                setIsLoading(false);
+            });
         }
     }
 
@@ -195,12 +225,11 @@ function CheckoutCart(props) {
             }
 
         }))
-        .catch(err => {});
+        .catch(err => {
+            console.log('getShippingCost');
+            setIsLoading(false);
+        });
     }
-
-    useEffect(() => {
-        getShippingCost(currentShippingAddress)
-    }, [currentShippingAddress])
 
     // Zalopayment
     const [token, setToken] = useState('')
@@ -224,6 +253,28 @@ function CheckoutCart(props) {
             }
         );
     }, []);
+
+    useEffect(() => {
+        AddressRepository.getAllAdrressCurrentUser(axiosContext)
+            .then(responseAddress => {
+                setShippingAddress(responseAddress);
+                if (responseAddress.length > 0) {
+                    // Set default shipping address
+                    const defaultAddress = responseAddress.filter(address => {
+                        return address.isDefault;
+                    }).at(0)
+                    if(defaultAddress){
+                        setCurrentShippingAddress(defaultAddress);
+                        getShippingCost(defaultAddress);
+                    } else {
+                        setCurrentShippingAddress(responseAddress.at(0));
+                        getShippingCost(responseAddress.at(0));
+                    }
+                }
+            })
+            .catch(error => {
+            })
+    }, [isFocused]);
 
     // Empty cart
     function emptyCartItems(){
@@ -453,17 +504,17 @@ function CheckoutCart(props) {
                                     color: colors.darkGreyText,
                                     fontFamily: fonts.MontserratMedium,
                                     fontSize: fontSizes.h4
-                                }}>Giao dự kiến: {moment(seller.shippingDate * 1000).format('DD/MM/YYYY')}</Text>
-                                <Text style={{
+                                }}>Thông qua Giao hàng nhanh</Text>
+                                {seller.shippingDate != 0 && <Text style={{
                                     color: colors.darkGreyText,
                                     fontFamily: fonts.MontserratMedium,
                                     fontSize: fontSizes.h4
-                                }}>Thông qua Giao hàng nhanh</Text>
-                                <Text style={{
+                                }}>Giao dự kiến: {moment(seller.shippingDate * 1000).format('DD/MM/YYYY')}</Text>}
+                                {seller.shippingCost != 0 && <Text style={{
                                     color: 'black',
                                     fontFamily: fonts.MontserratMedium,
                                     fontSize: fontSizes.h4
-                                }}>Phí vận chuyển: ₫{numberWithCommas(seller.shippingCost)} </Text>
+                                }}>Phí vận chuyển: ₫{numberWithCommas(seller.shippingCost)} </Text>}
                             </View>
                         </View>
                         <View style={styles.separator}></View>
@@ -697,6 +748,7 @@ function CheckoutCart(props) {
                     </View>
                     <TouchableOpacity onPress={() => {
                         navigate('AddAddress');
+                        setAddressModal(false);
                     }}>
                         <Text style={{
                             color: colors.primary,

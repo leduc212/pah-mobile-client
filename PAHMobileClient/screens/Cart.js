@@ -134,8 +134,21 @@ function Cart(props) {
                     });
                 })
                 .catch(error => {
-                    console.log(error);
-                    setIsLoading(false);
+                    // console.log('a')
+                    // console.log(error);
+                    // setIsLoading(false);
+                    // After get default address successfully, iterate grouped cart and calculate shipping cost for each seller
+                    cartGroupedComputed().forEach((seller, index, array) => {
+                        seller.total = seller.products.reduce((accumulator, object) => {
+                            return accumulator + object.price * object.amount;
+                        }, 0)
+                        seller.shippingCost = 0;
+                        setCartGrouped(oldArray => [...oldArray, seller]);
+                        if (index === array.length - 1) {
+                            setIsLoading(false);
+                        }
+                    });
+                    setTotalShippingPrice(0);
                 });
         } else {
             setIsLoading(false);
@@ -228,7 +241,7 @@ function Cart(props) {
                             marginHorizontal: 15,
                             marginTop: 15,
                             marginBottom: 10
-                        }}>{seller.shippingCost != 0 ? `₫${numberWithCommas(seller.shippingCost)} giao hàng` : 'Đăng nhập để xem phí giao hàng'}</Text>
+                        }}>{seller.shippingCost != 0 ? `₫${numberWithCommas(seller.shippingCost)} giao hàng` : 'Thêm địa chỉ mặc định để xem phí giao hàng'}</Text>
                         {seller.products.map((cart_item) =>
                             <View key={cart_item.id}>
                                 <TouchableOpacity
@@ -331,13 +344,17 @@ function Cart(props) {
                         <Text style={{
                             color: colors.darkGreyText,
                             fontFamily: fonts.MontserratMedium,
-                            fontSize: fontSizes.h4
+                            fontSize: fontSizes.h4,
+                            marginRight: 15
                         }}>Phí giao hàng</Text>
                         <Text style={{
                             color: 'black',
                             fontFamily: fonts.MontserratMedium,
-                            fontSize: fontSizes.h4
-                        }}>{totalShippingPrice != 0 ? `₫${numberWithCommas(totalShippingPrice)}` : 'Đăng nhập để xem'}</Text>
+                            fontSize: fontSizes.h4,
+                            flex: 1,
+                            flexWrap: 'wrap',
+                            textAlign: 'right'
+                        }}>{totalShippingPrice != 0 ? `₫${numberWithCommas(totalShippingPrice)}` : 'Thêm địa chỉ mặc định để xem'}</Text>
                     </View>
                     <View style={{
                         height: 1,
@@ -352,13 +369,17 @@ function Cart(props) {
                         <Text style={{
                             color: 'black',
                             fontFamily: fonts.MontserratMedium,
-                            fontSize: fontSizes.h3
+                            fontSize: fontSizes.h3,
+                            marginRight: 15
                         }}>Tổng</Text>
                         <Text style={{
                             color: 'black',
-                            fontFamily: fonts.MontserratBold,
-                            fontSize: fontSizes.h3
-                        }}>₫{numberWithCommas(totalShippingPrice + sumTotal())}</Text>
+                            fontFamily: totalShippingPrice != 0 ? fonts.MontserratBold : fonts.MontserratMedium,
+                            fontSize: totalShippingPrice != 0 ? fontSizes.h3 : fontSizes.h4,
+                            flex: 1,
+                            flexWrap: 'wrap',
+                            textAlign: 'right'
+                        }}>{totalShippingPrice != 0 ? `₫${numberWithCommas(totalShippingPrice + sumTotal())}` : "Thêm địa chỉ mặc định để xem tổng đơn hàng"}</Text>
                     </View>
                 </View>
 
@@ -426,7 +447,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     titleText: {
-        marginLeft:5,
+        marginLeft: 5,
         color: 'black',
         fontFamily: fonts.MontserratBold,
         fontSize: fontSizes.h1,

@@ -399,7 +399,7 @@ function AuctionDetail(props) {
                     </View>}
 
                     {/* During bidding, valid time */}
-                    {(auction.status == enumConstants.auction.Opened && isBiddingDuration()) && <View style={{
+                    {(auction.status == enumConstants.auction.Opened) && <View style={{
                         paddingHorizontal: 15,
                         gap: 10,
                         marginBottom: 10,

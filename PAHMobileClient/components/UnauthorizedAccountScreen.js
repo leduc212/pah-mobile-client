@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     },
     mainText: {
         color: 'black',
-        fontSize: fontSizes.h2,
+        fontSize: fontSizes.h3,
         textAlign: 'center',
         fontFamily: fonts.MontserratMedium,
         marginTop: 20

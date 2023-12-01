@@ -126,9 +126,15 @@ function CheckoutNow(props) {
                             const defaultAddress = responseAddress.filter(address => {
                                 return address.isDefault;
                             }).at(0)
-                            setCurrentShippingAddress(defaultAddress);
-                            getShippingCost(defaultAddress, responseProduct);
-                            getShippingDate(defaultAddress, responseProduct);
+                            if(defaultAddress){
+                                setCurrentShippingAddress(defaultAddress);
+                                getShippingCost(defaultAddress, responseProduct);
+                                getShippingDate(defaultAddress, responseProduct);
+                            } else {
+                                setCurrentShippingAddress(responseAddress.at(0));
+                                getShippingCost(responseAddress.at(0), responseProduct);
+                                getShippingDate(responseAddress.at(0), responseProduct);
+                            }
                         }
                         setIsLoading(false);
                     })
@@ -145,6 +151,21 @@ function CheckoutNow(props) {
         AddressRepository.getAllAdrressCurrentUser(axiosContext)
             .then(responseAddress => {
                 setShippingAddress(responseAddress);
+                if (responseAddress.length > 0) {
+                    // Set default shipping address
+                    const defaultAddress = responseAddress.filter(address => {
+                        return address.isDefault;
+                    }).at(0)
+                    if(defaultAddress){
+                        setCurrentShippingAddress(defaultAddress);
+                        getShippingCost(defaultAddress, responseProduct);
+                        getShippingDate(defaultAddress, responseProduct);
+                    } else {
+                        setCurrentShippingAddress(responseAddress.at(0));
+                        getShippingCost(responseAddress.at(0), responseProduct);
+                        getShippingDate(responseAddress.at(0), responseProduct);
+                    }
+                }
             })
             .catch(error => {
             })

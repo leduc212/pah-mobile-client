@@ -157,6 +157,25 @@ function Home(props) {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
                         navigate('Search')
+                        unsubscribe("weather")
+                        unsubscribe("AUCTION_1")
+                        unsubscribe("AUCTION_2")
+                        unsubscribe("AUCTION_3")
+                        unsubscribe("AUCTION_4")
+                        unsubscribe("AUCTION_5")
+                        unsubscribe("AUCTION_6")
+                        unsubscribe("AUCTION_7")
+                        unsubscribe("AUCTION_8")
+                        unsubscribe("AUCTION_9")
+                        unsubscribe("AUCTION_10")
+                        unsubscribe("USER_2")
+                        unsubscribe("USER_3")
+                        unsubscribe("USER_5")
+                        unsubscribe("USER_6")
+                        unsubscribe("USER_7")
+                        unsubscribe("USER_29")
+                        unsubscribe("USER_35")
+                        unsubscribe("USER_36")
                     }}>
                         <View style={{
                             width: 20, height: 20
