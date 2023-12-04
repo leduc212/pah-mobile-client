@@ -140,11 +140,9 @@ function CheckoutCart(props) {
                 console.log(error);
                 setIsLoading(false);
             });
-
         setShippingAddress(responseAddress);
         // After get default address successfully, iterate grouped cart and calculate shipping cost for each seller
         if (responseAddress.length > 0) {
-            console.log('a')
             // Set default shipping address
             defaultAddress = responseAddress.filter(address => {
                 return address.isDefault;
@@ -180,8 +178,11 @@ function CheckoutCart(props) {
 
     // Recalculate shipping cost
     async function getShippingCost(defaultAddress) {
-        setCartGrouped([]);
         setIsLoading(true);
+        let cartArray = [];
+        let shippingPriceTemp = 0;
+
+        // Foreach loop
         await Promise.all(cartGroupedComputed().map(async (seller, index, array) => {
             seller.total = seller.products.reduce((accumulator, object) => {
                 return accumulator + object.price * object.amount;
@@ -203,7 +204,7 @@ function CheckoutCart(props) {
                 });
 
             seller.shippingCost = responseShip.total;
-            setTotalShippingPrice(oldShippingCost => oldShippingCost + responseShip.total);
+            shippingPriceTemp += responseShip.total;
 
             // Calculate shipping date for each seller
             const responseDate = await ShippingRepository.calculateShippingDate({
@@ -218,17 +219,15 @@ function CheckoutCart(props) {
                 })
 
             seller.shippingDate = responseDate.leadtime;
-
-            setCartGrouped(oldArray => [...oldArray, seller]);
-            if (index === array.length - 1) {
-                setIsLoading(false);
-            }
-
+            cartArray.push(seller);
         }))
         .catch(err => {
             console.log('getShippingCost');
             setIsLoading(false);
         });
+        setTotalShippingPrice(shippingPriceTemp)
+        setCartGrouped(cartArray);
+        setIsLoading(false);
     }
 
     // Zalopayment
@@ -236,8 +235,6 @@ function CheckoutCart(props) {
     const [returncode, setReturnCode] = useState(0);
 
     useEffect(() => {
-        calculateCart();
-
         const subscription = payZaloBridgeEmitter.addListener(
             'EventPayZalo',
             (data) => {
@@ -255,25 +252,7 @@ function CheckoutCart(props) {
     }, []);
 
     useEffect(() => {
-        AddressRepository.getAllAdrressCurrentUser(axiosContext)
-            .then(responseAddress => {
-                setShippingAddress(responseAddress);
-                if (responseAddress.length > 0) {
-                    // Set default shipping address
-                    const defaultAddress = responseAddress.filter(address => {
-                        return address.isDefault;
-                    }).at(0)
-                    if(defaultAddress){
-                        setCurrentShippingAddress(defaultAddress);
-                        getShippingCost(defaultAddress);
-                    } else {
-                        setCurrentShippingAddress(responseAddress.at(0));
-                        getShippingCost(responseAddress.at(0));
-                    }
-                }
-            })
-            .catch(error => {
-            })
+        calculateCart();
     }, [isFocused]);
 
     // Empty cart
@@ -443,7 +422,8 @@ function CheckoutCart(props) {
             {/* Product basic info section */}
             <View>
                 {cartGrouped.map((seller) =>
-                    <View key={seller.sellerId}>
+                    //<View key={seller.sellerId}>
+                    <View key={Math.floor(Math.random() * 1000)}>
                         <View style={{
                             paddingHorizontal: 15,
                             marginBottom: 10
@@ -728,6 +708,7 @@ function CheckoutCart(props) {
                                 <TouchableOpacity style={[styles.sortModalOptionContainer, { flex: 1 }]}
                                     onPress={() => {
                                         setCurrentShippingAddress(item);
+                                        getShippingCost(item);
                                         setAddressModal(!addressModal);
                                     }}>
                                     <View style={[{
