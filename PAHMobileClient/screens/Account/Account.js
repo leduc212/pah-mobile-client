@@ -65,6 +65,8 @@ function Account(props) {
             unsubscribe(topic);
         });
 
+        pushNotificationContext.setMessageState([]);
+
         Toast.show({
             type: 'success',
             text1: 'Đăng xuất thành công',
@@ -208,7 +210,7 @@ function Account(props) {
                             {/* Notification navigation */}
                             <AccountMenuItem iconName='bell' text='Thông báo'
                                 onPress={() => {
-                                    navigate('Home')
+                                    console.log(pushNotificationContext.messageState)
                                 }} />
                             {/* Separator line */}
                             <View style={styles.separator}></View>

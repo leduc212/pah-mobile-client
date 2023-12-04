@@ -196,7 +196,7 @@ function App(props) {
 
         signalRContext?.connection?.on("ReceiveSubscribe", function (message) {
             subscribe(message);
-            pushNotificationContext?.setMessageState([...pushNotificationContext.messageState, message]);
+            pushNotificationContext?.setMessageState(oldState => [...oldState, message]);
         });
 
         signalRContext?.connection?.on("ReceiveNewBid", function (userName, auctionTitle) {
