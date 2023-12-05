@@ -479,6 +479,34 @@ function SellerRegisterView(props) {
           {status != 1 && (
             <View>
               <TouchableOpacity
+                onPress={() => navigate('UserAgreement')}
+                style={styles.secondaryButton}>
+                <Text style={styles.secondaryText}>Điều khoản sử dụng</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setReady(!ready);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  gap: 10,
+                  marginHorizontal: 10,
+                }}>
+                {ready ? (
+                  <IconFeather name="check-square" size={20} />
+                ) : (
+                  <IconFeather name="square" size={20} />
+                )}
+                <Text
+                  style={{
+                    color: colors.darkGreyText,
+                    fontFamily: fonts.MontserratMedium,
+                    fontSize: fontSizes.h5,
+                  }}>
+                  Tôi đồng ý với các điều khoản
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 disabled={!validate()}
                 onPress={() => {
                   registerSeller();
@@ -505,35 +533,6 @@ function SellerRegisterView(props) {
                   <Text style={styles.errorMessage}>{errorMessage}</Text>
                 </View>
               )}
-              <TouchableOpacity
-                onPress={()=> navigate('UserAgreement')} 
-                style={styles.secondaryButton}>
-                <Text style={styles.secondaryText}>Điều khoản sử dụng</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setReady(!ready);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  gap: 10,
-                  marginHorizontal: 10,
-                  marginBottom: 15,
-                }}>
-                {ready ? (
-                  <IconFeather name="check-square" size={20} />
-                ) : (
-                  <IconFeather name="square" size={20} />
-                )}
-                <Text
-                  style={{
-                    color: colors.darkGreyText,
-                    fontFamily: fonts.MontserratMedium,
-                    fontSize: fontSizes.h5,
-                  }}>
-                  Tôi đồng ý với các điều khoản
-                </Text>
-              </TouchableOpacity>
             </View>
           )}
         </ScrollView>
@@ -621,7 +620,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 15,
     marginHorizontal: 15,
-    marginTop: 20,
+    marginVertical: 10,
   },
   dropdown: {
     height: 50,
@@ -679,7 +678,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginTop:10
+    marginTop: 10,
   },
   secondaryText: {
     fontFamily: fonts.MontserratMedium,

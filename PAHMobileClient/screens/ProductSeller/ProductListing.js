@@ -249,15 +249,7 @@ function ProductListing(props) {
         </TouchableOpacity>
         <Text style={styles.titleText}>Tạo sản phẩm</Text>
         <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => {
-            alert('faq');
-          }}>
-          <IconAntDesign
-            name="questioncircleo"
-            size={25}
-            color={colors.primary}
-          />
+          style={styles.iconButton}>
         </TouchableOpacity>
       </View>
       {/* listing information */}
@@ -897,37 +889,33 @@ function ProductListing(props) {
               }}>
               Đăng bán miễn phí
             </Text>
-            <Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontFamily: fonts.MontserratMedium,
-                  fontSize: fontSizes.h5,
-                }}>
-                Khi nhấn{' '}
-              </Text>
-              <Text
-                style={{
-                  color: colors.black,
-                  fontFamily: fonts.MontserratBold,
-                  fontSize: fontSizes.h4,
-                }}>
-                Bắt đầu đăng bán
-              </Text>
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontFamily: fonts.MontserratMedium,
-                  fontSize: fontSizes.h5,
-                }}>
-                , bạn đồng ý với các điều khoản buôn bán và đấu giá trên nền tảng của chúng tôi.
-              </Text>
-            </Text>
             <TouchableOpacity
                 onPress={()=> navigate('UserAgreement')} 
                 style={styles.secondaryButton}>
                 <Text style={styles.secondaryText}>Điều khoản sử dụng</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+              onPress={() => {
+                setReady(!ready);
+              }}
+              style={{
+                flexDirection: 'row',
+                marginVertical: 10,
+              }}>
+              {ready == true ? (
+                <IconFeather name="check-square" size={20} />
+              ) : (
+                <IconFeather name="square" size={20} />
+              )}
+              <Text
+                style={{
+                  color: colors.darkGreyText,
+                  fontFamily: fonts.MontserratMedium,
+                  fontSize: fontSizes.h5,
+                }}>
+                Tôi đồng ý với các điều khoản
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity
               disabled={!validate()}
               onPress={() => {
@@ -955,28 +943,6 @@ function ProductListing(props) {
                   <Text style={styles.errorMessage}>{errorMessage}</Text>
                 </View>
               )}
-            <TouchableOpacity
-              onPress={() => {
-                setReady(!ready);
-              }}
-              style={{
-                flexDirection: 'row',
-                marginVertical: 10,
-              }}>
-              {ready == true ? (
-                <IconFeather name="check-square" size={20} />
-              ) : (
-                <IconFeather name="square" size={20} />
-              )}
-              <Text
-                style={{
-                  color: colors.darkGreyText,
-                  fontFamily: fonts.MontserratMedium,
-                  fontSize: fontSizes.h5,
-                }}>
-                Tôi đồng ý với các điều khoản
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -1017,7 +983,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MontserratBold,
     fontSize: fontSizes.h1,
     alignSelf: 'center',
-    marginLeft: 5
   },
   titleButtonContainer: {
     flexDirection: 'row',
@@ -1119,7 +1084,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginTop:10
   },
   secondaryText: {
     fontFamily: fonts.MontserratMedium,
