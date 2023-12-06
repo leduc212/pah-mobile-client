@@ -131,8 +131,8 @@ function RegisterView2(props) {
         </Text>
         <View style={{marginVertical: 20}}>
           <Text style={styles.termText}>
-            Khi tạo tài khoản, bạn đồng ý với các Điều Khoản Người Dùng và đã
-            đọc rõ Quyền Riêng Tư của chúng tôi
+            Khi tạo tài khoản, bạn đồng ý với các Điều khoản sử dụng và đã
+            đọc rõ Chính sách bảo mật của chúng tôi
           </Text>
         </View>
       </View>
