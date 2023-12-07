@@ -195,7 +195,7 @@ function SellerAuctionHistoryListing(props) {
                         data={auctions}
                         renderItem={({ item, index }) => <AuctionListingCard key={item.id} auction={item}
                             index={index} onPress={() => {
-                                navigate('AuctionDetail', { auction_id: item.id })
+                                navigate('AuctionDetailSeller', { auction_id: item.id })
                             }} />}
                         onEndReached={loadMoreItems}
                         onEndReachedThreshold={0}
