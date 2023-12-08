@@ -90,11 +90,11 @@ function ProductListing(props) {
   const [categoryData, setCategoryData] = useState([]);
   const [materialData, setMaterialData] = useState([]);
   const conditionData = [
-    { label: 'Mới', value: '1' },
-    { label: 'Như mới', value: '2' },
-    { label: 'Tốt', value: '3' },
-    { label: 'Khá', value: '4' },
-    { label: 'Cũ', value: '5' },
+    { label: 'Mới tinh', value: '1' },
+    { label: 'Mới', value: '2' },
+    { label: 'Đã qua sử dụng', value: '3' },
+    { label: 'Cũ', value: '4' },
+    { label: 'Cổ', value: '5' },
   ];
   //Input is enabled
   const [enableTitle, setEnableTitle] = useState(false);
