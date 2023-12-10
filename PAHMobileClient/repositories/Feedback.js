@@ -24,6 +24,22 @@ async function getFeedbacksByProductId(axiosContext, product_id) {
     }
 }
 
+async function createFeedback(axiosContext, feedback) {
+    const feedbackPath = `/feedback`;
+
+    try {
+        let responseData = await axiosContext.authAxios.post(feedbackPath, feedback);
+        if (responseData.status != 200) {
+            throw responseData.message;
+        }
+        let responseAddress = responseData.data.data;
+        return responseAddress;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
-    getFeedbacksByProductId
+    getFeedbacksByProductId,
+    createFeedback
 }
