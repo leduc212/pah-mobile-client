@@ -20,7 +20,6 @@ function ListingDetailFeedback(props) {
             <Text style={styles.feedbackLabel}>{buyerName} -</Text>
             <TimeLeft closedTime={ timestamp} textStyle={styles.feedbackLabel} showText={false}/>
         </View>
-        <Text style={styles.feedbackLabel}>Đánh giá: {ratings} sao</Text>
         <Text style={styles.feedbackContent}>{buyerFeedback}</Text>
         {index != length && <View style={styles.separator}></View>}
     </View>

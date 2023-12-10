@@ -616,7 +616,6 @@ function AuctionDetail(props) {
                                 <View style={{ gap: 2 }}>
                                     <Text style={styles.bottomSellerPrimary}>{auction.seller.name}</Text>
                                     <Text style={styles.bottomSellerSecondary}>{auction.seller.province}</Text>
-                                    <Text style={styles.bottomSellerSecondary}>Đánh giá: {auction.seller.ratings}</Text>
                                 </View>
                             </View>
                             <View style={{

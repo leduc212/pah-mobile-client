@@ -144,20 +144,33 @@ function ListingDetail(props) {
         Toast.show({
           type: 'success',
           text1: 'Bạn đã gửi đánh giá thành công',
-          position: 'top',
+          position: 'bottom',
           autoHide: true,
           visibilityTime: 2000,
         });
+        setfeedBack('');
         setIsLoadingCreate(false);
         onRefresh();
       })
       .catch(error => {
         console.log(error);
         if (error.response.data.message) {
-          setErrorMessage(error.response.data.message);
+          Toast.show({
+            type: 'error',
+            text1: error.response.data.message,
+            position: 'bottom',
+            autoHide: true,
+            visibilityTime: 2000,
+          });
         }
         if (error.response.data.Message) {
-          setErrorMessage(error.response.data.Message);
+          Toast.show({
+            type: 'error',
+            text1: error.response.data.Message,
+            position: 'bottom',
+            autoHide: true,
+            visibilityTime: 2000,
+          });
         }
         setIsLoadingCreate(false);
       });
@@ -463,9 +476,6 @@ function ListingDetail(props) {
                         <Text style={styles.bottomSellerSecondary}>
                           {product.seller.province}
                         </Text>
-                        <Text style={styles.bottomSellerSecondary}>
-                          Đánh giá: {product.seller.ratings}
-                        </Text>
                       </View>
                     </View>
                     <View
@@ -640,7 +650,7 @@ function ListingDetail(props) {
           }}>
           <View style={styles.feedbackModalContainer}>
             <TouchableOpacity
-              style={{position: 'absolute', top: 5, right: 10}}
+              style={{position: 'absolute', top: 10, right: 10}}
               onPress={() => {
                 setFeedbackModalVisible(!feedbackModalVisible);
               }}>
@@ -699,7 +709,7 @@ function ListingDetail(props) {
                   paddingVertical: 5,
                   paddingHorizontal: 10,
                   marginVertical: 10,
-                  borderRadius: 10,
+                  borderRadius: 5,
                 }}>
                 <Text
                   style={{
@@ -899,7 +909,7 @@ const styles = StyleSheet.create({
   },
   feedbackModalContainer: {
     backgroundColor: 'white',
-    borderRadius: 25,
+    borderRadius: 10,
     justifyContent: 'center',
     padding: 10,
     width: 300,

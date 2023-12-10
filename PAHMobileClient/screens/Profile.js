@@ -178,11 +178,6 @@ function Profile(props) {
               fontFamily: fonts.MontserratMedium,
               fontSize: fontSizes.h5
             }}>{userProfile.province}</Text>
-            <Text style={{
-              color: 'black',
-              fontFamily: fonts.MontserratMedium,
-              fontSize: fontSizes.h5
-            }}>Đánh giá: {userProfile.ratings}</Text>
           </View>
         </View>
 
